@@ -1,0 +1,245 @@
+package jordan.szalontai.unicrush;
+
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ResourceBundle;
+import javafx.concurrent.Task;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
+
+public class UniGameController implements Initializable {
+
+    @FXML
+    private GridPane mainGrid;
+    @FXML
+    private Label scoreLabel;
+    @FXML
+    private Label levelMessage;
+    @FXML
+    private Label levelSteps;
+
+    private UniGame game;
+    private int currentLevel;
+    private String[] selectedCandies = new String[2];
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        try {
+            game = new UniGame(0);
+            game.initLevels();
+
+            setMainGridDimensions(game.getCurrentLevel());
+
+            game.startLevel(currentLevel, mainGrid);
+            levelSteps.setText(Integer.toString(game.getCurrentLevel().getAvailableSteps()));
+
+            firstRender(game.getCurrentLevel().getBoardState());
+
+            enableOnClicks();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public synchronized void setScore(long score) {
+        scoreLabel.setText(Long.toString(score));
+    }
+
+    public synchronized void setMessage(String message) {
+        levelMessage.setText(message);
+    }
+
+    public synchronized void decreaseAvailableSteps() {
+        levelSteps.setText(Integer.toString(Integer.parseInt(levelSteps.getText()) - 1));
+    }
+
+    public void clearMessage() {
+        levelMessage.setText("");
+    }
+
+    public void setMainGridDimensions(Level l) {
+        List<ColumnConstraints> cols = new ArrayList<>();
+        List<RowConstraints> rows = new ArrayList<>();
+
+        for (int i = 0; i < l.getBoardSize(); i++) {
+            for (int j = 0; j < l.getBoardSize(); j++) {
+                cols.add(new ColumnConstraints());
+            }
+            rows.add(new RowConstraints());
+        }
+
+        mainGrid.getColumnConstraints().addAll(cols);
+        mainGrid.getRowConstraints().addAll(rows);
+    }
+
+    private void enableOnClicks() {
+        mainGrid.getChildren().stream()
+                .forEach(b -> b.setOnMouseClicked(e -> updateSelectedCandies(e)));
+    }
+
+    private void disableOnClicks() {
+        mainGrid.getChildren().stream()
+                .forEach(b -> b.setOnMouseClicked(null));
+    }
+
+    private void updateSelectedCandies(MouseEvent e) {
+        Button b = (Button) e.getSource();
+
+        String newSelect = String.format("%s,%s",
+                Integer.toString(GridPane.getRowIndex(b)),
+                Integer.toString(GridPane.getColumnIndex(b))
+        );
+
+        for (int c = 0; c < 2; c++) {
+            if (selectedCandies[c] == null) {
+                selectedCandies[c] = newSelect;
+                b.getStyleClass().add("selected");
+                break;
+            }
+            if (selectedCandies[c].equals(newSelect)) {
+                selectedCandies[c] = null;
+                b.getStyleClass().removeAll("selected");
+                break;
+            }
+        }
+
+        System.out.println(Arrays.toString(selectedCandies));
+
+        swapSelectedCandies(isSwapReady());
+    }
+
+    private void eraseSelectedCandies(Integer[][] coors) {
+        getFromGrid(coors[0][0], coors[0][1])
+                .getStyleClass()
+                .removeAll("selected");
+        getFromGrid(coors[1][0], coors[1][1])
+                .getStyleClass()
+                .removeAll("selected");
+
+        selectedCandies[0] = null;
+        selectedCandies[1] = null;
+    }
+
+    private Node getFromGrid(int i, int j) {
+        return mainGrid.getChildren()
+                .get(i * game.getCurrentLevel().getBoardSize() + j);
+    }
+
+    private void swapSelectedCandies(boolean ready) {
+        if (ready) {
+            clearMessage();
+            disableOnClicks();
+
+            Integer[][] coors = LevelBuilder.processCoordinateString(selectedCandies[0] + ";" + selectedCandies[1]);
+            game.getCurrentLevel().swap(coors);
+            renderCurrentLevel(game.getCurrentLevel().getBoardState());
+
+            List<String> boardStates = new ArrayList<>();
+            
+            long[] result = LevelManager.processLevelWithState(game.getCurrentLevel(), boardStates);
+            
+            final long iterations = result[0];
+            final long add = result[1];
+            
+            if (iterations == UniGame.MAX_ITERATION) {
+                LevelManager.resetLevel(game.getCurrentLevel());
+                boardStates.add(game.getCurrentLevel().getBoardState());
+            }
+            
+            if (iterations == 0) {
+                boardStates.add(game.getCurrentLevel().getBoardState());
+                game.getCurrentLevel().swap(coors);
+                boardStates.add(game.getCurrentLevel().getBoardState());
+            }
+            
+            game.addToScore(add);
+
+            startPopTask(boardStates, add);
+
+            eraseSelectedCandies(coors);
+            enableOnClicks();
+        }
+    }
+
+    private void startPopTask(List<String> boardStates, final long add) {
+        Task<Integer> popTask = new Task<Integer>() {
+            @Override
+            protected Integer call() {
+                int stateIndex = 0;
+                
+                while (stateIndex < boardStates.size()) {
+                    renderCurrentLevel(boardStates.get(stateIndex++));
+                    try {
+                        Thread.sleep(450);
+                    } catch (InterruptedException ex) {
+                        System.out.println(ex.getMessage());
+                    }
+                }
+                return stateIndex;
+            }
+        };
+        popTask.setOnSucceeded(e -> {
+            if (add >= 500) {
+                setMessage(Level.getMessage());
+            }
+            setScore(game.getPlayerScore());
+            decreaseAvailableSteps();
+        });
+        new Thread(popTask).start();
+    }
+
+    private boolean isSwapReady() {
+        return selectedCandies[0] != null && selectedCandies[1] != null;
+    }
+
+    private void firstRender(String boardState) {
+        String[] state = boardState.split(";");
+
+        for (int i = 0; i < state.length; i++) {
+            for (int j = 0; j < state[i].length(); j++) {
+                String color = Character.toString(state[i].charAt(j));
+
+                Button b = new Button();
+
+                b.setPrefWidth(30);
+                b.setPrefHeight(30);
+
+                if (!color.equals("x")) {
+                    b.setStyle("-fx-background-image:" + Game.getCandyImageURL(color));
+                } else {
+                    b.setStyle("-fx-background-color: transparent");
+                }
+
+                GridPane.setConstraints(b, j, i);
+                mainGrid.getChildren().add(b);
+            }
+        }
+    }
+
+    private void renderCurrentLevel(String boardState) {
+        String[] state = boardState.split(";");
+        int boardSize = state.length;
+
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < state[i].length(); j++) {
+                String color = Character.toString(state[i].charAt(j));
+
+                if (!color.equals("x")) {
+                    mainGrid.getChildren()
+                            .get(i * boardSize + j)
+                            .setStyle("-fx-background-image: " + Game.getCandyImageURL(color));
+                }
+            }
+        }
+    }
+
+}
