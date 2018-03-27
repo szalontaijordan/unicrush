@@ -62,6 +62,14 @@ public class Candy implements Comparable<Candy> {
     public boolean isMarkedForPop() {
         return markedForPop;
     }
+    
+    public void setMarkedForPop(boolean mark) {
+        this.markedForPop = mark;
+    }
+
+    public void setColor(State color) {
+        this.state = color;
+    }
 
     /**
      * Decides if the {@code Candy} is in the {@code State.EMPTY} state.
@@ -71,14 +79,6 @@ public class Candy implements Comparable<Candy> {
      */
     public boolean isEmpty() {
         return this.state == State.EMPTY;
-    }
-
-    public void setMarkedForPop(boolean mark) {
-        this.markedForPop = mark;
-    }
-
-    public void setColor(State color) {
-        this.state = color;
     }
 
     @Override
