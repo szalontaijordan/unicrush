@@ -29,7 +29,7 @@ public class StandardLevelBuilder extends LevelBuilder {
 
         for (int i = 0; i < l.getBoardSize(); i++) {
             for (int j = 0; j < l.getBoardSize(); j++) {
-                l.set(i, j, new Candy(Candy.getRandomColor()));
+                l.set(i, j, new Candy(Candy.getRandomColorState()));
             }
         }
 

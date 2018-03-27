@@ -10,7 +10,7 @@ public class StandardLevel extends Level {
         
         for (int i = 0; i < boardSize; i++) {
             for (int j = 0; j < boardSize; j++) {
-                board[i][j] = new Candy(Candy.getRandomColor());
+                board[i][j] = new Candy(Candy.getRandomColorState());
             }
         }
 

@@ -1,14 +1,16 @@
 package jordan.szalontai.unicrush;
 
 import java.util.Arrays;
+import lombok.Data;
 
+@Data
 public abstract class Level {
 
-    public static enum Messages {
-        SWEET,
-        DELICIOUS,
-        DIVINE,
-        TASTY
+    public static final String[] MESSAGES = {
+        "Sweet",
+        "Delicious",
+        "Divine",
+        "Tasty"
     };
     
     private int boardSize;
@@ -28,30 +30,6 @@ public abstract class Level {
         this.board = new Candy[boardSize][boardSize];
         this.transposed = false;
     }
-
-    public int getBoardSize() {
-        return boardSize;
-    }
-
-    public int getAvailableSteps() {
-        return availableSteps;
-    }
-
-    public int getScoreToComplete() {
-        return scoreToComplete;
-    }
-
-    public Integer[][] getWalls() {
-        return walls;
-    }
-
-    public Candy[][] getBoard() {
-        return board;
-    }
-    
-    public boolean isTransposed() {
-        return transposed;
-    }
     
     public Candy get(int i, int j) {
         try {
@@ -67,26 +45,6 @@ public abstract class Level {
     
     public void transpose() {
         this.transposed = !this.transposed;
-    }
-
-    public void setBoardSize(int boardSize) {
-        this.boardSize = boardSize;
-    }
-
-    public void setAvailableSteps(int availableSteps) {
-        this.availableSteps = availableSteps;
-    }
-
-    public void setScoreToComplete(int scoreToComplete) {
-        this.scoreToComplete = scoreToComplete;
-    }
-
-    public void setWalls(Integer[][] walls) {
-        this.walls = walls;
-    }
-
-    public void setBoard(Candy[][] board) {
-        this.board = board;
     }
 
     public void set(int i, int j, Candy c) throws ArrayIndexOutOfBoundsException {
@@ -133,7 +91,6 @@ public abstract class Level {
     }
     
     public static String getMessage() {
-        int index = (int) (Math.random() * Messages.values().length);
-        return Messages.values()[index].toString();
+        return MESSAGES[(int) (Math.random() * MESSAGES.length)];
     }
 }

@@ -26,7 +26,7 @@ public abstract class LevelManager {
         for (int row = 0; row < l.getBoardSize(); row++) {
             for (int col = 0; col < l.getBoardSize(); col++) {
                 if (l.get(row, col) != null && l.get(row, col).isMarkedForPop()) {
-                    l.get(row, col).setColor(Candy.Color.EMPTY);
+                    l.get(row, col).setColor(Candy.State.EMPTY);
                     l.get(row, col).setMarkedForPop(false);
                     popHappened = true;
                 }
@@ -115,7 +115,7 @@ public abstract class LevelManager {
 
             candies.replaceAll(c -> {
                 if (c.isEmpty()) {
-                    return new Candy(Candy.getRandomColor());
+                    return new Candy(Candy.getRandomColorState());
                 }
                 return c;
             });
