@@ -2,13 +2,11 @@ package jordan.szalontai.unicrush;
 
 import java.util.Arrays;
 
-public class LevelBuilder {
+public abstract class LevelBuilder {
 
-    private Level l;
-
-    public LevelBuilder() {
-        this.l = new Level();
-    }
+    protected Level l;
+    
+    public LevelBuilder() {}
     
     public LevelBuilder(Level l) {
         this.l = l;
@@ -39,39 +37,16 @@ public class LevelBuilder {
     }
 
     public LevelBuilder putWallsFromString(String template) {
-        l.setWalls(processCoordinateString(template));
+        l.setWalls(StandardLevelBuilder.processCoordinateString(template));
         return this;
     }
-
-    public LevelBuilder fillBoardRandom() throws Exception {
-        if (l.getBoardSize() == 0) {
-            throw new Exception("Board size must be set first!");
-        }
-
-        if (l.getWalls() == null) {
-            throw new Exception("Walls must be set first!");
-        }
-
-        if (l.getBoard() == null) {
-            l.setBoard(new Candy[l.getBoardSize()][l.getBoardSize()]);
-        }
-
-        for (int i = 0; i < l.getBoardSize(); i++) {
-            for (int j = 0; j < l.getBoardSize(); j++) {
-                l.set(i, j, new Candy(Candy.getRandomColor()));
-            }
-        }
-
-        Arrays.stream(l.getWalls())
-                .forEach(wall -> l.set(wall[0], wall[1], null));
-
-        return this;
-    }
-
+    
+    public abstract LevelBuilder fillBoard() throws Exception;
+    
     public Level create() {
         return l;
     }
-
+    
     /**
      * Creating a 2D-array that has coordinates that indicate locations on a
      * board.
@@ -80,8 +55,10 @@ public class LevelBuilder {
      * @return the 2D-array containing the coordinates
      */
     public static Integer[][] processCoordinateString(String walls) {
-        return Arrays.stream(walls.split(";")).map(coor -> Arrays.stream(coor.split(","))
-                .map(Integer::parseInt)
-                .toArray(Integer[]::new)).toArray(Integer[][]::new);
+        return Arrays.stream(walls.split(";"))
+                .map(coor -> Arrays.stream(coor.split(","))
+                    .map(Integer::parseInt)
+                    .toArray(Integer[]::new))
+                .toArray(Integer[][]::new);
     }
 }

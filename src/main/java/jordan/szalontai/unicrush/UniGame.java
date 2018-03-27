@@ -26,15 +26,12 @@ public class UniGame {
         Level current = getLevel(currentLevel);
 
         System.out.println("Preprocessing");
-        
+
         int iteration = LevelManager.processLevel(current);
 
         if (iteration == MAX_ITERATION) {
             System.out.println("Maxit, preprocessing again");
-            levels.set(currentLevel, new LevelBuilder(current)
-                    .fillBoardRandom()
-                    .create());
-
+            LevelManager.resetLevel(current);
             LevelManager.processLevel(current);
         }
 
@@ -47,7 +44,7 @@ public class UniGame {
     public Level getLevel(int index) {
         return levels.get(index);
     }
-    
+
     public List<Level> getLevels() {
         return levels;
     }
@@ -70,12 +67,12 @@ public class UniGame {
     }
 
     public void initLevels() throws Exception {
-        Level l = new LevelBuilder()
+        Level l = new StandardLevelBuilder()
                 .setCompliteScore(500)
                 .setAvailableSteps(20)
                 .setBoardSize(8)
                 .putWallsFromString("0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7")
-                .fillBoardRandom()
+                .fillBoard()
                 .create();
 
         levels.add(l);

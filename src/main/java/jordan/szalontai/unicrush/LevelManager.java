@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import static jordan.szalontai.unicrush.UniGame.MAX_ITERATION;
 
-public class LevelManager {
+public class LevelManager implements Manager {
 
     /**
      * Replaces the color of candies that are in a column or row with a length
@@ -161,9 +161,9 @@ public class LevelManager {
     
     public static void resetLevel(Level current) {
         try {
-            current = new LevelBuilder(current)
-                    .fillBoardRandom()
-                    .create();
+            //current = new StandardLevelBuilder(current)
+            //        .fillBoard()
+            //        .create();
             processLevel(current);
         } catch (Exception ex) {
         }

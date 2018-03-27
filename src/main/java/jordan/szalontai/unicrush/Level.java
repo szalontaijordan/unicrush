@@ -2,36 +2,31 @@ package jordan.szalontai.unicrush;
 
 import java.util.Arrays;
 
-public class Level {
+public abstract class Level {
 
-    public static final String[] MESSAGES = {"SWEET", "DELICIOUS", "DIVINE", "TASTY"};
+    public static enum Messages {
+        SWEET,
+        DELICIOUS,
+        DIVINE,
+        TASTY
+    };
     
     private int boardSize;
     private int availableSteps;
     private int scoreToComplete;
     private boolean transposed;
-    private Integer[][] walls;
-    private Candy[][] board;
+    
+    protected Integer[][] walls;
+    protected Candy[][] board;
 
+    public Level() {}
+    
     public Level(int scoreToComplete, int steps, int boardSize, String walls) {
         this.scoreToComplete = scoreToComplete;
         this.availableSteps = steps;
         this.boardSize = boardSize;
         this.board = new Candy[boardSize][boardSize];
         this.transposed = false;
-        this.walls = LevelBuilder.processCoordinateString(walls);
-
-        for (int i = 0; i < boardSize; i++) {
-            for (int j = 0; j < boardSize; j++) {
-                board[i][j] = new Candy(Candy.getRandomColor());
-            }
-        }
-
-        Arrays.stream(this.walls)
-                .forEach(wall -> board[wall[0]][wall[1]] = null);
-    }
-
-    public Level() {
     }
 
     public int getBoardSize() {
@@ -138,6 +133,7 @@ public class Level {
     }
     
     public static String getMessage() {
-        return MESSAGES[(int) (Math.random() * MESSAGES.length)];
+        int index = (int) (Math.random() * Messages.values().length);
+        return Messages.values()[index].toString();
     }
 }
