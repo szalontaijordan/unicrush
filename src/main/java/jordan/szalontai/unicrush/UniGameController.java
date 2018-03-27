@@ -16,6 +16,11 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
+/**
+ * TODO.
+ * 
+ * @author Szalontai Jordán
+ */
 public class UniGameController implements Initializable {
 
     private static enum GameState {
@@ -32,8 +37,7 @@ public class UniGameController implements Initializable {
     @FXML
     private Label levelSteps;
 
-    private UniGame game;
-    private int currentLevel;
+    private Game game;
     private String[] selectedCandies = new String[2];
 
     @Override
@@ -44,7 +48,7 @@ public class UniGameController implements Initializable {
 
             setMainGridDimensions(game.getCurrentLevel());
 
-            game.startLevel(currentLevel, mainGrid);
+            game.startCurrentLevel();
             levelSteps.setText(Integer.toString(game.getCurrentLevel().getAvailableSteps()));
 
             firstRender(game.getCurrentLevel().getBoardState());
@@ -231,7 +235,7 @@ public class UniGameController implements Initializable {
                 b.setPrefHeight(30);
 
                 if (!color.equals("x")) {
-                    b.setStyle("-fx-background-image:" + Game.getCandyImageURL(color));
+                    b.setStyle("-fx-background-image:" + Main.getCandyImageURL(color));
                 } else {
                     b.setStyle("-fx-background-color: transparent");
                 }
@@ -253,7 +257,7 @@ public class UniGameController implements Initializable {
                 if (!color.equals("x")) {
                     mainGrid.getChildren()
                             .get(i * boardSize + j)
-                            .setStyle("-fx-background-image: " + Game.getCandyImageURL(color));
+                            .setStyle("-fx-background-image: " + Main.getCandyImageURL(color));
                 }
             }
         }

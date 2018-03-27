@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class Candy implements Comparable<Candy> {
 
     /**
-     * An enum containing the possible states a {@code Candy} can be in.
+     * The possible states of a {@code Candy}.
      */
     public static enum State {
         EMPTY,
@@ -56,15 +56,15 @@ public class Candy implements Comparable<Candy> {
         this.markedForPop = mark;
     }
 
-    public void setColor(State color) {
+    public void setState(State color) {
         this.state = color;
     }
 
     /**
      * Decides if the {@code Candy} is in the {@code State.EMPTY} state.
      *
-     * @return true if the {@code Candy} is in the {@code State.EMPTY} state,
-     * false otherwise
+     * @return {@code true} if the {@code Candy} is in the {@code State.EMPTY} state,
+     * {@code false} otherwise
      */
     public boolean isEmpty() {
         return this.state == State.EMPTY;
