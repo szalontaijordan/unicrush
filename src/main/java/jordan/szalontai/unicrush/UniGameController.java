@@ -18,6 +18,11 @@ import javafx.scene.layout.RowConstraints;
 
 public class UniGameController implements Initializable {
 
+    private static enum GameState {
+        WON,
+        LOST
+    };
+
     @FXML
     private GridPane mainGrid;
     @FXML
@@ -62,7 +67,7 @@ public class UniGameController implements Initializable {
         levelSteps.setText(Integer.toString(Integer.parseInt(levelSteps.getText()) - 1));
     }
 
-    public void clearMessage() {
+    public synchronized void clearMessage() {
         levelMessage.setText("");
     }
 
@@ -144,23 +149,24 @@ public class UniGameController implements Initializable {
             renderCurrentLevel(game.getCurrentLevel().getBoardState());
 
             List<String> boardStates = new ArrayList<>();
-            
+
             long[] result = LevelManager.processLevelWithState(game.getCurrentLevel(), boardStates);
-            
+
             final long iterations = result[0];
             final long add = result[1];
-            
+
             if (iterations == UniGame.MAX_ITERATION) {
+                System.out.println("MAXIT");
                 LevelManager.resetLevel(game.getCurrentLevel());
                 boardStates.add(game.getCurrentLevel().getBoardState());
             }
-            
+
             if (iterations == 0) {
                 boardStates.add(game.getCurrentLevel().getBoardState());
                 game.getCurrentLevel().swap(coors);
                 boardStates.add(game.getCurrentLevel().getBoardState());
             }
-            
+
             game.addToScore(add);
 
             startPopTask(boardStates, add);
@@ -175,7 +181,7 @@ public class UniGameController implements Initializable {
             @Override
             protected Integer call() {
                 int stateIndex = 0;
-                
+
                 while (stateIndex < boardStates.size()) {
                     renderCurrentLevel(boardStates.get(stateIndex++));
                     try {
@@ -191,8 +197,19 @@ public class UniGameController implements Initializable {
             if (add >= 500) {
                 setMessage(Level.getMessage());
             }
-            setScore(game.getPlayerScore());
-            decreaseAvailableSteps();
+
+            if (Integer.parseInt(scoreLabel.getText()) == game.getCurrentLevel().getScoreToComplete()) {
+                endLevel(GameState.WON);
+            }
+
+            if (levelSteps.getText().equals("0")) {
+                endLevel(GameState.LOST);
+            }
+
+            if (add >= 0) {
+                setScore(game.getPlayerScore());
+                decreaseAvailableSteps();
+            }
         });
         new Thread(popTask).start();
     }
@@ -242,4 +259,16 @@ public class UniGameController implements Initializable {
         }
     }
 
+    private void endLevel(GameState state) {
+        switch (state) {
+            case WON:
+                System.out.println("GG");
+                break;
+            case LOST:
+                System.out.println("STEPS 0");
+                break;
+            default:
+                break;
+        }
+    }
 }
