@@ -22,17 +22,6 @@ public class Candy implements Comparable<Candy> {
         YELLOW
     }
 
-    /**
-     * Returning a random state that represents the state candy in this special
-     * case.
-     *
-     * @return a {@code Candy.State} representing the state of the candy
-     */
-    public static State getRandomColorState() {
-        return Arrays.asList(State.values())
-                .get((int) (Math.random() * (State.values().length - 1)) + 1);
-    }
-
     private State state;
     private boolean markedForPop;
 
@@ -93,4 +82,16 @@ public class Candy implements Comparable<Candy> {
         }
         return 0;
     }
+    
+    /**
+     * Returning a random state that represents the state candy in this special
+     * case.
+     *
+     * @return a {@code Candy.State} representing the state of the candy
+     */
+    public static State getRandomColorState() {
+        return Arrays.asList(State.values())
+                .get((int) (Math.random() * (State.values().length - 1)) + 1);
+    }
+    
 }
