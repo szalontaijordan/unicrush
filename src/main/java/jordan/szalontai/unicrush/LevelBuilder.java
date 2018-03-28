@@ -3,7 +3,7 @@ package jordan.szalontai.unicrush;
 import java.util.Arrays;
 
 /**
- * An abstract class for building instances of {@code Level}.
+ * Abstract class for building instances of {@code Level}.
  *
  * This class follows the builder pattern.
  *
@@ -11,16 +11,18 @@ import java.util.Arrays;
  */
 public abstract class LevelBuilder {
 
+    /**
+     * The {@code Level} instance we build.
+     */
     protected Level level;
 
     /**
-     * An empty constructor for the subclasses.
+     * Constructs an empty instance.
      */
-    public LevelBuilder() {
-    }
-
+    public LevelBuilder() {}
+    
     /**
-     * A constructor to set the {@code level} field of the class, so we don't
+     * Constructor to set the {@code level} field of the class, so we don't
      * start from the beginnings.
      *
      * @param level the level that we would like to continue building
@@ -113,7 +115,7 @@ public abstract class LevelBuilder {
     }
 
     /**
-     * Creating a 2D-array that has coordinates that indicate locations on a
+     * Creates a 2D-array that has coordinates that indicate locations on a
      * board.
      *
      * @param walls A String with the pattern. An example String: "0,0;0,1;0,2".

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A class representing the game like Candy Crush with a list of levels you can
+ * Class representing the game like Candy Crush with a list of levels you can
  * play.
  *
  * @author Szalontai Jordán
@@ -13,7 +13,7 @@ public class UniGame implements Game {
 
     /**
      * The maximum amount of iterations that can occur during processing a
-     * {@code Level} of the {@code UniGame}
+     * {@code Level} of the {@code UniGame}.
      */
     public static final int MAX_ITERATION = 50;
 
@@ -22,7 +22,7 @@ public class UniGame implements Game {
     private List<Level> levels;
 
     /**
-     * Constructing a {@code Game} and setting its current level to the given
+     * Constructs a {@code Game} and setting its current level to the given
      * parameter.
      *
      * @param currentLevel an index of the {@code Level}
@@ -38,13 +38,13 @@ public class UniGame implements Game {
     }
 
     /**
-     * Initializing a {@code Level} so there are not any matching {@code Candy}
+     * Initializes a {@code Level} so there are not any matching {@code Candy}
      * sequences.
      *
      * @param levelIndex the index of the {@code Level} we'd like to start
      *
-     * For further information see {@code LevelManager::processLevel}
-     * and {@code LevelManager::resetLevel}
+     * @see LevelManager#processLevel
+     * @see LevelManager#resetLevel
      */
     public void startLevel(int levelIndex) {
         Level level = levels.get(levelIndex);

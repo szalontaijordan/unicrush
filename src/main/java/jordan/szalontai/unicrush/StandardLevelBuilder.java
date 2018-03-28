@@ -3,7 +3,7 @@ package jordan.szalontai.unicrush;
 import java.util.Arrays;
 
 /**
- * A class for building a {@code StandardLevel}.
+ * Class for building a {@code StandardLevel}.
  *
  * This class is a subclass of {@code LevelBuilder}
  *

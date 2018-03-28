@@ -3,7 +3,7 @@ package jordan.szalontai.unicrush;
 import java.util.Arrays;
 
 /**
- * A class for representing a {@code Candy} on the board.
+ * Class for representing a {@code Candy} on the board.
  *
  * @author Szalontai Jordán
  */
@@ -84,7 +84,7 @@ public class Candy implements Comparable<Candy> {
     }
     
     /**
-     * Returning a random state that represents the state candy in this special
+     * Returns a random state that represents the state candy in this special
      * case.
      *
      * @return a {@code Candy.State} representing the state of the candy

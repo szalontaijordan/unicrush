@@ -1,7 +1,7 @@
 package jordan.szalontai.unicrush;
 
 /**
- * An interface describing the basic behaviors of a {@code Game}.
+ * Interface describing the basic behaviors of a {@code Game}.
  *
  * @author Szalontai Jordán
  */
@@ -26,7 +26,7 @@ public interface Game {
     public void startCurrentLevel();
 
     /**
-     * A method used for modifying the score of a player.
+     * Used for modifying the score of a player.
      *
      * @param plus the amount of points that should be added to some value
      * representing the player's score
@@ -34,7 +34,7 @@ public interface Game {
     public void addToScore(long plus);
 
     /**
-     * A method returning information about the index of a level on which the
+     * Returns information about the index of a level on which the
      * actual game is happening.
      *
      * @return an index of a level e.g. in a list
@@ -42,14 +42,14 @@ public interface Game {
     public int getCurrentLevel();
 
     /**
-     * A method returning information about the player's current score.
+     * Returns information about the player's current score.
      *
      * @return the current score of a player
      */
     public long getPlayerScore();
 
     /**
-     * A method returning a concrete {@code Level} instance of the game-
+     * Returns a concrete {@code Level} instance of the game-
      *
      * @param index the index of a level we need
      * @return a {@code Level} instance representing the level we wanted to get

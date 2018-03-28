@@ -4,7 +4,7 @@ import java.util.Arrays;
 import lombok.Data;
 
 /**
- * An abstract class representing a level of a game.
+ * Abstract class representing a level of a game.
  *
  * @author Szalontai Jordán
  */
@@ -26,7 +26,13 @@ public abstract class Level {
     private int scoreToComplete;
     private boolean transposed;
 
+    /**
+     * 2D-array that represents the coordinates of the wall positions.
+     */
     protected Integer[][] walls;
+    /**
+     * 2D-array that represents the board of {@code Candy} instances.
+     */
     protected Candy[][] board;
 
     /**
@@ -54,7 +60,7 @@ public abstract class Level {
     }
 
     /**
-     * Returning the desired element of the board.
+     * Returns the desired element of the board.
      *
      * @param i row index
      * @param j column index
@@ -74,14 +80,14 @@ public abstract class Level {
     }
 
     /**
-     * Switching the value of the {@code transposed} field.
+     * Switches the value of the {@code transposed} field.
      */
     public void transpose() {
         this.transposed = !this.transposed;
     }
 
     /**
-     * Setting a {@code Candy} instance in the board.
+     * Sets a {@code Candy} instance in the board.
      *
      * @param i row index
      * @param j column index
@@ -98,7 +104,7 @@ public abstract class Level {
     }
 
     /**
-     * Swapping two {@code Candy} instances on the board, if a given statement
+     * Swaps two {@code Candy} instances on the board, if a given statement
      * is true.
      *
      * @param coors an array representing the coordinates of the {@code Candy}
@@ -119,28 +125,17 @@ public abstract class Level {
         return true;
     }
 
-    /**
-     * Tests if the given coordinates are next to each other in some way.
-     *
-     * @param coors an array representing the coordinates of the {@code Candy}
-     * instances in the board
-     * @return {@code true} if the coordinates are next to each other
-     * horizontally or vertically, {@code false} if not
-     */
     private boolean testSwap(Integer[][] coors) {
         return Math.abs(coors[0][0] - coors[1][0]) + Math.abs(coors[0][1] - coors[1][1]) == 1;
     }
 
     /**
-     * A method to represent the board with a {@code String} that can be
+     * Represents the board with a {@code String} that can be
      * processed easily.
      *
-     * e.g.<br>
-     * {@code [x, R, B, x]}<br>
-     * {@code [G, G, B, G]}   ----&gt; xRBxGGBGBRYGxBBx<br>
-     * {@code [B, R, Y, G]}<br>
-     * {@code [x, B, B, x]}<br>
-     * 
+     * e.g.<br> {@code [x, R, B, x]}<br> {@code [G, G, B, G]} ----&gt;
+     * xRBxGGBGBRYGxBBx<br> {@code [B, R, Y, G]}<br> {@code [x, B, B, x]}<br>
+     *
      * @return the board state {@code String} produced as mentioned above
      */
     public String getBoardState() {
@@ -162,7 +157,7 @@ public abstract class Level {
 
     /**
      * Gives a random message from the defined messages.
-     * 
+     *
      * @return a random element of {@code MESSAGES}
      */
     public static String getMessage() {

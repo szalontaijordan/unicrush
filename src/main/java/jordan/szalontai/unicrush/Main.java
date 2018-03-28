@@ -7,7 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 /**
- * The main class starting the JavaFx application.
+ * Main class starting the JavaFx application.
  *
  * @author Szalontai Jordán
  */

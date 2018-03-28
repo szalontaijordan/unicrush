@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A class containing static methods that manage the logics of the levels.
+ * Class containing static methods that manage the logics of the levels.
  *
  * @author Szalontai Jordán
  */
 public abstract class LevelManager {
 
     /**
-     * Refreshing the {@code Candy.State} of {@code Candy} instances in the
+     * Refreshes the {@code Candy.State} of {@code Candy} instances in the
      * {@code level}'s board that are in a column or row with a length more than
      * two.
      *
@@ -44,15 +44,6 @@ public abstract class LevelManager {
         return popHappened;
     }
 
-    /**
-     * Marking each {@code Candy} instance as {@code markForPop} so the special
-     * cases of pop can be solved.
-     *
-     * Using a {@code HashMap<String, Integer[]>} to keep count of the
-     * occurrences of the instances.
-     *
-     * @param l the {@code Level} containing the board
-     */
     private static void markAllCandies(Level l) {
         Map<String, Integer[]> candyCountMap = new HashMap<>();
 
@@ -73,18 +64,7 @@ public abstract class LevelManager {
             candyCountMap.clear();
         }
     }
-
-    /**
-     * Marking the {@code Candy} instances as {@code markForPop}.
-     *
-     * This is a helper method, using the value in the map.
-     *
-     * @param l the {@code Level} containing the board
-     * @param row the row index of the sequence of {@code Candy} instances
-     * waiting to be marked
-     * @param v an array containing the length and the starting position of
-     * candy-sequence
-     */
+    
     private static void mark(Level l, int row, Integer[] v) {
         if (v[0] >= 3) {
             for (int i = 0; i < v[0]; i++) {
@@ -141,16 +121,15 @@ public abstract class LevelManager {
      * Iterations of popping the matching {@code Candy} instances and then
      * applying the gravity logic to the {@code Level}'s board.
      *
-     * We check how many iterations occurred, so this cannot be an infinite
+     * <p>We check how many iterations occurred, so this cannot be an infinite
      * loop. It is important to be aware of the fact, that this method is
-     * changing the model of the {@code Level} given as a parameter.
+     * changing the model of the {@code Level} given as a parameter.</p>
      *
      * @param l the {@code Level} on which we do these iterations
      * @return how many iterations occurred
      *
-     * For further information see {@code popAllMarked}
-     * and {@code applyGravity}.
-     *
+     * @see #popAllMarked
+     * @see #applyGravity
      */
     public static int processLevel(Level l) {
         int iterations = 0;
@@ -168,12 +147,12 @@ public abstract class LevelManager {
      * Iterations of popping the matching {@code Candy} instances and then
      * applying the gravity logic to the {@code Level}'s board.
      *
-     * We check how many iterations occurred, so this cannot be an infinite loop
+     * <p>We check how many iterations occurred, so this cannot be an infinite loop
      * and in addition we summarize the points that {@code applyGravity}
      * returns. It is important to be aware of the fact, that this method is
      * changing the model of the {@code Level} given as a parameter AND adding
      * the given {@code Level}'s {@code boardState String} to the given
-     * {@code List<String>}.
+     * {@code List<String>}.</p>
      *
      * @param l the {@code Level} on which we do these iterations
      * @param states the {@code List<String>} that will contain
@@ -181,8 +160,8 @@ public abstract class LevelManager {
      * @return a {@code long[]} array representing how many iterations occurred
      * and the sum of the points returned by {@code applyGravity}
      *
-     * For further information see {@code popAllMarked}
-     * and {@code applyGravity}
+     * @see #popAllMarked
+     * @see #applyGravity
      */
     public static long[] processLevelWithState(Level l, List<String> states) {
         long iterations;
@@ -204,8 +183,8 @@ public abstract class LevelManager {
      * Utilizes the {@code LevelBuilder} to reset all {@code Candy} instances in
      * a {@code Level}'s board.
      *
-     * The method fills the {@code Level}'s board with the method implemented in
-     * the concrete builder classes.
+     * <p>The method fills the {@code Level}'s board with the method implemented in
+     * the concrete builder classes.</p>
      *
      * @param l the {@code Level} we are rebuilding
      */
