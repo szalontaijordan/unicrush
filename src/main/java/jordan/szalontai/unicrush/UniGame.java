@@ -3,6 +3,12 @@ package jordan.szalontai.unicrush;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A class representing the game like Candy Crush with a list of levels you can
+ * play.
+ *
+ * @author Szalontai Jordán
+ */
 public class UniGame implements Game {
 
     /**
@@ -27,10 +33,6 @@ public class UniGame implements Game {
         this.currentLevel = currentLevel;
     }
 
-    public Level getLevel(int index) {
-        return levels.get(index);
-    }
-
     public List<Level> getLevels() {
         return levels;
     }
@@ -39,13 +41,14 @@ public class UniGame implements Game {
      * Initializing a {@code Level} so there are not any matching {@code Candy}
      * sequences.
      *
-     * @param level the {@code Level} needed to be initialized
-     * @throws Exception if anything bad happens during the initialization
+     * @param levelIndex the index of the {@code Level} we'd like to start
      *
      * @see {@code LevelManager::processLevel}
      * @see {@code LevelManager::resetLevel}
      */
-    public void startLevel(Level level) throws Exception {
+    public void startLevel(int levelIndex) {
+        Level level = levels.get(levelIndex);
+        
         System.out.println("Preprocessing");
 
         int iterations = LevelManager.processLevel(level);
@@ -61,35 +64,39 @@ public class UniGame implements Game {
 
         this.playerScore = 0;
     }
-
-    @Override
-    public void startCurrentLevel() throws Exception {
-        startLevel(getCurrentLevel());
+    
+    public void setCurrentLevel(int newCurrent) {
+        this.currentLevel = newCurrent;
     }
 
+    @Override
+    public Level getLevel(int index) {
+        return levels.get(index);
+    }
+    
     @Override
     public long getPlayerScore() {
         return playerScore;
     }
 
     @Override
-    public Level getCurrentLevel() {
-        return levels.get(currentLevel);
+    public int getCurrentLevel() {
+        return currentLevel;
     }
 
+    @Override
+    public void startCurrentLevel() {
+        startLevel(currentLevel);
+    }
+    
     @Override
     public void addToScore(long plus) {
         this.playerScore += plus;
     }
-
-    /**
-     * Initializing the basic structure of all levels.
-     *
-     * @throws Exception if something goes wrong during the process of building
-     * or reading from a database
-     */
+    
     @Override
     public void initLevels() throws Exception {
+        // creating level, we didn't set up any DB connection yet
         Level l = new StandardLevelBuilder()
                 .setCompliteScore(500)
                 .setAvailableSteps(20)

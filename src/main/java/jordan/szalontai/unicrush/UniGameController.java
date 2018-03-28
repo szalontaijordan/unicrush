@@ -46,12 +46,12 @@ public class UniGameController implements Initializable {
             game = new UniGame(0);
             game.initLevels();
 
-            setMainGridDimensions(game.getCurrentLevel());
+            setMainGridDimensions(game.getLevel(game.getCurrentLevel()));
 
             game.startCurrentLevel();
-            levelSteps.setText(Integer.toString(game.getCurrentLevel().getAvailableSteps()));
+            levelSteps.setText(Integer.toString(game.getLevel(game.getCurrentLevel()).getAvailableSteps()));
 
-            firstRender(game.getCurrentLevel().getBoardState());
+            firstRender(game.getLevel(game.getCurrentLevel()).getBoardState());
 
             enableOnClicks();
         } catch (Exception ex) {
@@ -140,7 +140,7 @@ public class UniGameController implements Initializable {
 
     private Node getFromGrid(int i, int j) {
         return mainGrid.getChildren()
-                .get(i * game.getCurrentLevel().getBoardSize() + j);
+                .get(i * game.getLevel(game.getCurrentLevel()).getBoardSize() + j);
     }
 
     private void swapSelectedCandies(boolean ready) {
@@ -149,26 +149,28 @@ public class UniGameController implements Initializable {
             disableOnClicks();
 
             Integer[][] coors = LevelBuilder.processCoordinateString(selectedCandies[0] + ";" + selectedCandies[1]);
-            game.getCurrentLevel().swap(coors);
-            renderCurrentLevel(game.getCurrentLevel().getBoardState());
+            game.getLevel(game.getCurrentLevel()).swap(coors);
+            renderCurrentLevel(game.getLevel(game.getCurrentLevel()).getBoardState());
 
             List<String> boardStates = new ArrayList<>();
 
-            long[] result = LevelManager.processLevelWithState(game.getCurrentLevel(), boardStates);
+            long[] result = LevelManager.processLevelWithState(game.getLevel(game.getCurrentLevel()), boardStates);
 
             final long iterations = result[0];
             final long add = result[1];
 
             if (iterations == UniGame.MAX_ITERATION) {
                 System.out.println("MAXIT");
-                LevelManager.resetLevel(game.getCurrentLevel());
-                boardStates.add(game.getCurrentLevel().getBoardState());
+                LevelManager.resetLevel(game.getLevel(game.getCurrentLevel()));
+                boardStates.add(game.getLevel(game.getCurrentLevel()).getBoardState());
             }
 
             if (iterations == 0) {
-                boardStates.add(game.getCurrentLevel().getBoardState());
-                game.getCurrentLevel().swap(coors);
-                boardStates.add(game.getCurrentLevel().getBoardState());
+                boardStates.add(game.getLevel(game.getCurrentLevel())
+                        .getBoardState());
+                game.getLevel(game.getCurrentLevel()).swap(coors);
+                boardStates.add(game.getLevel(game.getCurrentLevel())
+                        .getBoardState());
             }
 
             game.addToScore(add);
@@ -202,7 +204,7 @@ public class UniGameController implements Initializable {
                 setMessage(Level.getMessage());
             }
 
-            if (Integer.parseInt(scoreLabel.getText()) == game.getCurrentLevel().getScoreToComplete()) {
+            if (Integer.parseInt(scoreLabel.getText()) == game.getLevel(game.getCurrentLevel()).getScoreToComplete()) {
                 endLevel(GameState.WON);
             }
 
