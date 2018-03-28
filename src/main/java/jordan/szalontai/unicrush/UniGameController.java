@@ -17,12 +17,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 
 /**
- * TODO.
- * 
+ * A class that controls the main JavaFx {@code Scene} on which we play the
+ * current level of a {@code Game}.
+ *
  * @author Szalontai Jordán
  */
 public class UniGameController implements Initializable {
 
+    /**
+     * The possible game states, a game can be won or lost.
+     */
     private static enum GameState {
         WON,
         LOST
@@ -75,6 +79,18 @@ public class UniGameController implements Initializable {
         levelMessage.setText("");
     }
 
+    private Node getFromGrid(int i, int j) {
+        return mainGrid.getChildren()
+                .get(i * game.getLevel(game.getCurrentLevel()).getBoardSize() + j);
+    }
+
+    /**
+     * A method creating a number of n*n new columns and rows for the main grid
+     * of the {@code Scene}, where n is the size of the given {@code Level}'s
+     * board.
+     *
+     * @param l the {@code Level} instance from which we get the board size.
+     */
     public void setMainGridDimensions(Level l) {
         List<ColumnConstraints> cols = new ArrayList<>();
         List<RowConstraints> rows = new ArrayList<>();
@@ -100,6 +116,13 @@ public class UniGameController implements Initializable {
                 .forEach(b -> b.setOnMouseClicked(null));
     }
 
+    /**
+     * An event handler for tracking the candies selected on the grid.
+     *
+     * @param e the {@code MouseEvent} that occurred
+     *
+     * For further information see {@code swapSelectedCandies}
+     */
     private void updateSelectedCandies(MouseEvent e) {
         Button b = (Button) e.getSource();
 
@@ -126,6 +149,13 @@ public class UniGameController implements Initializable {
         swapSelectedCandies(isSwapReady());
     }
 
+    /**
+     * A helper method for reseting the array that is keeping track of the
+     * selected candies on a grid.
+     *
+     * @param coors an array representing the coordinates of the candies on the
+     * grid, so we can manage their CSS
+     */
     private void eraseSelectedCandies(Integer[][] coors) {
         getFromGrid(coors[0][0], coors[0][1])
                 .getStyleClass()
@@ -138,11 +168,19 @@ public class UniGameController implements Initializable {
         selectedCandies[1] = null;
     }
 
-    private Node getFromGrid(int i, int j) {
-        return mainGrid.getChildren()
-                .get(i * game.getLevel(game.getCurrentLevel()).getBoardSize() + j);
-    }
-
+    /**
+     * Swapping the two successfully selected candies of the grid.
+     *
+     * After the swap happened, the processing of the {@code Level} must be done
+     * due to the logic of the game. While this processing is taking place,
+     * onClick handles are disabled (set to {@code nul})
+     *
+     * @param ready the flag that indicates if the potential two candies are
+     * ready for swap
+     *
+     * For further information see {@code startPopTask}
+     * and {@code LevelManager.processLevelWithState}
+     */
     private void swapSelectedCandies(boolean ready) {
         if (ready) {
             clearMessage();
@@ -182,6 +220,15 @@ public class UniGameController implements Initializable {
         }
     }
 
+    /**
+     * Starting a new {@code Thread} with a JavaFx {@code Task}, that modifies
+     * the displayed appearance of the candies.
+     *
+     * @param boardStates the {@code List} containing the states of the current
+     * level that it was in during the processing
+     * @param add the points the player will gain after the successful
+     * processing of the current level
+     */
     private void startPopTask(List<String> boardStates, final long add) {
         Task<Integer> popTask = new Task<Integer>() {
             @Override
@@ -224,6 +271,13 @@ public class UniGameController implements Initializable {
         return selectedCandies[0] != null && selectedCandies[1] != null;
     }
 
+    /**
+     * Setting the constraints of the main grid with new buttons based on the
+     * current level's board state.
+     *
+     * @param boardState the {@code String} representing a {@code Level}'s
+     * state.
+     */
     private void firstRender(String boardState) {
         String[] state = boardState.split(";");
 
@@ -248,6 +302,13 @@ public class UniGameController implements Initializable {
         }
     }
 
+    /**
+     * Setting the CSS attributes of each {@code Node} on the main grid based on
+     * the given board state.
+     *
+     * @param boardState the {@code String} representing a {@code Level}'s
+     * state.
+     */
     private void renderCurrentLevel(String boardState) {
         String[] state = boardState.split(";");
         int boardSize = state.length;
@@ -265,6 +326,13 @@ public class UniGameController implements Initializable {
         }
     }
 
+    /**
+     * Endgame logic based on the {@code GameState} we called it with.
+     * 
+     * We can either lose a game or win.
+     * 
+     * @param state representing the state in which the game has ended
+     */
     private void endLevel(GameState state) {
         switch (state) {
             case WON:

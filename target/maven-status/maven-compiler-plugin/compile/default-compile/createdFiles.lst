@@ -1,10 +1,14 @@
+jordan/szalontai/unicrush/Game.class
 jordan/szalontai/unicrush/UniGameController$2.class
 jordan/szalontai/unicrush/UniGameController$GameState.class
 jordan/szalontai/unicrush/LevelManager.class
+jordan/szalontai/unicrush/Main.class
 jordan/szalontai/unicrush/StandardLevel.class
 jordan/szalontai/unicrush/Level.class
+jordan/szalontai/unicrush/Candy$State.class
 jordan/szalontai/unicrush/StandardLevelBuilder.class
 jordan/szalontai/unicrush/UniGame.class
+jordan/szalontai/unicrush/Candy.class
 jordan/szalontai/unicrush/UniGameController.class
 jordan/szalontai/unicrush/UniGameController$1.class
 jordan/szalontai/unicrush/LevelBuilder.class

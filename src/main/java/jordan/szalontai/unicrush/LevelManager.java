@@ -99,7 +99,7 @@ public abstract class LevelManager {
      * column.
      *
      * @param l the {@code Level} which contains the board
-     * @return 20 * {@code number of {@code Candy} instances
+     * @return 20 * {@code number of Candy instances}
      * in {@code Candy.State.EMPTY}
      */
     public static long applyGravity(Level l) {
@@ -148,8 +148,8 @@ public abstract class LevelManager {
      * @param l the {@code Level} on which we do these iterations
      * @return how many iterations occurred
      *
-     * @see {@code popAllMarked}
-     * @see {@code applyGravity}.
+     * For further information see {@code popAllMarked}
+     * and {@code applyGravity}.
      *
      */
     public static int processLevel(Level l) {
@@ -176,13 +176,13 @@ public abstract class LevelManager {
      * {@code List<String>}.
      *
      * @param l the {@code Level} on which we do these iterations
-     * @param states the {@code List<String> that will contain
+     * @param states the {@code List<String>} that will contain
      * the {@code boardState Strings} after the iterations
      * @return a {@code long[]} array representing how many iterations occurred
      * and the sum of the points returned by {@code applyGravity}
      *
-     * @see {@code popAllMarked}
-     * @see {@code applyGravity}
+     * For further information see {@code popAllMarked}
+     * and {@code applyGravity}
      */
     public static long[] processLevelWithState(Level l, List<String> states) {
         long iterations;

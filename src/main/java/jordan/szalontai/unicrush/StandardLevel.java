@@ -23,7 +23,7 @@ public class StandardLevel extends Level {
      * @param walls the template {@code String} representing the coordinates of
      * the walls
      *
-     * @see {@code LevelBuilder.processCoordinateString(walls)}
+     * For further information see {@code LevelBuilder.processCoordinateString(walls)}
      */
     public StandardLevel(int scoreToComplete, int steps, int boardSize, String walls) {
         super(scoreToComplete, steps, boardSize, walls);
