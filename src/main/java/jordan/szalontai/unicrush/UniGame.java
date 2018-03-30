@@ -80,7 +80,7 @@ public class UniGame implements Game {
     }
 
     @Override
-    public int getCurrentLevel() {
+    public int getCurrent() {
         return currentLevel;
     }
 

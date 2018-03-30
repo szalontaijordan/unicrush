@@ -34,12 +34,12 @@ public interface Game {
     public void addToScore(long plus);
 
     /**
-     * Returns information about the index of a level on which the
-     * actual game is happening.
+     * Returns information about the index of a level on which the actual game
+     * is happening.
      *
      * @return an index of a level e.g. in a list
      */
-    public int getCurrentLevel();
+    public int getCurrent();
 
     /**
      * Returns information about the player's current score.
@@ -55,4 +55,14 @@ public interface Game {
      * @return a {@code Level} instance representing the level we wanted to get
      */
     public Level getLevel(int index);
+
+    /**
+     * Default method for returning the level specified with the index that
+     * {@code getCurrent} returns.
+     *
+     * @return the {@code Level} instance with the current index
+     */
+    public default Level getCurrentLevel() {
+        return getLevel(getCurrent());
+    }
 }
