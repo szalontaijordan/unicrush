@@ -217,18 +217,18 @@ public class UniGameController implements Initializable {
                 setMessage(Level.getMessage());
             }
 
-            if (Integer.parseInt(scoreLabel.getText()) == game.getCurrentLevel().getScoreToComplete()) {
+            setScore(game.getPlayerScore());
+
+            if (add != 0) {
+                decreaseAvailableSteps();
+            }
+            
+            if (Integer.parseInt(scoreLabel.getText()) >= game.getCurrentLevel().getScoreToComplete()) {
                 endLevel(GameState.WON);
             }
 
             if (levelSteps.getText().equals("0")) {
                 endLevel(GameState.LOST);
-            }
-
-            setScore(game.getPlayerScore());
-
-            if (add != 0) {
-                decreaseAvailableSteps();
             }
         });
         new Thread(popTask).start();

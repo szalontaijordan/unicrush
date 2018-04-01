@@ -23,7 +23,7 @@ public class StandardLevel extends Level {
      * @param walls the template {@code String} representing the coordinates of
      * the walls
      *
-     * @see LevelBuilder#processCoordinateString(walls)
+     * @see LevelBuilder#processCoordinateString(java.lang.String)
      */
     public StandardLevel(int scoreToComplete, int steps, int boardSize, String walls) {
         super(scoreToComplete, steps, boardSize, walls);
@@ -38,7 +38,7 @@ public class StandardLevel extends Level {
         Arrays.stream(this.walls)
                 .forEach(wall -> board[wall[0]][wall[1]] = null);
     }
-    
+
     /**
      * Constructs an empty {@code StandardLevel} object with the empty
      * constructor of the superclass.

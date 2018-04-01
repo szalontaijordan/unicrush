@@ -1,14 +1,16 @@
 package jordan.szalontai.unicrush;
 
 import java.util.Arrays;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract class representing a level of a game.
  *
  * @author Szalontai Jordán
  */
-@Data
+@Getter
+@Setter
 public abstract class Level {
 
     /**
@@ -28,10 +30,18 @@ public abstract class Level {
 
     /**
      * 2D-array that represents the coordinates of the wall positions.
+     *
+     * @param walls the new value to be set
+     * @return the 2D-array that represents the coordinates of the wall
+     * positions
      */
     protected Integer[][] walls;
+
     /**
      * 2D-array that represents the board of {@code Candy} instances.
+     *
+     * @param board the new value to be set
+     * @return 2D-array that represents the board of {@code Candy} instances
      */
     protected Candy[][] board;
 
@@ -104,8 +114,8 @@ public abstract class Level {
     }
 
     /**
-     * Swaps two {@code Candy} instances on the board, if a given statement
-     * is true.
+     * Swaps two {@code Candy} instances on the board, if a given statement is
+     * true.
      *
      * @param coors an array representing the coordinates of the {@code Candy}
      * instances in the board
@@ -130,11 +140,22 @@ public abstract class Level {
     }
 
     /**
-     * Represents the board with a {@code String} that can be
-     * processed easily.
+     * Represents the board with a {@code String} that can be processed easily.
      *
-     * e.g.<br> {@code [x, R, B, x]}<br> {@code [G, G, B, G]} ----&gt;
-     * xRBxGGBGBRYGxBBx<br> {@code [B, R, Y, G]}<br> {@code [x, B, B, x]}<br>
+     * <p>
+     * Example usage</p>
+     * <pre>
+     * We have a <i>Level</i>:
+     *
+     *     [x, R, B, x]
+     *     [G, G, B, G]
+     *     [B, R, Y, G]
+     *     [x, B, B, x]
+     *
+     * The result of <i>getBoardState()</i> is the following
+     *
+     *     xRBx;GGBG;BRYG;xBBx;
+     * </pre>
      *
      * @return the board state {@code String} produced as mentioned above
      */
@@ -146,6 +167,21 @@ public abstract class Level {
                 .reduce("", (sum, current) -> sum.concat(current).concat(";"));
     }
 
+    /**
+     * Returns a {@code String} representation of {@code this} instance.
+     *
+     * <pre>
+     * Example:
+     *
+     *     [x, R, B, x]
+     *     [G, G, B, G]
+     *     [B, R, Y, G]
+     *     [x, B, B, x]
+     * </pre>
+     *
+     * @return the {@code String} representation of {@code this} instance as the
+     * example shows above
+     */
     @Override
     public String toString() {
         return Arrays.stream(board)

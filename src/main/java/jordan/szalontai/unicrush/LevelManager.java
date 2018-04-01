@@ -64,7 +64,7 @@ public abstract class LevelManager {
             candyCountMap.clear();
         }
     }
-    
+
     private static void mark(Level l, int row, Integer[] v) {
         if (v[0] >= 3) {
             for (int i = 0; i < v[0]; i++) {
@@ -79,8 +79,9 @@ public abstract class LevelManager {
      * column.
      *
      * @param l the {@code Level} which contains the board
-     * @return 20 * {@code number of Candy instances}
-     * in {@code Candy.State.EMPTY}
+     * @return 60 multiplied by the {@code number of Candy instances} in
+     * {@code Candy.State.EMPTY}, multiplied by the {@code number of blocks}
+     * (one block = three or more {@code Candy} instances in a row or column)
      */
     public static long applyGravity(Level l) {
         long re = 0;
@@ -94,7 +95,7 @@ public abstract class LevelManager {
                 }
             }
             System.out.println(candies);
-            Collections.sort(candies, Collections.reverseOrder());
+            Collections.sort(candies);
 
             re += candies.stream()
                     .filter(c -> c.isEmpty())
@@ -121,7 +122,8 @@ public abstract class LevelManager {
      * Iterations of popping the matching {@code Candy} instances and then
      * applying the gravity logic to the {@code Level}'s board.
      *
-     * <p>We check how many iterations occurred, so this cannot be an infinite
+     * <p>
+     * We check how many iterations occurred, so this cannot be an infinite
      * loop. It is important to be aware of the fact, that this method is
      * changing the model of the {@code Level} given as a parameter.</p>
      *
@@ -132,7 +134,7 @@ public abstract class LevelManager {
      * @see #applyGravity
      */
     public static int processLevel(Level l) {
-        int iterations = 0;
+        int iterations;
         for (iterations = 0; iterations < UniGame.MAX_ITERATION; iterations++) {
             if (popAllMarked(l)) {
                 applyGravity(l);
@@ -147,7 +149,8 @@ public abstract class LevelManager {
      * Iterations of popping the matching {@code Candy} instances and then
      * applying the gravity logic to the {@code Level}'s board.
      *
-     * <p>We check how many iterations occurred, so this cannot be an infinite loop
+     * <p>
+     * We check how many iterations occurred, so this cannot be an infinite loop
      * and in addition we summarize the points that {@code applyGravity}
      * returns. It is important to be aware of the fact, that this method is
      * changing the model of the {@code Level} given as a parameter AND adding
@@ -155,8 +158,8 @@ public abstract class LevelManager {
      * {@code List<String>}.</p>
      *
      * @param l the {@code Level} on which we do these iterations
-     * @param states the {@code List<String>} that will contain
-     * the {@code boardState Strings} after the iterations
+     * @param states the {@code List<String>} that will contain the
+     * {@code boardState Strings} after the iterations
      * @return a {@code long[]} array representing how many iterations occurred
      * and the sum of the points returned by {@code applyGravity}
      *
@@ -183,7 +186,8 @@ public abstract class LevelManager {
      * Utilizes the {@code LevelBuilder} to reset all {@code Candy} instances in
      * a {@code Level}'s board.
      *
-     * <p>The method fills the {@code Level}'s board with the method implemented in
+     * <p>
+     * The method fills the {@code Level}'s board with the method implemented in
      * the concrete builder classes.</p>
      *
      * @param l the {@code Level} we are rebuilding
