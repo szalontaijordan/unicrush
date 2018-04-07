@@ -19,8 +19,9 @@ public abstract class LevelBuilder {
     /**
      * Constructs an empty instance.
      */
-    public LevelBuilder() {}
-    
+    public LevelBuilder() {
+    }
+
     /**
      * Constructor to set the {@code level} field of the class, so we don't
      * start from the beginnings.
@@ -91,6 +92,47 @@ public abstract class LevelBuilder {
      */
     public LevelBuilder putWallsFromString(String template) {
         level.setWalls(processCoordinateString(template));
+        return this;
+    }
+
+    /**
+     * Sets the elements of a {@code Level}'s board as described in the given
+     * {@code String}
+     *
+     * @param boardState a string representing a {@code Level}' board.
+     * @return {@code this} so we can chain the methods after each other
+     * @throws IllegalArgumentException when the {@code boardSize}, or the
+     * {@code walls} field is not set
+     * 
+     * @see Level#getBoardState() 
+     */
+    public LevelBuilder setBoardFromState(String boardState) throws IllegalArgumentException {
+        if (level.getBoardSize() == 0) {
+            throw new IllegalArgumentException("The size of the board is not set yet!");
+        }
+
+        if (level.getWalls() == null) {
+            throw new IllegalArgumentException("The walls must be set, before altering the board!");
+        }
+
+        Candy[][] newBoard = new Candy[level.getBoardSize()][level.getBoardSize()];
+        String[] state = boardState.split(";");
+
+        if (state.length != state[0].length()) {
+            throw new IllegalArgumentException("Malformed board state string");
+        }
+
+        for (int i = 0; i < state.length; i++) {
+            for (int j = 0; j < state[i].length(); j++) {
+                if (state[i].charAt(j) == 'x') {
+                    newBoard[i][j] = null;
+                } else {
+                    newBoard[i][j] = new Candy(Candy.getStateFromChar(state[i].charAt(j)));
+                }
+            }
+        }
+
+        level.setBoard(newBoard);
         return this;
     }
 

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Class for representing a {@code Candy} on the board.
+ * Class representing a {@code Candy} on the board.
  *
  * @author Szalontai Jordán
  */
@@ -92,6 +92,21 @@ public class Candy implements Comparable<Candy> {
     public static State getRandomColorState() {
         return Arrays.asList(State.values())
                 .get((int) (Math.random() * (State.values().length - 1)) + 1);
+    }
+
+    /**
+     * Returns the {@code State} that's string representation starts with the
+     * given parameter.
+     *
+     * @param c the first character of the desired {@code State}'s string
+     * representation
+     * @return
+     */
+    public static State getStateFromChar(char c) {
+        return Arrays.stream(State.values())
+                .filter(s -> s.toString().charAt(0) == c)
+                .findFirst()
+                .get();
     }
 
     /**
