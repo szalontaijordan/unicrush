@@ -30,7 +30,7 @@ public class Candy implements Comparable<Candy> {
      * Indicates the {@code State} of this object.
      *
      * @param state the new state of this object
-     * @return the {@code State} of this object
+     * @return the state of this object
      */
     private State state;
 
@@ -39,7 +39,7 @@ public class Candy implements Comparable<Candy> {
      *
      * @param markedForPop the new value that indicates if this object is marked
      * for removal
-     * @return {@code true} if this object is marked for removal {@code false}
+     * @return true if this object is marked for removal false
      * otherwise
      */
     private boolean markedForPop;
@@ -106,7 +106,7 @@ public class Candy implements Comparable<Candy> {
         return Arrays.stream(State.values())
                 .filter(s -> s.toString().charAt(0) == c)
                 .findFirst()
-                .get();
+                .orElse(null);
     }
 
     /**
