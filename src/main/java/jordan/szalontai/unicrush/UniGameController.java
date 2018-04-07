@@ -176,7 +176,7 @@ public class UniGameController implements Initializable {
 
         if (iterations == UniGame.MAX_ITERATION) {
             System.out.println("MAXIT");
-            LevelManager.resetLevel(game.getCurrentLevel());
+            LevelManager.reset(game.getCurrentLevel());
             boardStates.add(game.getCurrentLevel().getBoardState());
         }
 
@@ -222,7 +222,7 @@ public class UniGameController implements Initializable {
             if (add != 0) {
                 decreaseAvailableSteps();
             }
-            
+
             if (Integer.parseInt(scoreLabel.getText()) >= game.getCurrentLevel().getScoreToComplete()) {
                 endLevel(GameState.WON);
             }

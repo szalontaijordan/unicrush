@@ -37,6 +37,12 @@ public class StandardLevel extends Level {
 
         Arrays.stream(this.walls)
                 .forEach(wall -> board[wall[0]][wall[1]] = null);
+
+        this.initialState = Arrays.stream(board)
+                .map(row -> Arrays.toString(row)
+                .replaceAll("\\W", "")
+                .replaceAll("null", "x"))
+                .reduce("", (sum, current) -> sum.concat(current).concat(";"));
     }
 
     /**
@@ -46,5 +52,4 @@ public class StandardLevel extends Level {
     public StandardLevel() {
         super();
     }
-
 }

@@ -27,6 +27,14 @@ public abstract class Level {
     private int availableSteps;
     private int scoreToComplete;
     private boolean transposed;
+    
+    /**
+     * The string representation of the initial board state.
+     * 
+     * @return string that represents the initial board state
+     */
+    @Getter
+    protected String initialState;
 
     /**
      * 2D-array that represents the coordinates of the wall positions.

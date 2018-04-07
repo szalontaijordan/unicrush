@@ -1,5 +1,6 @@
 package jordan.szalontai.unicrush;
 
+import java.util.ArrayList;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -15,32 +16,30 @@ import static org.junit.Assert.*;
 public class LevelManagerTest {
 
     public static final String NO_MATCH_STATE = ""
-                        + "xBGPx;"
-                        + "BGPRO;"
-                        + "GPROB;"
-                        + "PROBG;"
-                        + "xGRPx;";
-    
+            + "xBGPx;"
+            + "BGPRO;"
+            + "GPROB;"
+            + "PROBG;"
+            + "xGRPx;";
+
     public static final String ALL_EMPTY_STATE = ""
-                        + "xEEEx;"
-                        + "EEEEE;"
-                        + "EEEEE;"
-                        + "EEEEE;"
-                        + "xEEEx;";
-    
+            + "xEEEx;"
+            + "EEEEE;"
+            + "EEEEE;"
+            + "EEEEE;"
+            + "xEEEx;";
+
     public static final String CHAIN_REACTION_STATE = ""
-                        + "xBGGx;"
-                        + "BBBBR;"
-                        + "RYOGG;"
-                        + "RYOGG;"
-                        + "xOPOx;";
-    
+            + "xBGGx;"
+            + "BBBBR;"
+            + "RYOGG;"
+            + "RYOGG;"
+            + "xOPOx;";
+
     private Level level;
-    private String initialState;
 
     public LevelManagerTest() {
         this.level = null;
-        this.initialState = "";
     }
 
     @BeforeClass
@@ -63,7 +62,6 @@ public class LevelManagerTest {
                     .putWallsFromString("0,0;0,4;4,0;4,4")
                     .fillBoard()
                     .create();
-            initialState = level.getBoardState();
         } catch (Exception e) {
             fail(e.getMessage());
         }
@@ -106,7 +104,7 @@ public class LevelManagerTest {
 
         // test 3
         level = null;
-        
+
         try {
             LevelManager.popAllMarked(level);
         } catch (NullPointerException e) {
@@ -128,30 +126,30 @@ public class LevelManagerTest {
         level.set(1, 1, new Candy(Candy.State.EMPTY));
         level.set(1, 2, new Candy(Candy.State.EMPTY));
         level.set(1, 3, new Candy(Candy.State.EMPTY));
-        
+
         expResult = 180L;
         result = LevelManager.applyGravity(level);
-        
-        assertEquals(result,expResult);
-        
+
+        assertEquals(result, expResult);
+
         // test 2
         level = new StandardLevelBuilder(level)
                 .setBoardFromState(ALL_EMPTY_STATE)
                 .create();
-        
+
         expResult = 21 / 3 * 21 * 60;
         result = LevelManager.applyGravity(level);
-        
+
         assertEquals(expResult, result);
-        
+
         // test 3
         level = new StandardLevelBuilder(level)
-                .setBoardFromState(initialState)
+                .setBoardFromState(level.getInitialState())
                 .create();
-        
+
         expResult = 0L;
         result = LevelManager.applyGravity(level);
-        
+
         assertEquals(expResult, result);
     }
 
@@ -161,7 +159,7 @@ public class LevelManagerTest {
     @Test
     public void testProcessLevel() {
         System.out.println("-- -- Testing method: processLevel");
-        
+
         int expResult;
         int result;
 
@@ -169,20 +167,20 @@ public class LevelManagerTest {
         level = new StandardLevelBuilder(level)
                 .setBoardFromState(CHAIN_REACTION_STATE)
                 .create();
-        
+
         expResult = 2;
         result = LevelManager.processLevel(level);
-        
+
         assertTrue(result >= expResult);
-        
+
         // test 2
         level = new StandardLevelBuilder(level)
                 .setBoardFromState(NO_MATCH_STATE)
                 .create();
-        
+
         expResult = 0;
         result = LevelManager.processLevel(level);
-        
+
         assertEquals(expResult, result);
     }
 
@@ -191,7 +189,31 @@ public class LevelManagerTest {
      */
     @Test
     public void testProcessLevelWithState() {
-        // TODO
+        System.out.println("-- -- Testing method: processLevelWithState");
+
+        long[] expResult;
+        long[] result;
+
+        // test 1
+        level = new StandardLevelBuilder(level)
+                .setBoardFromState(CHAIN_REACTION_STATE)
+                .create();
+        
+        expResult = new long[]{ 2L, 360L };
+        result = LevelManager.processLevelWithState(level, new ArrayList<>());
+        
+        assertTrue(result[0] >= expResult[0]);
+        assertTrue(result[1] >= expResult[1]);
+        
+        // test 2
+        level = new StandardLevelBuilder(level)
+                .setBoardFromState(NO_MATCH_STATE)
+                .create();
+        
+        expResult = new long[]{ 0L, 0L };
+        result = LevelManager.processLevelWithState(level, new ArrayList<>());
+        
+        assertArrayEquals(expResult, result);
     }
 
     /**
@@ -199,7 +221,26 @@ public class LevelManagerTest {
      */
     @Test
     public void testResetLevel() {
-        // TODO
+        System.out.println("-- -- Testing method: resetLevel");
+        
+        String initialState;
+        String currentState;
+        
+        // test 1
+        assertTrue(level instanceof StandardLevel);
+        
+        initialState = level.getBoardState();
+        
+        level.set(1, 1, new Candy(Candy.State.BLUE));
+        level.set(1, 2, new Candy(Candy.State.BLUE));
+        level.set(1, 3, new Candy(Candy.State.BLUE));
+        
+        LevelManager.processLevel(level);
+        LevelManager.reset(level);
+        
+        currentState = level.getBoardState();
+        
+        assertEquals(initialState, currentState);
     }
 
 }

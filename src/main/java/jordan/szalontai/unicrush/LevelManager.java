@@ -183,27 +183,20 @@ public abstract class LevelManager {
     }
 
     /**
-     * Utilizes the {@code LevelBuilder} to reset all {@code Candy} instances in
-     * a {@code Level}'s board.
+     * Resetting the {@code board} based on the original board state.
      *
-     * <p>
-     * The method fills the {@code Level}'s board with the method implemented in
-     * the concrete builder classes.</p>
-     *
-     * @param l the {@code Level} we are rebuilding
+     * @param l the {@code Level} instance to reset
      */
-    public static void resetLevel(Level l) {
-        try {
-            LevelBuilder lb = new StandardLevelBuilder();
+    public static void reset(Level l) {
+        String[] state = l.getInitialState().split(";");
 
-            if (l instanceof StandardLevel) {
-                lb = new StandardLevelBuilder(l);
-            } // ...
-
-            l = lb.fillBoard().create();
-
-            processLevel(l);
-        } catch (Exception ex) {
+        for (int i = 0; i < state.length; i++) {
+            for (int j = 0; j < state[i].length(); j++) {
+                if (l.get(i, j) != null) {
+                    l.get(i, j).setState(Candy.getStateFromChar(state[i].charAt(j)));
+                }
+            }
         }
     }
+    
 }

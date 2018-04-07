@@ -48,14 +48,14 @@ public class UniGame implements Game {
      */
     public void startLevel(int levelIndex) {
         Level level = levels.get(levelIndex);
-        
+
         System.out.println("Preprocessing");
 
         int iterations = LevelManager.processLevel(level);
 
         if (iterations == MAX_ITERATION) {
             System.out.println("Maxit, preprocessing again");
-            LevelManager.resetLevel(level);
+            LevelManager.reset(level);
             LevelManager.processLevel(level);
         }
 
@@ -64,7 +64,7 @@ public class UniGame implements Game {
 
         this.playerScore = 0;
     }
-    
+
     public void setCurrentLevel(int newCurrent) {
         this.currentLevel = newCurrent;
     }
@@ -73,7 +73,7 @@ public class UniGame implements Game {
     public Level getLevel(int index) {
         return levels.get(index);
     }
-    
+
     @Override
     public long getPlayerScore() {
         return playerScore;
@@ -88,12 +88,12 @@ public class UniGame implements Game {
     public void startCurrentLevel() {
         startLevel(currentLevel);
     }
-    
+
     @Override
     public void addToScore(long plus) {
         this.playerScore += plus;
     }
-    
+
     @Override
     public void initLevels() throws Exception {
         // creating level, we didn't set up any DB connection yet

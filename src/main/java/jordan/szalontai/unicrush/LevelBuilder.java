@@ -91,7 +91,7 @@ public abstract class LevelBuilder {
      * @return {@code this} so we can chain the methods after each other
      */
     public LevelBuilder putWallsFromString(String template) {
-        level.setWalls(processCoordinateString(template));
+        level.walls = processCoordinateString(template);
         return this;
     }
 
@@ -103,8 +103,8 @@ public abstract class LevelBuilder {
      * @return {@code this} so we can chain the methods after each other
      * @throws IllegalArgumentException when the {@code boardSize}, or the
      * {@code walls} field is not set
-     * 
-     * @see Level#getBoardState() 
+     *
+     * @see Level#getBoardState()
      */
     public LevelBuilder setBoardFromState(String boardState) throws IllegalArgumentException {
         if (level.getBoardSize() == 0) {
@@ -132,7 +132,7 @@ public abstract class LevelBuilder {
             }
         }
 
-        level.setBoard(newBoard);
+        level.board = newBoard;
         return this;
     }
 
@@ -153,6 +153,9 @@ public abstract class LevelBuilder {
      * @return the level instance of this builder
      */
     public Level create() {
+        if (level.initialState == null || level.initialState.equals("")) {
+            level.initialState = level.getBoardState();
+        }
         return level;
     }
 
