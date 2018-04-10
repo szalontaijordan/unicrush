@@ -31,6 +31,7 @@ public abstract class Level {
     /**
      * The string representation of the initial board state.
      * 
+     * @param initialState the new initial state
      * @return string that represents the initial board state
      */
     @Getter

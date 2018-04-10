@@ -100,7 +100,7 @@ public class Candy implements Comparable<Candy> {
      *
      * @param c the first character of the desired {@code State}'s string
      * representation
-     * @return
+     * @return a {@code State} that starts with the given character
      */
     public static State getStateFromChar(char c) {
         return Arrays.stream(State.values())
