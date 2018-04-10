@@ -1,6 +1,7 @@
 package jordan.szalontai.unicrush;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,10 +28,10 @@ public abstract class Level {
     private int availableSteps;
     private int scoreToComplete;
     private boolean transposed;
-    
+
     /**
      * The string representation of the initial board state.
-     * 
+     *
      * @param initialState the new initial state
      * @return string that represents the initial board state
      */
@@ -163,7 +164,7 @@ public abstract class Level {
      *
      * The result of <i>getBoardState()</i> is the following
      *
-     *     xRBx;GGBG;BRYG;xBBx;
+     *     xRBx;GGBG;BRYG;xBBx
      * </pre>
      *
      * @return the board state {@code String} produced as mentioned above
@@ -171,9 +172,10 @@ public abstract class Level {
     public String getBoardState() {
         return Arrays.stream(board)
                 .map(row -> Arrays.toString(row)
-                .replaceAll("\\W", "")
-                .replaceAll("null", "x"))
-                .reduce("", (sum, current) -> sum.concat(current).concat(";"));
+                    .replaceAll("\\W", "")
+                    .replaceAll("null", "x")
+                )
+                .collect(Collectors.joining(";"));
     }
 
     /**
@@ -195,9 +197,10 @@ public abstract class Level {
     public String toString() {
         return Arrays.stream(board)
                 .map(row -> Arrays.toString(row)
-                .replaceAll("null", "x")
-                .replaceAll("E", " "))
-                .reduce("", (output, currentRow) -> output += currentRow + "\n");
+                    .replaceAll("null", "x")
+                    .replaceAll("E", " ")
+                )
+                .collect(Collectors.joining("\n"));
     }
 
     /**
