@@ -1,202 +1,60 @@
 package jordan.szalontai.unicrush;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Class containing static methods that manage the logics of the levels.
+ * Interface representing actions that can be done one a level.
  *
  * @author Szalontai Jordán
  */
-public abstract class LevelManager {
+public interface LevelManager {
 
     /**
-     * Refreshes the {@code Candy.State} of {@code Candy} instances in the
-     * {@code level}'s board that are in a column or row with a length more than
-     * two.
+     * Iterations processing the level and returning the score.
      *
-     * @param l the {@code Level} which contains the board of {@code Candy}
-     * instances
-     * @return {@code true} if a change happened in the board, {@code false} if
-     * did not
-     */
-    public static boolean popAllMarked(Level l) {
-        markAllCandies(l);
-        l.transpose();
-        markAllCandies(l);
-        l.transpose();
-
-        boolean popHappened = false;
-
-        for (int row = 0; row < l.getBoardSize(); row++) {
-            for (int col = 0; col < l.getBoardSize(); col++) {
-                if (l.get(row, col) != null && l.get(row, col).isMarkedForPop()) {
-                    l.get(row, col).setState(Candy.State.EMPTY);
-                    l.get(row, col).setMarkedForPop(false);
-                    popHappened = true;
-                }
-            }
-        }
-        System.out.println(l);
-        return popHappened;
-    }
-
-    private static void markAllCandies(Level l) {
-        Map<String, Integer[]> candyCountMap = new HashMap<>();
-
-        for (int i = 0; i < l.getBoardSize(); i++) {
-            for (int j = 0; j < l.getBoardSize(); j++) {
-                String curr = l.get(i, j) == null ? "" : l.get(i, j).toString();
-                String next = l.get(i, j + 1) == null ? "" : l.get(i, j + 1).toString();
-
-                if (!curr.equals("") && curr.equals(next)) {
-                    if (candyCountMap.get(curr) == null) {
-                        candyCountMap.put(curr, new Integer[]{2, j});
-                    }
-                    mark(l, i, candyCountMap.get(curr));
-                } else {
-                    candyCountMap.remove(curr);
-                }
-            }
-            candyCountMap.clear();
-        }
-    }
-
-    private static void mark(Level l, int row, Integer[] v) {
-        if (v[0] >= 3) {
-            for (int i = 0; i < v[0]; i++) {
-                l.get(row, v[1] + i).setMarkedForPop(true);
-            }
-        }
-        v[0]++;
-    }
-
-    /**
-     * All {@code Candy} instances "fall" when there's empty space in their
-     * column.
-     *
-     * @param l the {@code Level} which contains the board
-     * @return 60 multiplied by the {@code number of Candy instances} in
-     * {@code Candy.State.EMPTY}, multiplied by the {@code number of blocks}
-     * (one block = three or more {@code Candy} instances in a row or column)
-     */
-    public static long applyGravity(Level l) {
-        long re = 0;
-
-        for (int i = 0; i < l.getBoardSize(); i++) {
-            List<Candy> candies = new ArrayList<>();
-
-            for (int col = 0; col < l.getBoardSize(); col++) {
-                if (l.get(col, i) != null) {
-                    candies.add(l.get(col, i));
-                }
-            }
-            System.out.println(candies);
-            Collections.sort(candies);
-
-            re += candies.stream()
-                    .filter(c -> c.isEmpty())
-                    .count();
-
-            candies.replaceAll(c -> {
-                if (c.isEmpty()) {
-                    return new Candy(Candy.getRandomColorState());
-                }
-                return c;
-            });
-
-            int index = 0;
-            for (int col = 0; col < l.getBoardSize(); col++) {
-                if (l.get(col, i) != null) {
-                    l.set(col, i, candies.get(index++));
-                }
-            }
-        }
-        return re / 3 * re * 60;
-    }
-
-    /**
-     * Iterations of popping the matching {@code Candy} instances and then
-     * applying the gravity logic to the {@code Level}'s board.
+     * <p>
+     * Iterations should consist of popping the matching {@code Candy} instances
+     * and then applying the gravity logic to the {@code Level}'s board.
      *
      * <p>
      * We check how many iterations occurred, so this cannot be an infinite
-     * loop. It is important to be aware of the fact, that this method is
-     * changing the model of the {@code Level} given as a parameter.</p>
+     * loop. This method might change the model of the {@code Level} given as a
+     * parameter.</p>
      *
-     * @param l the {@code Level} on which we do these iterations
+     * @param level the {@code Level} on which we do these iterations
      * @return how many iterations occurred
-     *
-     * @see #popAllMarked
-     * @see #applyGravity
      */
-    public static int processLevel(Level l) {
-        int iterations;
-        for (iterations = 0; iterations < UniGame.MAX_ITERATION; iterations++) {
-            if (popAllMarked(l)) {
-                applyGravity(l);
-            } else {
-                break;
-            }
-        }
-        return iterations;
-    }
+    public int process(Level level);
 
     /**
-     * Iterations of popping the matching {@code Candy} instances and then
-     * applying the gravity logic to the {@code Level}'s board.
+     * Iterations processing the level and returning information in a list.
      *
      * <p>
-     * We check how many iterations occurred, so this cannot be an infinite loop
-     * and in addition we summarize the points that {@code applyGravity}
-     * returns. It is important to be aware of the fact, that this method is
-     * changing the model of the {@code Level} given as a parameter AND adding
-     * the given {@code Level}'s {@code boardState String} to the given
-     * {@code List<String>}.</p>
+     * Iterations should consist of popping the matching {@code Candy} instances
+     * and then applying the gravity logic to the {@code Level}'s board.
+     * </p>
+     * <p>
+     * We should check how many iterations occurred, so this cannot be an
+     * infinite loop and in addition we summarize the points that
+     * {@code applyGravity} returns. It is important to be aware of the fact,
+     * that this method might change model of the {@code Level} given as a
+     * parameter AND add the given {@code Level}'s {@code boardState String} to
+     * the returned {@code List<String>}.</p>
      *
-     * @param l the {@code Level} on which we do these iterations
-     * @param states the {@code List<String>} that will contain the
-     * {@code boardState Strings} after the iterations
-     * @return a {@code long[]} array representing how many iterations occurred
-     * and the sum of the points returned by {@code applyGravity}
-     *
-     * @see #popAllMarked
-     * @see #applyGravity
+     * @param level the {@code Level} on which we do these iterations
+     * @return a list starting with information about the iteration and the rest
+     * are the board states of each iteration
      */
-    public static long[] processLevelWithState(Level l, List<String> states) {
-        long iterations;
-        long sum = 0;
-
-        for (iterations = 0; iterations < UniGame.MAX_ITERATION; iterations++) {
-            if (popAllMarked(l)) {
-                states.add(l.getBoardState());
-                sum += applyGravity(l);
-                states.add(l.getBoardState());
-            } else {
-                break;
-            }
-        }
-        return new long[]{iterations, sum};
-    }
+    public List<String> processWithState(Level level);
 
     /**
      * Resetting the {@code board} based on the original board state.
      *
-     * @param l the {@code Level} instance to reset
+     * @param level the {@code Level} instance to reset
      */
-    public static void reset(Level l) {
-        String[] state = l.getInitialState().split(";");
-
-        for (int i = 0; i < state.length; i++) {
-            for (int j = 0; j < state[i].length(); j++) {
-                if (l.get(i, j) != null) {
-                    l.get(i, j).setState(Candy.getStateFromChar(state[i].charAt(j)));
-                }
-            }
-        }
+    public default void reset(Level level) {
+        level = new Level.Builder(level)
+                .fillBoard(level.getInitialState())
+                .build();
     }
-    
 }

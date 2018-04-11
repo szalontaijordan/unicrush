@@ -43,20 +43,20 @@ public class UniGame implements Game {
      *
      * @param levelIndex the index of the {@code Level} we'd like to start
      *
-     * @see LevelManager#processLevel
-     * @see LevelManager#reset
+     * @see SimpleManager.getInstance()#process
+     * @see SimpleManager.getInstance()#reset
      */
     public void startLevel(int levelIndex) {
         Level level = levels.get(levelIndex);
 
         System.out.println("Preprocessing");
 
-        int iterations = LevelManager.processLevel(level);
+        int iterations = SimpleManager.getInstance().process(level);
 
         if (iterations == MAX_ITERATION) {
             System.out.println("Maxit, preprocessing again");
-            LevelManager.reset(level);
-            LevelManager.processLevel(level);
+            SimpleManager.getInstance().reset(level);
+            SimpleManager.getInstance().process(level);
         }
 
         System.out.println("Start:");

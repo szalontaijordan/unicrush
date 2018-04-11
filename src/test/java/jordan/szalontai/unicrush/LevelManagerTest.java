@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.Assert;
 
 /**
- * Class with {@code JUnit} unit tests for the class {@code LevelManager}.
+ * Class with {@code JUnit} unit tests for the class {@code SimpleManager.getInstance()}.
  *
  * @author Szalontai Jordán
  */
@@ -72,7 +72,7 @@ public class LevelManagerTest {
     }
 
     /**
-     * Test of popAllMarked method, of class LevelManager.
+     * Test of popAllMarked method, of class SimpleManager.getInstance().
      */
     @Test
     public void testPopAllMarked() {
@@ -87,7 +87,7 @@ public class LevelManagerTest {
         level.set(1, 3, new Candy(Candy.State.BLUE));
 
         expResult = true;
-        result = LevelManager.popAllMarked(level);
+        result = SimpleManager.getInstance().popAllMarked(level);
 
         Assert.assertEquals(expResult, result);
 
@@ -97,7 +97,7 @@ public class LevelManagerTest {
                 .build();
 
         expResult = false;
-        result = LevelManager.popAllMarked(level);
+        result = SimpleManager.getInstance().popAllMarked(level);
 
         Assert.assertEquals(expResult, result);
 
@@ -105,14 +105,14 @@ public class LevelManagerTest {
         level = null;
 
         try {
-            LevelManager.popAllMarked(level);
+            SimpleManager.getInstance().popAllMarked(level);
         } catch (NullPointerException e) {
             Assert.assertTrue(true);
         }
     }
 
     /**
-     * Test of applyGravity method, of class LevelManager.
+     * Test of applyGravity method, of class SimpleManager.getInstance().
      */
     @Test
     public void testApplyGravity() {
@@ -127,7 +127,7 @@ public class LevelManagerTest {
         level.set(1, 3, new Candy(Candy.State.EMPTY));
 
         expResult = 180L;
-        result = LevelManager.applyGravity(level);
+        result = SimpleManager.getInstance().applyGravity(level);
 
         Assert.assertEquals(result, expResult);
 
@@ -137,7 +137,7 @@ public class LevelManagerTest {
                 .build();
 
         expResult = 21 / 3 * 21 * 60;
-        result = LevelManager.applyGravity(level);
+        result = SimpleManager.getInstance().applyGravity(level);
 
         Assert.assertEquals(expResult, result);
 
@@ -147,17 +147,17 @@ public class LevelManagerTest {
                 .build();
 
         expResult = 0L;
-        result = LevelManager.applyGravity(level);
+        result = SimpleManager.getInstance().applyGravity(level);
 
         Assert.assertEquals(expResult, result);
     }
 
     /**
-     * Test of processLevel method, of class LevelManager.
+     * Test of process method, of class SimpleManager.getInstance().
      */
     @Test
-    public void testProcessLevel() {
-        System.out.println("-- -- Testing method: processLevel");
+    public void testProcess() {
+        System.out.println("-- -- Testing method: process");
 
         int expResult;
         int result;
@@ -168,7 +168,7 @@ public class LevelManagerTest {
                 .build();
 
         expResult = 2;
-        result = LevelManager.processLevel(level);
+        result = SimpleManager.getInstance().process(level);
 
         Assert.assertTrue(result >= expResult);
 
@@ -178,45 +178,22 @@ public class LevelManagerTest {
                 .build();
 
         expResult = 0;
-        result = LevelManager.processLevel(level);
+        result = SimpleManager.getInstance().process(level);
 
         Assert.assertEquals(expResult, result);
     }
 
     /**
-     * Test of processLevelWithState method, of class LevelManager.
+     * Test of processWithState method, of class SimpleManager.getInstance().
      */
     @Test
     public void testProcessLevelWithState() {
-        System.out.println("-- -- Testing method: processLevelWithState");
-
-        long[] expResult;
-        long[] result;
-
-        // test 1
-        level = new Level.Builder(level)
-                .fillBoard(CHAIN_REACTION_STATE)
-                .build();
-        
-        expResult = new long[]{ 2L, 360L };
-        result = LevelManager.processLevelWithState(level, new ArrayList<>());
-        
-        Assert.assertTrue(result[0] >= expResult[0]);
-        Assert.assertTrue(result[1] >= expResult[1]);
-        
-        // test 2
-        level = new Level.Builder(level)
-                .fillBoard(NO_MATCH_STATE)
-                .build();
-        
-        expResult = new long[]{ 0L, 0L };
-        result = LevelManager.processLevelWithState(level, new ArrayList<>());
-        
-        Assert.assertArrayEquals(expResult, result);
+        System.out.println("-- -- Testing method: processWithState");
+        // TODO
     }
 
     /**
-     * Test of resetLevel method, of class LevelManager.
+     * Test of resetLevel method, of class SimpleManager.getInstance().
      */
     @Test
     public void testResetLevel() {
@@ -231,8 +208,8 @@ public class LevelManagerTest {
         level.set(1, 2, new Candy(Candy.State.BLUE));
         level.set(1, 3, new Candy(Candy.State.BLUE));
         
-        LevelManager.processLevel(level);
-        LevelManager.reset(level);
+        SimpleManager.getInstance().process(level);
+        SimpleManager.getInstance().reset(level);
         
         currentState = level.getBoardState();
         

@@ -4,6 +4,7 @@ jordan/szalontai/unicrush/LevelManager.class
 jordan/szalontai/unicrush/Transposable.class
 jordan/szalontai/unicrush/LevelType.class
 jordan/szalontai/unicrush/Level.class
+jordan/szalontai/unicrush/SimpleManager.class
 jordan/szalontai/unicrush/Candy$State.class
 jordan/szalontai/unicrush/UniGame.class
 jordan/szalontai/unicrush/UniGameController.class

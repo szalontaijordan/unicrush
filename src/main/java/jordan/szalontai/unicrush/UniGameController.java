@@ -162,10 +162,13 @@ public class UniGameController implements Initializable {
             game.getCurrentLevel().swap(coors);
             renderCurrentLevel(game.getCurrentLevel().getBoardState());
 
-            List<String> boardStates = new ArrayList<>();
-
-            long[] result = LevelManager.processLevelWithState(game.getCurrentLevel(), boardStates);
-
+            List<String> boardStates = SimpleManager.getInstance().processWithState(game.getCurrentLevel());
+            
+            long[] result = Arrays.stream(boardStates.get(0)
+                    .split(","))
+                    .mapToLong(Long::parseLong).toArray();
+            boardStates.remove(0);
+            
             processChanges(coors, result, boardStates);
         }
     }
@@ -176,7 +179,7 @@ public class UniGameController implements Initializable {
 
         if (iterations == UniGame.MAX_ITERATION) {
             System.out.println("MAXIT");
-            LevelManager.reset(game.getCurrentLevel());
+            SimpleManager.getInstance().reset(game.getCurrentLevel());
             boardStates.add(game.getCurrentLevel().getBoardState());
         }
 

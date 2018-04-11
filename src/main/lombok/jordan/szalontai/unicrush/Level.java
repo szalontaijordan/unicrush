@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 
 /**
- * Abstract class representing a level of a game.
+ * Class representing a level of a game.
  *
  * @author Szalontai Jordán
  */
@@ -207,14 +207,14 @@ public final class Level implements Transposable {
         public Builder(Level src) {
             this.type = src.type;
             this.boardSize = src.boardSize;
-            this.transposed  = src.transposed;
+            this.transposed = src.transposed;
             this.scoreToComplete = src.scoreToComplete;
             this.availableSteps = src.availableSteps;
             this.board = src.board.clone();
             this.walls = src.walls.clone();
             this.initialState = src.initialState;
         }
-        
+
         /**
          * Sets the score that is required to complete this level.
          *
@@ -281,7 +281,9 @@ public final class Level implements Transposable {
          * @return a {@code Level} object with the builded fields
          */
         public Level build() {
-            this.initialState = setupInitialState();
+            if (this.initialState == null || this.initialState.equals("")) {
+                this.initialState = setupInitialState();
+            }
             return new Level(this);
         }
 
@@ -344,9 +346,10 @@ public final class Level implements Transposable {
          * The idea of this, is that in the template we list some coordinates
          * separated, and we parse this template string.</p>
          * <p>
-         * For example 
-         * {@code Level.Builder.processCoordinateString("1,2;3,4;5,6");} returns </p>
-         * 
+         * For example
+         * {@code Level.Builder.processCoordinateString("1,2;3,4;5,6");} returns
+         * </p>
+         *
          * <pre>
          *     new Integer[][]{ { 1, 2 }, { 3, 4 }, { 5, 6 } }
          * </pre>
