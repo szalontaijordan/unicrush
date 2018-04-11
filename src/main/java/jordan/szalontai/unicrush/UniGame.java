@@ -2,6 +2,8 @@ package jordan.szalontai.unicrush;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class representing the game like Candy Crush with a list of levels you can
@@ -16,6 +18,8 @@ public class UniGame implements Game {
      * {@code Level} of the {@code UniGame}.
      */
     public static final int MAX_ITERATION = 50;
+    
+    private static final Logger logger = LoggerFactory.getLogger(UniGame.class);
 
     private long playerScore;
     private int currentLevel;
@@ -48,19 +52,20 @@ public class UniGame implements Game {
      */
     public void startLevel(int levelIndex) {
         Level level = levels.get(levelIndex);
-
-        System.out.println("Preprocessing");
+        
+        logger.info("Preprocessing current level ...");
+        
 
         int iterations = SimpleManager.getInstance().process(level);
 
         if (iterations == MAX_ITERATION) {
-            System.out.println("Maxit, preprocessing again");
+            logger.info("Maximum iteration, reseting level ...");
             SimpleManager.getInstance().reset(level);
             SimpleManager.getInstance().process(level);
         }
 
         System.out.println("Start:");
-        System.out.println(level);
+        logger.info("Started level:\n{}", level.toString());
 
         this.playerScore = 0;
     }

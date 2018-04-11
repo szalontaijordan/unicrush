@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Singleton class containing methods that manage the logics of the levels.
@@ -13,6 +15,7 @@ import java.util.Map;
  */
 public class SimpleManager implements LevelManager {
     
+    private static final Logger logger = LoggerFactory.getLogger(SimpleManager.class);
     public static SimpleManager instance;
     
     private SimpleManager() {
@@ -23,29 +26,30 @@ public class SimpleManager implements LevelManager {
      * {@code level}'s board that are in a column or row with a length more than
      * two.
      *
-     * @param l the {@code Level} which contains the board of {@code Candy}
+     * @param level the {@code Level} which contains the board of {@code Candy}
      * instances
      * @return {@code true} if a change happened in the board, {@code false} if
      * did not
      */
-    public boolean popAllMarked(Level l) {
-        markAllCandies(l);
-        l.transpose();
-        markAllCandies(l);
-        l.transpose();
+    public boolean popAllMarked(Level level) {
+        markAllCandies(level);
+        level.transpose();
+        markAllCandies(level);
+        level.transpose();
 
         boolean popHappened = false;
 
-        for (int row = 0; row < l.getBoardSize(); row++) {
-            for (int col = 0; col < l.getBoardSize(); col++) {
-                if (l.get(row, col) != null && l.get(row, col).isMarkedForPop()) {
-                    l.get(row, col).setState(Candy.State.EMPTY);
-                    l.get(row, col).setMarkedForPop(false);
+        for (int row = 0; row < level.getBoardSize(); row++) {
+            for (int col = 0; col < level.getBoardSize(); col++) {
+                if (level.get(row, col) != null && level.get(row, col).isMarkedForPop()) {
+                    level.get(row, col).setState(Candy.State.EMPTY);
+                    level.get(row, col).setMarkedForPop(false);
                     popHappened = true;
                 }
             }
         }
-        System.out.println(l);
+        
+        logger.trace("Current level:\n{}", level.toString());
         return popHappened;
     }
 
@@ -83,23 +87,24 @@ public class SimpleManager implements LevelManager {
      * All {@code Candy} instances "fall" when there's empty space in their
      * column.
      *
-     * @param l the {@code Level} which contains the board
+     * @param level the {@code Level} which contains the board
      * @return 60 multiplied by the {@code number of Candy instances} in
      * {@code Candy.State.EMPTY}, multiplied by the {@code number of blocks}
      * (one block = three or more {@code Candy} instances in a row or column)
      */
-    public long applyGravity(Level l) {
+    public long applyGravity(Level level) {
         long re = 0;
 
-        for (int i = 0; i < l.getBoardSize(); i++) {
+        for (int i = 0; i < level.getBoardSize(); i++) {
             List<Candy> candies = new ArrayList<>();
 
-            for (int col = 0; col < l.getBoardSize(); col++) {
-                if (l.get(col, i) != null) {
-                    candies.add(l.get(col, i));
+            for (int col = 0; col < level.getBoardSize(); col++) {
+                if (level.get(col, i) != null) {
+                    candies.add(level.get(col, i));
                 }
             }
-            System.out.println(candies);
+            
+            logger.trace("Candies in active column:\n{}", candies.toString());
             Collections.sort(candies);
 
             re += candies.stream()
@@ -114,9 +119,9 @@ public class SimpleManager implements LevelManager {
             });
 
             int index = 0;
-            for (int col = 0; col < l.getBoardSize(); col++) {
-                if (l.get(col, i) != null) {
-                    l.set(col, i, candies.get(index++));
+            for (int col = 0; col < level.getBoardSize(); col++) {
+                if (level.get(col, i) != null) {
+                    level.set(col, i, candies.get(index++));
                 }
             }
         }

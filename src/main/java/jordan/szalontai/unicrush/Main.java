@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class starting the JavaFx application.
@@ -13,8 +15,12 @@ import javafx.stage.Stage;
  */
 public class Main extends Application {
 
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    
     @Override
     public void start(Stage stage) throws Exception {
+        logger.info("Application started!");
+        
         Parent root = FXMLLoader.load(Main.class.getResource("/fxml/UniCrush.fxml"));
 
         Scene scene = new Scene(root);
@@ -23,6 +29,8 @@ public class Main extends Application {
         stage.setTitle("UniCrush");
         stage.setScene(scene);
         stage.show();
+        
+        logger.info("Switched to root scene");
     }
 
     /**
@@ -46,6 +54,7 @@ public class Main extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        logger.info("Starting application ...");
         launch(args);
     }
 }

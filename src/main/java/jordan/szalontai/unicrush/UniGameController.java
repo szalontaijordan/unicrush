@@ -15,6 +15,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class that controls the main JavaFx {@code Scene} on which we play the
@@ -24,6 +26,8 @@ import javafx.scene.layout.RowConstraints;
  */
 public class UniGameController implements Initializable {
 
+    private static final Logger logger = LoggerFactory.getLogger(UniGameController.class);
+    
     /**
      * The possible game states, a game can be won or lost.
      */
@@ -136,7 +140,7 @@ public class UniGameController implements Initializable {
             }
         }
 
-        System.out.println(Arrays.toString(selectedCandies));
+        logger.trace("Selected candies: {}", Arrays.toString(selectedCandies));
 
         swapSelectedCandies(isSwapReady());
     }
@@ -178,7 +182,7 @@ public class UniGameController implements Initializable {
         final long add = result[1];
 
         if (iterations == UniGame.MAX_ITERATION) {
-            System.out.println("MAXIT");
+            logger.info("Maximum iterations, reseting level ...");
             SimpleManager.getInstance().reset(game.getCurrentLevel());
             boardStates.add(game.getCurrentLevel().getBoardState());
         }
@@ -209,7 +213,7 @@ public class UniGameController implements Initializable {
                     try {
                         Thread.sleep(450);
                     } catch (InterruptedException ex) {
-                        System.out.println(ex.getMessage());
+                        logger.error(ex.getMessage());
                     }
                 }
                 return stateIndex;
@@ -285,10 +289,10 @@ public class UniGameController implements Initializable {
     private void endLevel(GameState state) {
         switch (state) {
             case WON:
-                System.out.println("GG");
+                logger.warn("GG");
                 break;
             case LOST:
-                System.out.println("STEPS 0");
+                logger.warn("STEPS 0");
                 break;
             default:
                 break;

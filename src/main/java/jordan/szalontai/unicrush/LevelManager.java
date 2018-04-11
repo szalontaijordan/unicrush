@@ -3,7 +3,7 @@ package jordan.szalontai.unicrush;
 import java.util.List;
 
 /**
- * Interface representing actions that can be done one a level.
+ * Interface representing actions that can be done on a level.
  *
  * @author Szalontai Jordán
  */
