@@ -158,7 +158,7 @@ public class UniGameController implements Initializable {
             clearMessage();
             disableOnClicks();
 
-            Integer[][] coors = LevelBuilder.processCoordinateString(selectedCandies[0] + ";" + selectedCandies[1]);
+            Integer[][] coors = Level.Builder.processCoordinateString(selectedCandies[0] + ";" + selectedCandies[1]);
             game.getCurrentLevel().swap(coors);
             renderCurrentLevel(game.getCurrentLevel().getBoardState());
 

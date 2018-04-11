@@ -55,13 +55,12 @@ public class LevelManagerTest {
     @Before
     public void setUp() {
         try {
-            level = new StandardLevelBuilder()
-                    .setCompliteScore(500)
-                    .setAvailableSteps(20)
-                    .setBoardSize(5)
-                    .putWallsFromString("0,0;0,4;4,0;4,4")
-                    .fillBoard()
-                    .create();
+            level = new Level.Builder(LevelType.STANDARD, 8)
+                .withCompleteScore(500)
+                .withAvailableSteps(20)
+                .putWalls("0,0;0,4;4,0;4,4")
+                .fillBoard()
+                .build();
         } catch (Exception e) {
             Assert.fail(e.getMessage());
         }
@@ -93,9 +92,9 @@ public class LevelManagerTest {
         Assert.assertEquals(expResult, result);
 
         // test 2
-        level = new StandardLevelBuilder(level)
-                .setBoardFromState(NO_MATCH_STATE)
-                .create();
+        level = new Level.Builder(level)
+                .fillBoard(NO_MATCH_STATE)
+                .build();
 
         expResult = false;
         result = LevelManager.popAllMarked(level);
@@ -133,9 +132,9 @@ public class LevelManagerTest {
         Assert.assertEquals(result, expResult);
 
         // test 2
-        level = new StandardLevelBuilder(level)
-                .setBoardFromState(ALL_EMPTY_STATE)
-                .create();
+        level = new Level.Builder(level)
+                .fillBoard(ALL_EMPTY_STATE)
+                .build();
 
         expResult = 21 / 3 * 21 * 60;
         result = LevelManager.applyGravity(level);
@@ -143,9 +142,9 @@ public class LevelManagerTest {
         Assert.assertEquals(expResult, result);
 
         // test 3
-        level = new StandardLevelBuilder(level)
-                .setBoardFromState(level.getInitialState())
-                .create();
+        level = new Level.Builder(level)
+                .fillBoard(level.getInitialState())
+                .build();
 
         expResult = 0L;
         result = LevelManager.applyGravity(level);
@@ -164,9 +163,9 @@ public class LevelManagerTest {
         int result;
 
         // test 1
-        level = new StandardLevelBuilder(level)
-                .setBoardFromState(CHAIN_REACTION_STATE)
-                .create();
+        level = new Level.Builder(level)
+                .fillBoard(CHAIN_REACTION_STATE)
+                .build();
 
         expResult = 2;
         result = LevelManager.processLevel(level);
@@ -174,9 +173,9 @@ public class LevelManagerTest {
         Assert.assertTrue(result >= expResult);
 
         // test 2
-        level = new StandardLevelBuilder(level)
-                .setBoardFromState(NO_MATCH_STATE)
-                .create();
+        level = new Level.Builder(level)
+                .fillBoard(NO_MATCH_STATE)
+                .build();
 
         expResult = 0;
         result = LevelManager.processLevel(level);
@@ -195,9 +194,9 @@ public class LevelManagerTest {
         long[] result;
 
         // test 1
-        level = new StandardLevelBuilder(level)
-                .setBoardFromState(CHAIN_REACTION_STATE)
-                .create();
+        level = new Level.Builder(level)
+                .fillBoard(CHAIN_REACTION_STATE)
+                .build();
         
         expResult = new long[]{ 2L, 360L };
         result = LevelManager.processLevelWithState(level, new ArrayList<>());
@@ -206,9 +205,9 @@ public class LevelManagerTest {
         Assert.assertTrue(result[1] >= expResult[1]);
         
         // test 2
-        level = new StandardLevelBuilder(level)
-                .setBoardFromState(NO_MATCH_STATE)
-                .create();
+        level = new Level.Builder(level)
+                .fillBoard(NO_MATCH_STATE)
+                .build();
         
         expResult = new long[]{ 0L, 0L };
         result = LevelManager.processLevelWithState(level, new ArrayList<>());
@@ -225,9 +224,6 @@ public class LevelManagerTest {
         
         String initialState;
         String currentState;
-        
-        // test 1
-        Assert.assertTrue(level instanceof StandardLevel);
         
         initialState = level.getBoardState();
         

@@ -97,13 +97,12 @@ public class UniGame implements Game {
     @Override
     public void initLevels() throws Exception {
         // creating level, we didn't set up any DB connection yet
-        Level l = new StandardLevelBuilder()
-                .setCompliteScore(500)
-                .setAvailableSteps(20)
-                .setBoardSize(8)
-                .putWallsFromString("0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7")
+        Level l = new Level.Builder(LevelType.STANDARD, 8)
+                .withCompleteScore(500)
+                .withAvailableSteps(20)
+                .putWalls("0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7")
                 .fillBoard()
-                .create();
+                .build();
 
         levels.add(l);
     }
