@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.Assert;
 
 /**
- * Class with {@code JUnit} unit tests for the class {@code SimpleManager.getInstance()}.
+ * Class with {@code JUnit} unit tests for the class {@code SimpleLevelManager.getInstance()}.
  *
  * @author Szalontai Jordán
  */
@@ -72,7 +72,7 @@ public class LevelManagerTest {
     }
 
     /**
-     * Test of popAllMarked method, of class SimpleManager.getInstance().
+     * Test of popAllMarked method, of class SimpleLevelManager.getInstance().
      */
     @Test
     public void testPopAllMarked() {
@@ -87,7 +87,7 @@ public class LevelManagerTest {
         level.set(1, 3, new Candy(Candy.State.BLUE));
 
         expResult = true;
-        result = SimpleManager.getInstance().popAllMarked(level);
+        result = SimpleLevelManager.getInstance().popAllMarked(level);
 
         Assert.assertEquals(expResult, result);
 
@@ -97,7 +97,7 @@ public class LevelManagerTest {
                 .build();
 
         expResult = false;
-        result = SimpleManager.getInstance().popAllMarked(level);
+        result = SimpleLevelManager.getInstance().popAllMarked(level);
 
         Assert.assertEquals(expResult, result);
 
@@ -105,14 +105,14 @@ public class LevelManagerTest {
         level = null;
 
         try {
-            SimpleManager.getInstance().popAllMarked(level);
+            SimpleLevelManager.getInstance().popAllMarked(level);
         } catch (NullPointerException e) {
             Assert.assertTrue(true);
         }
     }
 
     /**
-     * Test of applyGravity method, of class SimpleManager.getInstance().
+     * Test of applyGravity method, of class SimpleLevelManager.getInstance().
      */
     @Test
     public void testApplyGravity() {
@@ -127,7 +127,7 @@ public class LevelManagerTest {
         level.set(1, 3, new Candy(Candy.State.EMPTY));
 
         expResult = 180L;
-        result = SimpleManager.getInstance().applyGravity(level);
+        result = SimpleLevelManager.getInstance().applyGravity(level);
 
         Assert.assertEquals(result, expResult);
 
@@ -137,7 +137,7 @@ public class LevelManagerTest {
                 .build();
 
         expResult = 21 / 3 * 21 * 60;
-        result = SimpleManager.getInstance().applyGravity(level);
+        result = SimpleLevelManager.getInstance().applyGravity(level);
 
         Assert.assertEquals(expResult, result);
 
@@ -147,13 +147,13 @@ public class LevelManagerTest {
                 .build();
 
         expResult = 0L;
-        result = SimpleManager.getInstance().applyGravity(level);
+        result = SimpleLevelManager.getInstance().applyGravity(level);
 
         Assert.assertEquals(expResult, result);
     }
 
     /**
-     * Test of process method, of class SimpleManager.getInstance().
+     * Test of process method, of class SimpleLevelManager.getInstance().
      */
     @Test
     public void testProcess() {
@@ -168,7 +168,7 @@ public class LevelManagerTest {
                 .build();
 
         expResult = 2;
-        result = SimpleManager.getInstance().process(level);
+        result = SimpleLevelManager.getInstance().process(level);
 
         Assert.assertTrue(result >= expResult);
 
@@ -178,13 +178,13 @@ public class LevelManagerTest {
                 .build();
 
         expResult = 0;
-        result = SimpleManager.getInstance().process(level);
+        result = SimpleLevelManager.getInstance().process(level);
 
         Assert.assertEquals(expResult, result);
     }
 
     /**
-     * Test of processWithState method, of class SimpleManager.getInstance().
+     * Test of processWithState method, of class SimpleLevelManager.getInstance().
      */
     @Test
     public void testProcessLevelWithState() {
@@ -193,7 +193,7 @@ public class LevelManagerTest {
     }
 
     /**
-     * Test of resetLevel method, of class SimpleManager.getInstance().
+     * Test of resetLevel method, of class SimpleLevelManager.getInstance().
      */
     @Test
     public void testResetLevel() {
@@ -208,7 +208,7 @@ public class LevelManagerTest {
         level.set(1, 2, new Candy(Candy.State.BLUE));
         level.set(1, 3, new Candy(Candy.State.BLUE));
         
-        SimpleManager.getInstance().process(level);
+        SimpleLevelManager.getInstance().process(level);
         LevelManager.reset(level);
         
         currentState = level.getBoardState();

@@ -1,5 +1,6 @@
 package jordan.szalontai.unicrush;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -16,21 +17,46 @@ import org.slf4j.LoggerFactory;
 public class Main extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    
+
+    /**
+     * The names of the existing FXML files.
+     */
+    public static final String[] SCENES = {
+        "GameScene",
+        "EndGameScene"
+    };
+
+    private static boolean funmode = false;
+
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Application started!");
-        
-        Parent root = FXMLLoader.load(Main.class.getResource("/fxml/UniCrush.fxml"));
+        loadNewScene(stage, SCENES[0], "Game Scene");
+        LOGGER.info("Switched to root scene");
+    }
+
+    /**
+     * Switches to the given scene on a stage, with a given title.
+     *
+     * @param stage the window
+     * @param fxmlResName the FXML's name without the extension
+     * @param windowText the title of the window
+     * @return the {@code FXMLLoader} object that loads the scene into the
+     * window
+     * @throws IOException when there is no FXML file
+     */
+    public static FXMLLoader loadNewScene(Stage stage, String fxmlResName, String windowText) throws IOException {
+        FXMLLoader fl = new FXMLLoader(Main.class.getResource("/fxml/" + fxmlResName + ".fxml"));
+        Parent root = fl.load();
 
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/styles.css");
 
-        stage.setTitle("UniCrush");
+        stage.setTitle(windowText);
         stage.setScene(scene);
         stage.show();
-        
-        LOGGER.info("Switched to root scene");
+
+        return fl;
     }
 
     /**
@@ -41,12 +67,15 @@ public class Main extends Application {
      * used in CSS
      */
     public static String getCandyImageURL(String candy) {
+        if (funmode) {
+            return "url('/candy/fun/" + candy + ".png')";
+        }
         return "url('/candy/" + candy + ".png')";
     }
 
     /**
-     * This method is only required to call {@code launch(args} so the
-     * JavaFx application can start.
+     * This method is only required to call {@code launch(args} so the JavaFx
+     * application can start.
      *
      * This might be used as a fallback method if the application fails to
      * start.
@@ -54,7 +83,7 @@ public class Main extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        LOGGER.info("Starting application ...");
+        LOGGER.info("Launching application ...");
         launch(args);
     }
 }

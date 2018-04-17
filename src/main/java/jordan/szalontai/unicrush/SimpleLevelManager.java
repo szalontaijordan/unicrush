@@ -14,16 +14,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Szalontai Jordán
  */
-public class SimpleManager implements LevelManager {
+public class SimpleLevelManager implements LevelManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleLevelManager.class);
 
     /**
      * The singleton instance of this class.
      */
-    public static SimpleManager instance;
+    public static SimpleLevelManager instance;
 
-    private SimpleManager() {
+    private SimpleLevelManager() {
     }
 
     private void markAllCandies(Level level) {
@@ -265,7 +265,7 @@ public class SimpleManager implements LevelManager {
     @Override
     public int process(Level level) {
         int iterations;
-        for (iterations = 0; iterations < UniGame.MAX_ITERATION; iterations++) {
+        for (iterations = 0; iterations < CandyCrushGame.MAX_ITERATION; iterations++) {
             if (popAllMarked(level)) {
                 applyGravity(level);
             } else {
@@ -281,7 +281,7 @@ public class SimpleManager implements LevelManager {
         long iterations;
         long sum = 0;
 
-        for (iterations = 0; iterations < UniGame.MAX_ITERATION; iterations++) {
+        for (iterations = 0; iterations < CandyCrushGame.MAX_ITERATION; iterations++) {
             if (popAllMarked(level)) {
                 states.add(level.getBoardState());
                 sum += applyGravity(level);
@@ -295,9 +295,9 @@ public class SimpleManager implements LevelManager {
         return states;
     }
 
-    public synchronized static SimpleManager getInstance() {
+    public synchronized static SimpleLevelManager getInstance() {
         if (instance == null) {
-            instance = new SimpleManager();
+            instance = new SimpleLevelManager();
         }
 
         return instance;

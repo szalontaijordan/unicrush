@@ -11,15 +11,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Szalontai Jordán
  */
-public class UniGame implements Game {
+public class CandyCrushGame implements Game {
 
     /**
      * The maximum amount of iterations that can occur during processing a
-     * {@code Level} of the {@code UniGame}.
+     * {@code Level} of the {@code CandyCrushGame}.
      */
     public static final int MAX_ITERATION = 50;
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(UniGame.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CandyCrushGame.class);
 
     private long playerScore;
     private int currentLevel;
@@ -31,7 +31,7 @@ public class UniGame implements Game {
      *
      * @param currentLevel an index of the {@code Level}
      */
-    public UniGame(int currentLevel) {
+    public CandyCrushGame(int currentLevel) {
         this.playerScore = 0;
         this.levels = new ArrayList<>();
         this.currentLevel = currentLevel;
@@ -47,8 +47,8 @@ public class UniGame implements Game {
      *
      * @param levelIndex the index of the {@code Level} we'd like to start
      *
-     * @see SimpleManager#process
-     * @see SimpleManager#reset
+     * @see SimpleLevelManager#process
+     * @see SimpleLevelManager#reset
      */
     public void startLevel(int levelIndex) {
         Level level = levels.get(levelIndex);
@@ -56,12 +56,12 @@ public class UniGame implements Game {
         LOGGER.info("Preprocessing current level ...");
         
 
-        int iterations = SimpleManager.getInstance().process(level);
+        int iterations = SimpleLevelManager.getInstance().process(level);
 
         if (iterations == MAX_ITERATION) {
             LOGGER.info("Maximum iteration, reseting level ...");
             LevelManager.reset(level);
-            SimpleManager.getInstance().process(level);
+            SimpleLevelManager.getInstance().process(level);
         }
 
         System.out.println("Start:");
@@ -114,6 +114,7 @@ public class UniGame implements Game {
 
     @Override
     public String toString() {
-        return "gg";
+        return "CandyCrushGame{" + "playerScore=" + playerScore + ", currentLevel=" + currentLevel + ", levels=" + levels + '}';
     }
+    
 }
