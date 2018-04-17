@@ -47,8 +47,8 @@ public class UniGame implements Game {
      *
      * @param levelIndex the index of the {@code Level} we'd like to start
      *
-     * @see SimpleManager.getInstance()#process
-     * @see SimpleManager.getInstance()#reset
+     * @see SimpleManager#process
+     * @see SimpleManager#reset
      */
     public void startLevel(int levelIndex) {
         Level level = levels.get(levelIndex);

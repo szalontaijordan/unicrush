@@ -75,8 +75,9 @@ public interface LevelManager {
      * </pre>
      *
      *
-     * @param template
-     * @return
+     * @param template a string that represents coordinates like in the example
+     * above
+     * @return a 2D-array that represents coordinates
      */
     public static Integer[][] processCoordinateString(String template) {
         return Arrays.stream(template.split(";"))

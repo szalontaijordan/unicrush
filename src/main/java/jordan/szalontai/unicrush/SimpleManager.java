@@ -111,7 +111,7 @@ public class SimpleManager implements LevelManager {
      * This method finds a single possible move. More specific, the one
      * horizontal box, which is the closest to the top of the level.</p>
      *
-     * @param level the level we are searching in
+     * @param level the level we search in
      * @return a string representing the coordinates of a box in which a move is
      * possible
      */
@@ -156,8 +156,9 @@ public class SimpleManager implements LevelManager {
      * If there is none in a row like above, we look for a 3x2 rectangle, in
      * which we can perform a move.</p>
      *
-     * @param level
-     * @return
+     * @param level the level we search in
+     * @return a string representing a coordinate, we found first with the
+     * algorithm above
      */
     public String lookForMoves(Level level) {
         String coor = "";
