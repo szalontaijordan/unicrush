@@ -17,6 +17,10 @@ import org.slf4j.LoggerFactory;
 public class SimpleManager implements LevelManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleManager.class);
+
+    /**
+     * The singleton instance of this class.
+     */
     public static SimpleManager instance;
 
     private SimpleManager() {
@@ -50,6 +54,134 @@ public class SimpleManager implements LevelManager {
             }
         }
         v[0]++;
+    }
+
+    private String inlineMatch(String top3, String row, int i, Level level) {
+        String coor = "";
+        String reg = "(.*XX.X.*|.*X.XX.*)".replaceAll("X", "" + top3.charAt(0));
+
+        if (row.matches(reg)) {
+            int start = row.indexOf(top3.charAt(0));
+            for (int k = start; k < start + 4; k++) {
+                if (level.isTransposed()) {
+                    coor += k + "," + i + ";";
+                } else {
+                    coor += i + "," + k + ";";
+                }
+            }
+            return coor;
+        }
+        return coor;
+    }
+
+    private String allMatch(String top3, String bot3, int i, int j, Level level) {
+        String coor = "";
+        String[] regexes = {
+            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + top3.charAt(0)),
+            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + top3.charAt(0)),
+            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + bot3.charAt(0)),
+            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + bot3.charAt(0))
+        };
+
+        for (String regex : regexes) {
+            LOGGER.debug("{}", regex);
+            if ((top3 + bot3).matches(regex) || (bot3 + top3).matches(regex)) {
+                LOGGER.debug("Parsing:\n{}\n{}", top3, bot3);
+
+                for (int k = j; k < j + 3; k++) {
+                    if (level.isTransposed()) {
+                        coor += k + "," + i + ";";
+                        coor += k + "," + (i + 1) + ";";
+                    } else {
+                        coor += i + "," + k + ";";
+                        coor += (i + 1) + "," + k + ";";
+                    }
+                }
+                return coor;
+            }
+        }
+        return coor;
+    }
+
+    /**
+     * Returns a template string containing the coordinates of a box, in which a
+     * move is possible.
+     *
+     * <p>
+     * This method finds a single possible move. More specific, the one
+     * horizontal box, which is the closest to the top of the level.</p>
+     *
+     * @param level the level we are searching in
+     * @return a string representing the coordinates of a box in which a move is
+     * possible
+     */
+    public String areThereAvailableMoves(Level level) {
+        String possibleCoordinates = "";
+
+        LOGGER.debug("Horizontal processing..");
+        possibleCoordinates = lookForMoves(level);
+
+        if (possibleCoordinates.length() == 0) {
+            level.transpose();
+
+            LOGGER.debug("Vertical processing..");
+            possibleCoordinates += lookForMoves(level);
+            level.transpose();
+        }
+
+        return possibleCoordinates;
+    }
+
+    /**
+     * Returns a template string with coordinates of a box area, in which a move
+     * is possible.
+     *
+     * <p>
+     * The first step is that we look for a possible move in a row. For
+     * example</p>
+     * <pre>
+     *   Let a level's toString be equal to
+     *
+     *     [x, B, B, G, x]
+     *     [B, B, G, B, x]
+     *     [x, P, x, x, x]
+     *     [x, x, x, x, x]
+     *     [x, x, x, x, x],
+     *
+     *   in this case the return value is
+     *
+     *     1,0;1,1;1,2;1,3;
+     * </pre>
+     * <p>
+     * If there is none in a row like above, we look for a 3x2 rectangle, in
+     * which we can perform a move.</p>
+     *
+     * @param level
+     * @return
+     */
+    public String lookForMoves(Level level) {
+        String coor = "";
+        String[] levelStates = level.getBoardState().split(";");
+
+        LOGGER.debug("{}", Arrays.toString(levelStates));
+
+        for (int i = 0; i < levelStates.length - 1; i++) {
+            for (int j = 0; j < levelStates[i].length() - 3; j++) {
+                String top3 = levelStates[i].substring(j, j + 3);
+                String bot3 = levelStates[i + 1].substring(j, j + 3);
+
+                coor = inlineMatch(top3, levelStates[i], i, level);
+
+                if (coor.length() == 0) {
+                    coor = allMatch(top3, bot3, i, j, level);
+                }
+
+                if (coor.length() != 0) {
+                    return coor;
+                }
+            }
+        }
+        return coor;
     }
 
     /**
@@ -127,95 +259,6 @@ public class SimpleManager implements LevelManager {
             }
         }
         return re / 3 * re * 60;
-    }
-
-    public String areThereAvailableMoves(Level level) {
-        String possibleCoordinates = "";
-
-        LOGGER.debug("Horizontal processing..");
-        possibleCoordinates = parseForMoves(level);
-
-        if (possibleCoordinates.length() == 0) {
-            level.transpose();
-
-            LOGGER.debug("Vertical processing..");
-            possibleCoordinates += parseForMoves(level);
-            level.transpose();
-        }
-
-        return possibleCoordinates;
-    }
-
-    public String parseForMoves(Level level) {
-        String coor = "";
-        String[] levelStates = level.getBoardState().split(";");
-
-        LOGGER.debug("{}", Arrays.toString(levelStates));
-
-        for (int i = 0; i < levelStates.length - 1; i++) {
-            for (int j = 0; j < levelStates[i].length() - 3; j++) {
-                String top3 = levelStates[i].substring(j, j + 3);
-                String bot3 = levelStates[i + 1].substring(j, j + 3);
-
-                coor = inlineMatch(top3, levelStates[i], i, level);
-
-                if (coor.length() == 0) {
-                    coor = allMatch(top3, bot3, i, j, level);
-                }
-                
-                if (coor.length() != 0) {
-                    return coor;
-                }
-            }
-        }
-        return coor;
-    }
-
-    private String inlineMatch(String top3, String row, int i, Level level) {
-        String coor = "";
-        String reg = "(.*XX.X.*|.*X.XX.*)".replaceAll("X", "" + top3.charAt(0));
-
-        if (row.matches(reg)) {
-            int start = row.indexOf(top3.charAt(0));
-            for (int k = start; k < start + 4; k++) {
-                if (level.isTransposed()) {
-                    coor += k + "," + i + ";";
-                } else {
-                    coor += i + "," + k + ";";
-                }
-            }
-            return coor;
-        }
-        return coor;
-    }
-
-    private String allMatch(String top3, String bot3, int i, int j, Level level) {
-        String coor = "";
-        String[] regexes = {
-            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + top3.charAt(0)),
-            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + top3.charAt(0)),
-            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + bot3.charAt(0)),
-            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + bot3.charAt(0))
-        };
-
-        for (String regex : regexes) {
-            LOGGER.debug("{}", regex);
-            if ((top3 + bot3).matches(regex) || (bot3 + top3).matches(regex)) {
-                LOGGER.debug("Parsing:\n{}\n{}", top3, bot3);
-
-                for (int k = j; k < j + 3; k++) {
-                    if (level.isTransposed()) {
-                        coor += k + "," + i + ";";
-                        coor += k + "," + (i + 1) + ";";
-                    } else {
-                        coor += i + "," + k + ";";
-                        coor += (i + 1) + "," + k + ";";
-                    }
-                }
-                return coor;
-            }
-        }
-        return coor;
     }
 
     @Override

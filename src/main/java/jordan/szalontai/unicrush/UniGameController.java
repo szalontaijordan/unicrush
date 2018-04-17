@@ -117,11 +117,6 @@ public class UniGameController implements Initializable {
         levelMessage.setText("");
     }
 
-    private Node getFromGrid(int i, int j) {
-        return mainGrid.getChildren()
-                .get(i * game.getCurrentLevel().getBoardSize() + j);
-    }
-
     /**
      * Creates a number of n*n new columns and rows for the main grid of the
      * {@code Scene}, where n is the size of the given {@code Level}'s board.
@@ -240,7 +235,7 @@ public class UniGameController implements Initializable {
         enableOnClicks();
     }
 
-    private Thread startPopTask(List<String> boardStates, final long add) {
+    private void startPopTask(List<String> boardStates, final long add) {
         Task<Integer> popTask = new Task<Integer>() {
             @Override
             protected Integer call() {
@@ -287,11 +282,9 @@ public class UniGameController implements Initializable {
         popTaskThread.setDaemon(true);
 
         popTaskThread.start();
-
-        return popTaskThread;
     }
 
-    private Thread startHelpTask() {
+    private void startHelpTask() {
         Task<Integer> helpTask = new Task<Integer>() {
             @Override
             protected Integer call() {
@@ -315,14 +308,17 @@ public class UniGameController implements Initializable {
         helpTaskThread.setDaemon(true);
 
         helpTaskThread.start();
-
-        return helpTaskThread;
     }
 
     private boolean isSwapReady() {
         return selectedCandies[0] != null && selectedCandies[1] != null;
     }
 
+    private Node getFromGrid(int i, int j) {
+        return mainGrid.getChildren()
+                .get(i * game.getCurrentLevel().getBoardSize() + j);
+    }
+    
     private void firstRender(String boardState) {
         String[] state = boardState.split(";");
 
