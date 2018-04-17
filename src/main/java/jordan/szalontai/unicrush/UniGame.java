@@ -19,7 +19,7 @@ public class UniGame implements Game {
      */
     public static final int MAX_ITERATION = 50;
     
-    private static final Logger logger = LoggerFactory.getLogger(UniGame.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UniGame.class);
 
     private long playerScore;
     private int currentLevel;
@@ -53,19 +53,19 @@ public class UniGame implements Game {
     public void startLevel(int levelIndex) {
         Level level = levels.get(levelIndex);
         
-        logger.info("Preprocessing current level ...");
+        LOGGER.info("Preprocessing current level ...");
         
 
         int iterations = SimpleManager.getInstance().process(level);
 
         if (iterations == MAX_ITERATION) {
-            logger.info("Maximum iteration, reseting level ...");
-            SimpleManager.getInstance().reset(level);
+            LOGGER.info("Maximum iteration, reseting level ...");
+            LevelManager.reset(level);
             SimpleManager.getInstance().process(level);
         }
 
         System.out.println("Start:");
-        logger.info("Started level:\n{}", level.toString());
+        LOGGER.info("Started level:\n{}", level.toString());
 
         this.playerScore = 0;
     }

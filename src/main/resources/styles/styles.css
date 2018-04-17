@@ -13,3 +13,7 @@
 .selected {
     -fx-background-color: rgba(255,0,0,0.2);
 }
+
+.highlighted {
+    -fx-background-color: rgba(0, 255, 0, 0.2);
+}

@@ -1,6 +1,7 @@
 package jordan.szalontai.unicrush;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,11 +15,41 @@ import org.slf4j.LoggerFactory;
  * @author Szalontai Jordán
  */
 public class SimpleManager implements LevelManager {
-    
-    private static final Logger logger = LoggerFactory.getLogger(SimpleManager.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleManager.class);
     public static SimpleManager instance;
-    
+
     private SimpleManager() {
+    }
+
+    private void markAllCandies(Level level) {
+        Map<String, Integer[]> candyCountMap = new HashMap<>();
+
+        for (int i = 0; i < level.getBoardSize(); i++) {
+            for (int j = 0; j < level.getBoardSize(); j++) {
+                String curr = level.get(i, j) == null ? "" : level.get(i, j).toString();
+                String next = level.get(i, j + 1) == null ? "" : level.get(i, j + 1).toString();
+
+                if (!curr.equals("") && curr.equals(next)) {
+                    if (candyCountMap.get(curr) == null) {
+                        candyCountMap.put(curr, new Integer[]{2, j});
+                    }
+                    mark(level, i, candyCountMap.get(curr));
+                } else {
+                    candyCountMap.remove(curr);
+                }
+            }
+            candyCountMap.clear();
+        }
+    }
+
+    private void mark(Level level, int row, Integer[] v) {
+        if (v[0] >= 3) {
+            for (int i = 0; i < v[0]; i++) {
+                level.get(row, v[1] + i).setMarkedForPop(true);
+            }
+        }
+        v[0]++;
     }
 
     /**
@@ -48,39 +79,9 @@ public class SimpleManager implements LevelManager {
                 }
             }
         }
-        
-        logger.trace("Current level:\n{}", level.toString());
+
+        LOGGER.trace("Current level:\n{}", level.toString());
         return popHappened;
-    }
-
-    private void markAllCandies(Level l) {
-        Map<String, Integer[]> candyCountMap = new HashMap<>();
-
-        for (int i = 0; i < l.getBoardSize(); i++) {
-            for (int j = 0; j < l.getBoardSize(); j++) {
-                String curr = l.get(i, j) == null ? "" : l.get(i, j).toString();
-                String next = l.get(i, j + 1) == null ? "" : l.get(i, j + 1).toString();
-
-                if (!curr.equals("") && curr.equals(next)) {
-                    if (candyCountMap.get(curr) == null) {
-                        candyCountMap.put(curr, new Integer[]{2, j});
-                    }
-                    mark(l, i, candyCountMap.get(curr));
-                } else {
-                    candyCountMap.remove(curr);
-                }
-            }
-            candyCountMap.clear();
-        }
-    }
-
-    private void mark(Level l, int row, Integer[] v) {
-        if (v[0] >= 3) {
-            for (int i = 0; i < v[0]; i++) {
-                l.get(row, v[1] + i).setMarkedForPop(true);
-            }
-        }
-        v[0]++;
     }
 
     /**
@@ -103,8 +104,8 @@ public class SimpleManager implements LevelManager {
                     candies.add(level.get(col, i));
                 }
             }
-            
-            logger.trace("Candies in active column:\n{}", candies.toString());
+
+            LOGGER.trace("Candies in active column:\n{}", candies.toString());
             Collections.sort(candies);
 
             re += candies.stream()
@@ -127,7 +128,96 @@ public class SimpleManager implements LevelManager {
         }
         return re / 3 * re * 60;
     }
-    
+
+    public String areThereAvailableMoves(Level level) {
+        String possibleCoordinates = "";
+
+        LOGGER.debug("Horizontal processing..");
+        possibleCoordinates = parseForMoves(level);
+
+        if (possibleCoordinates.length() == 0) {
+            level.transpose();
+
+            LOGGER.debug("Vertical processing..");
+            possibleCoordinates += parseForMoves(level);
+            level.transpose();
+        }
+
+        return possibleCoordinates;
+    }
+
+    public String parseForMoves(Level level) {
+        String coor = "";
+        String[] levelStates = level.getBoardState().split(";");
+
+        LOGGER.debug("{}", Arrays.toString(levelStates));
+
+        for (int i = 0; i < levelStates.length - 1; i++) {
+            for (int j = 0; j < levelStates[i].length() - 3; j++) {
+                String top3 = levelStates[i].substring(j, j + 3);
+                String bot3 = levelStates[i + 1].substring(j, j + 3);
+
+                coor = inlineMatch(top3, levelStates[i], i, level);
+
+                if (coor.length() == 0) {
+                    coor = allMatch(top3, bot3, i, j, level);
+                }
+                
+                if (coor.length() != 0) {
+                    return coor;
+                }
+            }
+        }
+        return coor;
+    }
+
+    private String inlineMatch(String top3, String row, int i, Level level) {
+        String coor = "";
+        String reg = "(.*XX.X.*|.*X.XX.*)".replaceAll("X", "" + top3.charAt(0));
+
+        if (row.matches(reg)) {
+            int start = row.indexOf(top3.charAt(0));
+            for (int k = start; k < start + 4; k++) {
+                if (level.isTransposed()) {
+                    coor += k + "," + i + ";";
+                } else {
+                    coor += i + "," + k + ";";
+                }
+            }
+            return coor;
+        }
+        return coor;
+    }
+
+    private String allMatch(String top3, String bot3, int i, int j, Level level) {
+        String coor = "";
+        String[] regexes = {
+            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + top3.charAt(0)),
+            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + top3.charAt(0)),
+            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + bot3.charAt(0)),
+            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + bot3.charAt(0))
+        };
+
+        for (String regex : regexes) {
+            LOGGER.debug("{}", regex);
+            if ((top3 + bot3).matches(regex) || (bot3 + top3).matches(regex)) {
+                LOGGER.debug("Parsing:\n{}\n{}", top3, bot3);
+
+                for (int k = j; k < j + 3; k++) {
+                    if (level.isTransposed()) {
+                        coor += k + "," + i + ";";
+                        coor += k + "," + (i + 1) + ";";
+                    } else {
+                        coor += i + "," + k + ";";
+                        coor += (i + 1) + "," + k + ";";
+                    }
+                }
+                return coor;
+            }
+        }
+        return coor;
+    }
+
     @Override
     public int process(Level level) {
         int iterations;
@@ -160,12 +250,12 @@ public class SimpleManager implements LevelManager {
         states.add(0, iterations + "," + sum);
         return states;
     }
-    
+
     public synchronized static SimpleManager getInstance() {
         if (instance == null) {
             instance = new SimpleManager();
         }
-        
+
         return instance;
     }
 

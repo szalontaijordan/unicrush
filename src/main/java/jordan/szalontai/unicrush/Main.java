@@ -15,11 +15,11 @@ import org.slf4j.LoggerFactory;
  */
 public class Main extends Application {
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
     
     @Override
     public void start(Stage stage) throws Exception {
-        logger.info("Application started!");
+        LOGGER.info("Application started!");
         
         Parent root = FXMLLoader.load(Main.class.getResource("/fxml/UniCrush.fxml"));
 
@@ -30,7 +30,7 @@ public class Main extends Application {
         stage.setScene(scene);
         stage.show();
         
-        logger.info("Switched to root scene");
+        LOGGER.info("Switched to root scene");
     }
 
     /**
@@ -54,7 +54,7 @@ public class Main extends Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        logger.info("Starting application ...");
+        LOGGER.info("Starting application ...");
         launch(args);
     }
 }

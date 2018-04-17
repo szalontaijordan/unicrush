@@ -71,20 +71,28 @@ public final class Level implements Transposable {
      *     [B, R, Y, G]
      *     [x, B, B, x]
      *
-     * The result of <i>getBoardState()</i> is the following
+     * The result of <i>getBoardState()</i> is the following if not transposed:
      *
      *     xRBx;GGBG;BRYG;xBBx
+     *
+     * Othervise:
+     *
+     *     xGBx;RGRB;BBYB;xGGx
+     *
      * </pre>
      *
      * @return the board state {@code String} produced as mentioned above
      */
     public String getBoardState() {
-        return Arrays.stream(board)
-                .map(row -> Arrays.toString(row)
-                .replaceAll("\\W", "")
-                .replaceAll("null", "x")
-                )
-                .collect(Collectors.joining(";"));
+        String state = "";
+
+        for (int i = 0; i < boardSize; i++) {
+            for (int j = 0; j < boardSize; j++) {
+                state += get(i, j) == null ? "x" : get(i, j).toString();
+            }
+            state += ";";
+        }
+        return state.substring(0, state.length() - 1);
     }
 
     /**
@@ -101,7 +109,11 @@ public final class Level implements Transposable {
         if (!success) {
             return false;
         }
-
+        
+        if (board[coors[0][0]][coors[0][1]] == null || board[coors[1][0]][coors[1][1]] == null) {
+            return false;
+        }
+        
         Candy tmp = board[coors[0][0]][coors[0][1]];
         board[coors[0][0]][coors[0][1]] = board[coors[1][0]][coors[1][1]];
         board[coors[1][0]][coors[1][1]] = tmp;
@@ -204,6 +216,12 @@ public final class Level implements Transposable {
             this.transposed = false;
         }
 
+        /**
+         * Constructs a builder instance, which fields will be based on an
+         * existing level object.
+         *
+         * @param src the level object as a starting point
+         */
         public Builder(Level src) {
             this.type = src.type;
             this.boardSize = src.boardSize;
@@ -244,7 +262,7 @@ public final class Level implements Transposable {
          * @return {@code this} so we can chain builder methods
          */
         public Builder putWalls(final String template) {
-            this.walls = processCoordinateString(template);
+            this.walls = LevelManager.processCoordinateString(template);
             return this;
         }
 
@@ -337,33 +355,6 @@ public final class Level implements Transposable {
                 }
             }
             return newBoard;
-        }
-
-        /**
-         * Returns a 2D-array that represents coordinates.
-         *
-         * <p>
-         * The idea of this, is that in the template we list some coordinates
-         * separated, and we parse this template string.</p>
-         * <p>
-         * For example
-         * {@code Level.Builder.processCoordinateString("1,2;3,4;5,6");} returns
-         * </p>
-         *
-         * <pre>
-         *     new Integer[][]{ { 1, 2 }, { 3, 4 }, { 5, 6 } }
-         * </pre>
-         *
-         *
-         * @param template
-         * @return
-         */
-        public static Integer[][] processCoordinateString(String template) {
-            return Arrays.stream(template.split(";"))
-                    .map(coor -> Arrays.stream(coor.split(","))
-                    .map(Integer::parseInt)
-                    .toArray(Integer[]::new))
-                    .toArray(Integer[][]::new);
         }
     }
 }

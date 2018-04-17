@@ -1,5 +1,6 @@
 package jordan.szalontai.unicrush;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,9 +53,36 @@ public interface LevelManager {
      *
      * @param level the {@code Level} instance to reset
      */
-    public default void reset(Level level) {
+    public static void reset(Level level) {
         level = new Level.Builder(level)
                 .fillBoard(level.getInitialState())
                 .build();
+    }
+
+    /**
+     * Returns a 2D-array that represents coordinates.
+     *
+     * <p>
+     * The idea of this, is that in the template we list some coordinates
+     * separated, and we parse this template string.</p>
+     * <p>
+     * For example {@code Level.Builder.processCoordinateString("1,2;3,4;5,6");}
+     * returns
+     * </p>
+     *
+     * <pre>
+     *     new Integer[][]{ { 1, 2 }, { 3, 4 }, { 5, 6 } }
+     * </pre>
+     *
+     *
+     * @param template
+     * @return
+     */
+    public static Integer[][] processCoordinateString(String template) {
+        return Arrays.stream(template.split(";"))
+                .map(coor -> Arrays.stream(coor.split(","))
+                .map(Integer::parseInt)
+                .toArray(Integer[]::new))
+                .toArray(Integer[][]::new);
     }
 }

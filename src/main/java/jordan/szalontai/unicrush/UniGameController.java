@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
  */
 public class UniGameController implements Initializable {
 
-    private static final Logger logger = LoggerFactory.getLogger(UniGameController.class);
-    
+    private static final Logger LOGGER = LoggerFactory.getLogger(UniGameController.class);
+
     /**
      * The possible game states, a game can be won or lost.
      */
@@ -47,6 +47,10 @@ public class UniGameController implements Initializable {
 
     private Game game;
     private String[] selectedCandies = new String[2];
+    private String hightlightedCoors;
+
+    private Thread popTaskThread;
+    private Thread helpTaskThread;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -57,14 +61,44 @@ public class UniGameController implements Initializable {
             setMainGridDimensions(game.getCurrentLevel());
 
             game.startCurrentLevel();
+
             levelSteps.setText(Integer.toString(game.getCurrentLevel().getAvailableSteps()));
 
+            hightlightedCoors = "";
             firstRender(game.getCurrentLevel().getBoardState());
-
+            
+            startHelpTask();
             enableOnClicks();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error(ex.getMessage());
         }
+    }
+
+    public synchronized void showHelpMarkers() {
+        LOGGER.debug("Showing help markers");
+        hightlightedCoors = SimpleManager.getInstance()
+                .areThereAvailableMoves(game.getCurrentLevel());
+
+        Integer[][] coordinates = LevelManager.processCoordinateString(hightlightedCoors);
+
+        for (Integer[] coor : coordinates) {
+            getFromGrid(coor[0], coor[1]).getStyleClass().add("highlighted");
+        }
+    }
+
+    public synchronized void hideHelpMarkers() {
+        LOGGER.debug("Hiding help markers");
+        if (hightlightedCoors.equals("")) {
+            return;
+        }
+
+        Integer[][] coordinates = LevelManager.processCoordinateString(hightlightedCoors);
+
+        for (Integer[] coor : coordinates) {
+            getFromGrid(coor[0], coor[1]).getStyleClass().removeAll("highlighted");
+        }
+
+        hightlightedCoors = "";
     }
 
     public synchronized void setScore(long score) {
@@ -140,7 +174,7 @@ public class UniGameController implements Initializable {
             }
         }
 
-        logger.trace("Selected candies: {}", Arrays.toString(selectedCandies));
+        LOGGER.trace("Selected candies: {}", Arrays.toString(selectedCandies));
 
         swapSelectedCandies(isSwapReady());
     }
@@ -162,28 +196,31 @@ public class UniGameController implements Initializable {
             clearMessage();
             disableOnClicks();
 
-            Integer[][] coors = Level.Builder.processCoordinateString(selectedCandies[0] + ";" + selectedCandies[1]);
+            Integer[][] coors = LevelManager.processCoordinateString(selectedCandies[0] + ";" + selectedCandies[1]);
             game.getCurrentLevel().swap(coors);
             renderCurrentLevel(game.getCurrentLevel().getBoardState());
 
             List<String> boardStates = SimpleManager.getInstance().processWithState(game.getCurrentLevel());
-            
+
             long[] result = Arrays.stream(boardStates.get(0)
                     .split(","))
                     .mapToLong(Long::parseLong).toArray();
             boardStates.remove(0);
-            
+
             processChanges(coors, result, boardStates);
         }
     }
 
     private void processChanges(Integer[][] coors, long[] result, List<String> boardStates) {
+        LOGGER.info("Cancelling help task ...");
+        helpTaskThread.interrupt();
+        
         final long iterations = result[0];
         final long add = result[1];
 
         if (iterations == UniGame.MAX_ITERATION) {
-            logger.info("Maximum iterations, reseting level ...");
-            SimpleManager.getInstance().reset(game.getCurrentLevel());
+            LOGGER.info("Maximum iterations, reseting level ...");
+            LevelManager.reset(game.getCurrentLevel());
             boardStates.add(game.getCurrentLevel().getBoardState());
         }
 
@@ -196,13 +233,14 @@ public class UniGameController implements Initializable {
         }
 
         game.addToScore(add);
+
         startPopTask(boardStates, add);
 
         eraseSelectedCandies(coors);
         enableOnClicks();
     }
 
-    private void startPopTask(List<String> boardStates, final long add) {
+    private Thread startPopTask(List<String> boardStates, final long add) {
         Task<Integer> popTask = new Task<Integer>() {
             @Override
             protected Integer call() {
@@ -213,7 +251,7 @@ public class UniGameController implements Initializable {
                     try {
                         Thread.sleep(450);
                     } catch (InterruptedException ex) {
-                        logger.error(ex.getMessage());
+                        LOGGER.error(ex.getMessage());
                     }
                 }
                 return stateIndex;
@@ -234,11 +272,51 @@ public class UniGameController implements Initializable {
                 endLevel(GameState.WON);
             }
 
+            hideHelpMarkers();
+            
+            LOGGER.info("Restarting Help Task");
+            startHelpTask();
+
             if (levelSteps.getText().equals("0")) {
                 endLevel(GameState.LOST);
             }
         });
-        new Thread(popTask).start();
+
+        popTaskThread = new Thread(popTask);
+        popTaskThread.setName("Pop Task Thread");
+        popTaskThread.setDaemon(true);
+
+        popTaskThread.start();
+
+        return popTaskThread;
+    }
+
+    private Thread startHelpTask() {
+        Task<Integer> helpTask = new Task<Integer>() {
+            @Override
+            protected Integer call() {
+                LOGGER.trace("Help Task called");
+                try {
+                    Thread.sleep(20000);
+                } catch (InterruptedException ex) {
+                    LOGGER.info("Interrupted sleep {}", this.getState().toString());
+                    hideHelpMarkers();
+                }
+                return 0;
+            }
+        };
+        helpTask.setOnSucceeded(e -> {
+            LOGGER.debug("Highlighted coordinates: {}", hightlightedCoors);            
+            showHelpMarkers();
+        });
+
+        helpTaskThread = new Thread(helpTask);
+        helpTaskThread.setName("Help Task Thread");
+        helpTaskThread.setDaemon(true);
+
+        helpTaskThread.start();
+
+        return helpTaskThread;
     }
 
     private boolean isSwapReady() {
@@ -289,10 +367,10 @@ public class UniGameController implements Initializable {
     private void endLevel(GameState state) {
         switch (state) {
             case WON:
-                logger.warn("GG");
+                LOGGER.warn("GG");
                 break;
             case LOST:
-                logger.warn("STEPS 0");
+                LOGGER.warn("STEPS 0");
                 break;
             default:
                 break;
