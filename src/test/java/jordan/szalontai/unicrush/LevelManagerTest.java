@@ -209,11 +209,13 @@ public class LevelManagerTest {
         level.set(1, 3, new Candy(Candy.State.BLUE));
         
         SimpleManager.getInstance().process(level);
-        SimpleManager.getInstance().reset(level);
+        LevelManager.reset(level);
         
         currentState = level.getBoardState();
         
         Assert.assertEquals(initialState, currentState);
     }
+    
+    // TODO other public methods
 
 }
