@@ -14,48 +14,54 @@ import org.slf4j.LoggerFactory;
 public class CandyCrushGame implements Game {
 
     /**
-     * The maximum amount of iterations that can occur during processing a
-     * {@code Level} of the {@code CandyCrushGame}.
+     * The maximum amount of allowed iterations while processing a {@code Level}
+     * of the {@code CandyCrushGame}.
      */
     public static final int MAX_ITERATION = 50;
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(CandyCrushGame.class);
 
     private long playerScore;
-    private int currentLevel;
     private List<Level> levels;
+    private int currentLevelIndex;
 
     /**
-     * Constructs a {@code Game} and setting its current level to the given
-     * parameter.
-     *
-     * @param currentLevel an index of the {@code Level}
+     * Constructs an object that wraps its levels and information about the
+     * player playing the game.
+     * 
      */
-    public CandyCrushGame(int currentLevel) {
+    public CandyCrushGame() {
         this.playerScore = 0;
         this.levels = new ArrayList<>();
-        this.currentLevel = currentLevel;
+        this.currentLevelIndex = 0;
     }
 
     public List<Level> getLevels() {
         return levels;
     }
 
-    /**
-     * Initializes a {@code Level} so there are not any matching {@code Candy}
-     * sequences.
-     *
-     * @param levelIndex the index of the {@code Level} we'd like to start
-     *
-     * @see SimpleLevelManager#process
-     * @see SimpleLevelManager#reset
-     */
-    public void startLevel(int levelIndex) {
-        Level level = levels.get(levelIndex);
+    public int getCurrentLevelIndex() {
+        return currentLevelIndex;
+    }
+
+    public void setPlayerScore(long playerScore) {
+        this.playerScore = playerScore;
+    }
+
+    public void setLevels(List<Level> levels) {
+        this.levels = levels;
+    }
+
+    public void setCurrentLevelIndex(int currentLevelIndex) {
+        this.currentLevelIndex = currentLevelIndex;
+    }
+
+    @Override
+    public void startLevel(Level level) {
+        LOGGER.debug("Reseting player score");
+        this.playerScore = 0;
         
         LOGGER.info("Preprocessing current level ...");
-        
-
         int iterations = SimpleLevelManager.getInstance().process(level);
 
         if (iterations == MAX_ITERATION) {
@@ -66,37 +72,6 @@ public class CandyCrushGame implements Game {
 
         System.out.println("Start:");
         LOGGER.info("Started level:\n{}", level.toString());
-
-        this.playerScore = 0;
-    }
-
-    public void setCurrentLevel(int newCurrent) {
-        this.currentLevel = newCurrent;
-    }
-
-    @Override
-    public Level getLevel(int index) {
-        return levels.get(index);
-    }
-
-    @Override
-    public long getPlayerScore() {
-        return playerScore;
-    }
-
-    @Override
-    public int getCurrent() {
-        return currentLevel;
-    }
-
-    @Override
-    public void startCurrentLevel() {
-        startLevel(currentLevel);
-    }
-
-    @Override
-    public void addToScore(long plus) {
-        this.playerScore += plus;
     }
 
     @Override
@@ -111,10 +86,29 @@ public class CandyCrushGame implements Game {
 
         levels.add(l);
     }
+    
+    @Override
+    public Level getLevel(int index) {
+        return levels.get(index);
+    }
+
+    @Override
+    public Level getCurrentLevel() {
+        return levels.get(currentLevelIndex);
+    }
+
+    @Override
+    public long getPlayerScore() {
+        return playerScore;
+    }      
+
+    @Override
+    public void addToScore(long plus) {
+        this.playerScore += plus;
+    }
 
     @Override
     public String toString() {
-        return "CandyCrushGame{" + "playerScore=" + playerScore + ", currentLevel=" + currentLevel + ", levels=" + levels + '}';
+        return "CandyCrushGame{" + "playerScore=" + playerScore + ", levels=" + levels + ", currentLevelIndex=" + currentLevelIndex + '}';
     }
-    
 }

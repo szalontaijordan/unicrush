@@ -2,6 +2,9 @@ package jordan.szalontai.unicrush;
 
 import java.util.Arrays;
 import java.util.List;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 
 /**
  * Interface representing actions that can be done on a level.
@@ -66,7 +69,7 @@ public interface LevelManager {
      * The idea of this, is that in the template we list some coordinates
      * separated, and we parse this template string.</p>
      * <p>
-     * For example {@code Level.Builder.processCoordinateString("1,2;3,4;5,6");}
+     * For example {@code Level.Builder.createCoordinates("1,2;3,4;5,6");}
      * returns
      * </p>
      *
@@ -79,7 +82,7 @@ public interface LevelManager {
      * above
      * @return a 2D-array that represents coordinates
      */
-    public static Integer[][] processCoordinateString(String template) {
+    public static Integer[][] createCoordinates(String template) {
         return Arrays.stream(template.split(";"))
                 .map(coor -> Arrays.stream(coor.split(","))
                 .map(Integer::parseInt)

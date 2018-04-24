@@ -298,7 +298,7 @@ public final class Level implements Transposable {
          * @return {@code this} so we can chain builder methods
          */
         public Builder putWalls(final String template) {
-            this.walls = LevelManager.processCoordinateString(template);
+            this.walls = LevelManager.createCoordinates(template);
             return this;
         }
 

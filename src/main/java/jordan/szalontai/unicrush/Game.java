@@ -20,35 +20,6 @@ public interface Game {
     public void initLevels() throws Exception;
 
     /**
-     * The way of starting the defined level of the game on which the actual
-     * game is happening.
-     */
-    public void startCurrentLevel();
-
-    /**
-     * Used for modifying the score of a player.
-     *
-     * @param plus the amount of points that should be added to some value
-     * representing the player's score
-     */
-    public void addToScore(long plus);
-
-    /**
-     * Returns information about the index of a level on which the actual game
-     * is happening.
-     *
-     * @return an index of a level e.g. in a list
-     */
-    public int getCurrent();
-
-    /**
-     * Returns information about the player's current score.
-     *
-     * @return the current score of a player
-     */
-    public long getPlayerScore();
-
-    /**
      * Returns a concrete {@code Level} instance of the game-
      *
      * @param index the index of a level we need
@@ -57,12 +28,43 @@ public interface Game {
     public Level getLevel(int index);
 
     /**
-     * Default method for returning the level specified with the index that
-     * {@code getCurrent} returns.
+     * Returns the level on which the game is happening.
      *
      * @return the {@code Level} instance with the current index
      */
-    public default Level getCurrentLevel() {
-        return getLevel(getCurrent());
+    public Level getCurrentLevel();
+    
+    /**
+     * Initializes a {@code Level} so there are not any matching {@code Candy}
+     * sequences.
+     *
+     * @param level the {@code Level} we'd like to start
+     *
+     * @see SimpleLevelManager#process
+     * @see SimpleLevelManager#reset
+     */
+    public void startLevel(Level level);
+    
+    /**
+     * The way of starting the defined level of the game on which the actual
+     * game is happening.
+     */
+    public default void startCurrentLevel() {
+        startLevel(getCurrentLevel());
     }
+    
+    /**
+     * Returns information about the player's current score.
+     *
+     * @return the current score of a player
+     */
+    public long getPlayerScore();
+    
+    /**
+     * Used for modifying the score of a player.
+     *
+     * @param plus the amount of points that should be added to some value
+     * representing the player's score
+     */
+    public void addToScore(long plus);
 }

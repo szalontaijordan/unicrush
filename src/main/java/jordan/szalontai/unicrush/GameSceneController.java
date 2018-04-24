@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -17,18 +20,22 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import javafx.stage.Stage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class that controls the main JavaFx {@code Scene} on which we play the
- * current level of a {@code Game}.
+ * Class that controls the main JavaFx {@code Scene} on which we play a {@code Level} instance of a
+ * {@code Game} object.
  *
  * @author Szalontai Jordán
  */
 public class GameSceneController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSceneController.class);
+
+    private static final int HELP_INTERVAL = 30000;
+    private static final int POP_INTERVAL = 450;
 
     @FXML
     private GridPane mainGrid;
@@ -40,109 +47,90 @@ public class GameSceneController implements Initializable {
     private Label levelSteps;
 
     private Game game;
-    private String[] selectedCandies = new String[2];
-    private String hightlightedCoors;
+    private String[] selectedCandies;
+    private String suggestedArea;
 
-    private Thread popTaskThread;
-    private Thread helpTaskThread;
+    private Thread popThread;
+    private Timer suggestionTimer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        suggestedArea = "";
+        selectedCandies = new String[2];
+
+        suggestionTimer = new Timer("Highlight Thread", true);
+
+        popThread = new Thread("Pop Task Thread");
+        popThread.setDaemon(true);
+
+        startGame();
+    }
+
+    private void startGame() {
         try {
-            game = new CandyCrushGame(0);
+            game = new CandyCrushGame();
             game.initLevels();
-
-            setMainGridDimensions(game.getCurrentLevel());
-
             game.startCurrentLevel();
 
-            levelSteps.setText(Integer.toString(game.getCurrentLevel().getAvailableSteps()));
-
-            hightlightedCoors = "";
+            setMainGridDimensions(game.getCurrentLevel());
             firstRender(game.getCurrentLevel().getBoardState());
 
-            startHelpTask();
-            enableOnClicks();
+            levelSteps.setText(game.getCurrentLevel().getAvailableSteps() + "");
+            startSuggestionTask();
+            enableButtonClicks();
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
         }
     }
+    
+    public void endLevel() {
+        try {
+            LOGGER.warn("Ending level...");
+            popThread.interrupt();
+            suggestionTimer.cancel();
 
-    public synchronized void showHelpMarkers() {
-        LOGGER.debug("Showing help markers");
-        hightlightedCoors = SimpleLevelManager.getInstance()
-                .areThereAvailableMoves(game.getCurrentLevel());
+            Stage stage = (Stage) mainGrid.getScene().getWindow();
+            String message = "Congratulations!";
 
-        Integer[][] coordinates = LevelManager.processCoordinateString(hightlightedCoors);
+            if (game.getPlayerScore() < game.getCurrentLevel().getScoreToComplete()) {
+                message = "There are no more steps!";
+            }
 
-        for (Integer[] coor : coordinates) {
-            getFromGrid(coor[0], coor[1]).getStyleClass().add("highlighted");
+            Main.loadNewScene(stage, Main.SCENES[1], "Game Over").<EndGameController>getController()
+                    .setGrat(message + " Your score is " + game.getPlayerScore());
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
         }
-    }
-
-    public synchronized void hideHelpMarkers() {
-        LOGGER.debug("Hiding help markers");
-        if (hightlightedCoors.equals("")) {
-            return;
-        }
-
-        Integer[][] coordinates = LevelManager.processCoordinateString(hightlightedCoors);
-
-        for (Integer[] coor : coordinates) {
-            getFromGrid(coor[0], coor[1]).getStyleClass().removeAll("highlighted");
-        }
-
-        hightlightedCoors = "";
-    }
-
-    public synchronized void setScore(long score) {
-        scoreLabel.setText(Long.toString(score));
-    }
-
-    public synchronized void setMessage(String message) {
-        levelMessage.setText(message);
-    }
-
-    public synchronized void decreaseAvailableSteps() {
-        levelSteps.setText(Integer.toString(Integer.parseInt(levelSteps.getText()) - 1));
-    }
-
-    public synchronized void clearMessage() {
-        levelMessage.setText("");
     }
 
     /**
-     * Creates a number of n*n new columns and rows for the main grid of the
-     * {@code Scene}, where n is the size of the given {@code Level}'s board.
+     * Creates a number of n*n new columns and rows for the main grid of the {@code Scene}, where n
+     * is the size of the given {@code Level}'s board.
      *
-     * @param l the {@code Level} instance from which we get the board size.
+     * @param level the {@code Level} instance from which we get the board size.
      */
-    public void setMainGridDimensions(Level l) {
-        List<ColumnConstraints> cols = new ArrayList<>();
-        List<RowConstraints> rows = new ArrayList<>();
-
-        for (int i = 0; i < l.getBoardSize(); i++) {
-            for (int j = 0; j < l.getBoardSize(); j++) {
-                cols.add(new ColumnConstraints());
+    public void setMainGridDimensions(Level level) {
+        for (int i = 0; i < level.getBoardSize(); i++) {
+            for (int j = 0; j < level.getBoardSize(); j++) {
+                mainGrid.getColumnConstraints().add(new ColumnConstraints());
             }
-            rows.add(new RowConstraints());
+            mainGrid.getRowConstraints().add(new RowConstraints());
         }
-
-        mainGrid.getColumnConstraints().addAll(cols);
-        mainGrid.getRowConstraints().addAll(rows);
+    }
+    
+    private Node getNode(int i, int j) {
+        return mainGrid.getChildren().get(i * game.getCurrentLevel().getBoardSize() + j);
     }
 
-    private void enableOnClicks() {
-        mainGrid.getChildren().stream()
-                .forEach(b -> b.setOnMouseClicked(e -> updateSelectedCandies(e)));
+    private void enableButtonClicks() {
+        mainGrid.getChildren().stream().forEach(b -> b.setOnMouseClicked(e -> onCandySelect(e)));
     }
 
-    private void disableOnClicks() {
-        mainGrid.getChildren().stream()
-                .forEach(b -> b.setOnMouseClicked(null));
+    private void disableButtonClicks() {
+        mainGrid.getChildren().stream().forEach(b -> b.setOnMouseClicked(null));
     }
 
-    private void updateSelectedCandies(MouseEvent e) {
+    private void onCandySelect(MouseEvent e) {
         Button b = (Button) e.getSource();
 
         String newSelect = String.format("%s,%s",
@@ -150,14 +138,14 @@ public class GameSceneController implements Initializable {
                 Integer.toString(GridPane.getColumnIndex(b))
         );
 
-        for (int c = 0; c < 2; c++) {
-            if (selectedCandies[c] == null) {
-                selectedCandies[c] = newSelect;
+        for (int i = 0; i < 2; i++) {
+            if (selectedCandies[i] == null) {
+                selectedCandies[i] = newSelect;
                 b.getStyleClass().add("selected");
                 break;
             }
-            if (selectedCandies[c].equals(newSelect)) {
-                selectedCandies[c] = null;
+            if (selectedCandies[i].equals(newSelect)) {
+                selectedCandies[i] = null;
                 b.getStyleClass().removeAll("selected");
                 break;
             }
@@ -165,47 +153,45 @@ public class GameSceneController implements Initializable {
 
         LOGGER.trace("Selected candies: {}", Arrays.toString(selectedCandies));
 
-        swapSelectedCandies(isSwapReady());
+        swapSelectedCandies(selectedCandies[0] != null && selectedCandies[1] != null);
     }
 
     private void eraseSelectedCandies(Integer[][] coors) {
-        getFromGrid(coors[0][0], coors[0][1])
-                .getStyleClass()
-                .removeAll("selected");
-        getFromGrid(coors[1][0], coors[1][1])
-                .getStyleClass()
-                .removeAll("selected");
+        getNode(coors[0][0], coors[0][1]).getStyleClass().removeAll("selected");
+        getNode(coors[1][0], coors[1][1]).getStyleClass().removeAll("selected");
 
         selectedCandies[0] = null;
         selectedCandies[1] = null;
     }
 
     private void swapSelectedCandies(boolean ready) {
+        disableButtonClicks();
         if (ready) {
-            clearMessage();
-            disableOnClicks();
-
-            Integer[][] coors = LevelManager.processCoordinateString(selectedCandies[0] + ";" + selectedCandies[1]);
+            levelMessage.setText("");
+            
+            String coordinate = selectedCandies[0] + ";" + selectedCandies[1];
+            Integer[][] coors = LevelManager.createCoordinates(coordinate);
+            
             game.getCurrentLevel().swap(coors);
-            renderCurrentLevel(game.getCurrentLevel().getBoardState());
+            renderBoardState(game.getCurrentLevel().getBoardState());
 
-            List<String> boardStates = SimpleLevelManager.getInstance().processWithState(game.getCurrentLevel());
+            List<String> boardStates = SimpleLevelManager.getInstance()
+                    .processWithState(game.getCurrentLevel());
 
-            long[] result = Arrays.stream(boardStates.get(0)
-                    .split(","))
-                    .mapToLong(Long::parseLong).toArray();
+            long[] result = Arrays.stream(boardStates.get(0).split(",")).mapToLong(Long::parseLong)
+                    .toArray();
+
             boardStates.remove(0);
-
             processChanges(coors, result, boardStates);
         }
+        enableButtonClicks();
     }
 
     private void processChanges(Integer[][] coors, long[] result, List<String> boardStates) {
         LOGGER.info("Cancelling help task ...");
-        helpTaskThread.interrupt();
 
-        final long iterations = result[0];
-        final long add = result[1];
+        long iterations = result[0];
+        long add = result[1];
 
         if (iterations == CandyCrushGame.MAX_ITERATION) {
             LOGGER.info("Maximum iterations, reseting level ...");
@@ -214,103 +200,91 @@ public class GameSceneController implements Initializable {
         }
 
         if (iterations == 0) {
-            boardStates.add(game.getCurrentLevel()
-                    .getBoardState());
+            boardStates.add(game.getCurrentLevel().getBoardState());
             game.getCurrentLevel().swap(coors);
-            boardStates.add(game.getCurrentLevel()
-                    .getBoardState());
+            boardStates.add(game.getCurrentLevel().getBoardState());
         }
 
         game.addToScore(add);
 
         startPopTask(boardStates, add);
-
         eraseSelectedCandies(coors);
-        enableOnClicks();
     }
 
     private void startPopTask(List<String> boardStates, final long add) {
         Task<Integer> popTask = new Task<Integer>() {
             @Override
             protected Integer call() {
-                int stateIndex = 0;
-
-                while (stateIndex < boardStates.size()) {
-                    renderCurrentLevel(boardStates.get(stateIndex++));
-                    try {
-                        Thread.sleep(450);
-                    } catch (InterruptedException ex) {
-                        LOGGER.error(ex.getMessage());
-                    }
-                }
-                return stateIndex;
+                return onPapTaskCalled(boardStates);
             }
         };
-        popTask.setOnSucceeded(e -> {
-            if (add >= 500) {
-                setMessage(Level.getMessage());
-            }
+        popTask.setOnSucceeded(e -> onPopTaskSucceeded(add));
 
-            setScore(game.getPlayerScore());
-
-            if (add != 0) {
-                decreaseAvailableSteps();
-            }
-
-            if (Integer.parseInt(scoreLabel.getText()) >= game.getCurrentLevel().getScoreToComplete()) {
-                endLevel(true);
-            }
-
-            hideHelpMarkers();
-
-            LOGGER.info("Restarting Help Task");
-            startHelpTask();
-
-            if (levelSteps.getText().equals("0")) {
-                endLevel(false);
-            }
-        });
-
-        popTaskThread = new Thread(popTask);
-        popTaskThread.setName("Pop Task Thread");
-        popTaskThread.setDaemon(true);
-
-        popTaskThread.start();
+        popThread = new Thread(popTask);
+        popThread.start();
     }
 
-    private void startHelpTask() {
-        Task<Integer> helpTask = new Task<Integer>() {
+    private Integer onPapTaskCalled(List<String> boardStates) {
+        int stateIndex = 0;
+
+        while (stateIndex < boardStates.size()) {
+            renderBoardState(boardStates.get(stateIndex++));
+            try {
+                Thread.sleep(POP_INTERVAL);
+            } catch (InterruptedException ex) {
+                LOGGER.error(ex.getMessage());
+            }
+        }
+        return stateIndex;
+    }
+    
+    private void onPopTaskSucceeded(final long add) {
+        boolean isMaxScore = game.getPlayerScore() >= game.getCurrentLevel().getScoreToComplete();
+        boolean isZeroSteps = game.getCurrentLevel().getAvailableSteps() == 0;
+
+        scoreLabel.setText(game.getPlayerScore() + "");
+
+        LOGGER.debug("Hiding help markers");
+        hideSuggestionMarkers();
+
+        if (add >= 500) {
+            levelMessage.setText(Level.getMessage());
+        }
+
+        if (add != 0) {
+            levelSteps.setText("" + (Integer.parseInt(levelSteps.getText()) - 1));
+        }
+
+        if (isMaxScore || isZeroSteps) {
+            endLevel();
+        }
+    }
+
+    private void startSuggestionTask() {
+        suggestionTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
-            protected Integer call() {
-                LOGGER.trace("Help Task called");
-                try {
-                    Thread.sleep(20000);
-                } catch (InterruptedException ex) {
-                    LOGGER.info("Interrupted sleep {}", this.getState().toString());
-                    hideHelpMarkers();
-                }
-                return 0;
+            public void run() {
+                LOGGER.debug("Highlighted coordinates: {}", suggestedArea);
+                showSuggestionMarkers();
             }
-        };
-        helpTask.setOnSucceeded(e -> {
-            LOGGER.debug("Highlighted coordinates: {}", hightlightedCoors);
-            showHelpMarkers();
-        });
+        }, HELP_INTERVAL, HELP_INTERVAL);
+    }
+    
+    public void showSuggestionMarkers() {
+        LOGGER.debug("Showing help markers");
+        suggestedArea = SimpleLevelManager.getInstance().getAvailableMoves(game.getCurrentLevel());
 
-        helpTaskThread = new Thread(helpTask);
-        helpTaskThread.setName("Help Task Thread");
-        helpTaskThread.setDaemon(true);
-
-        helpTaskThread.start();
+        for (Integer[] coor : LevelManager.createCoordinates(suggestedArea)) {
+            getNode(coor[0], coor[1]).getStyleClass().add("highlighted");
+        }
     }
 
-    private boolean isSwapReady() {
-        return selectedCandies[0] != null && selectedCandies[1] != null;
-    }
+    public void hideSuggestionMarkers() {
+        LOGGER.debug("Hiding help markers");
 
-    private Node getFromGrid(int i, int j) {
-        return mainGrid.getChildren()
-                .get(i * game.getCurrentLevel().getBoardSize() + j);
+        for (Integer[] coor : LevelManager.createCoordinates(suggestedArea)) {
+            getNode(coor[0], coor[1]).getStyleClass().removeAll("highlighted");
+        }
     }
 
     private void firstRender(String boardState) {
@@ -321,9 +295,6 @@ public class GameSceneController implements Initializable {
                 String color = Character.toString(state[i].charAt(j));
 
                 Button b = new Button();
-
-                b.setPrefWidth(30);
-                b.setPrefHeight(30);
 
                 if (!color.equals("x")) {
                     b.setStyle("-fx-background-image:" + Main.getCandyImageURL(color));
@@ -337,43 +308,17 @@ public class GameSceneController implements Initializable {
         }
     }
 
-    private void renderCurrentLevel(String boardState) {
+    public void renderBoardState(String boardState) {
         String[] state = boardState.split(";");
-        int boardSize = state.length;
 
-        for (int i = 0; i < boardSize; i++) {
+        for (int i = 0; i < state.length; i++) {
             for (int j = 0; j < state[i].length(); j++) {
                 String color = Character.toString(state[i].charAt(j));
 
                 if (!color.equals("x")) {
-                    mainGrid.getChildren()
-                            .get(i * boardSize + j)
-                            .setStyle("-fx-background-image: " + Main.getCandyImageURL(color));
+                    getNode(i, j).setStyle("-fx-background-image: " + Main.getCandyImageURL(color));
                 }
             }
-        }
-    }
-
-    private void endLevel(boolean won) {
-        Stage stage = (Stage) mainGrid.getScene().getWindow();
-        try {
-            if (won) {
-                LOGGER.warn("GG");
-
-                Main
-                    .loadNewScene(stage, Main.SCENES[1], "Game Over")
-                    .<EndGameController>getController()
-                    .setGrat("Congratulations! Your score is " + game.getPlayerScore());
-
-            } else {
-                LOGGER.warn("STEPS 0");
-                Main
-                    .loadNewScene(stage, Main.SCENES[1], "Game Over")
-                    .<EndGameController>getController()
-                    .setGrat("There are no more steps! Your score was " + game.getPlayerScore());
-            }
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
         }
     }
 }

@@ -115,7 +115,7 @@ public class SimpleLevelManager implements LevelManager {
      * @return a string representing the coordinates of a box in which a move is
      * possible
      */
-    public String areThereAvailableMoves(Level level) {
+    public String getAvailableMoves(Level level) {
         String possibleCoordinates = "";
 
         LOGGER.debug("Horizontal processing..");
