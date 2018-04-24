@@ -2,14 +2,12 @@ package jordan.szalontai.unicrush;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
-import lombok.Getter;
 
 /**
  * Class representing a level of a game.
  *
  * @author Szalontai Jordán
  */
-@Getter
 public final class Level implements Transposable {
 
     /**
@@ -182,6 +180,44 @@ public final class Level implements Transposable {
         return MESSAGES[(int) (Math.random() * MESSAGES.length)];
     }
 
+    public static String[] getMESSAGES() {
+        return MESSAGES;
+    }
+
+    public int getBoardSize() {
+        return boardSize;
+    }
+
+    public int getScoreToComplete() {
+        return scoreToComplete;
+    }
+
+    public LevelType getType() {
+        return type;
+    }
+
+    public String getInitialState() {
+        return initialState;
+    }
+
+    public Integer[][] getWalls() {
+        return walls;
+    }
+
+    public Candy[][] getBoard() {
+        return board;
+    }
+
+    public int getAvailableSteps() {
+        return availableSteps;
+    }
+
+    public boolean isTransposed() {
+        return transposed;
+    }
+
+    
+    
     /**
      * Static class for the level that follows the builder pattern.
      */

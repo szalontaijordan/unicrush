@@ -192,30 +192,6 @@ public class LevelManagerTest {
         // TODO
     }
 
-    /**
-     * Test of resetLevel method, of class SimpleLevelManager.getInstance().
-     */
-    @Test
-    public void testResetLevel() {
-        System.out.println("-- -- Testing method: resetLevel");
-        
-        String initialState;
-        String currentState;
-        
-        initialState = level.getBoardState();
-        
-        level.set(1, 1, new Candy(Candy.State.BLUE));
-        level.set(1, 2, new Candy(Candy.State.BLUE));
-        level.set(1, 3, new Candy(Candy.State.BLUE));
-        
-        SimpleLevelManager.getInstance().process(level);
-        LevelManager.reset(level);
-        
-        currentState = level.getBoardState();
-        
-        Assert.assertEquals(initialState, currentState);
-    }
-    
     // TODO other public methods
 
 }
