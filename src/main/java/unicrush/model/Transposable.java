@@ -1,4 +1,4 @@
-package jordan.szalontai.unicrush;
+package unicrush.model;
 
 /**
  * Interface for an object that can be transposed.

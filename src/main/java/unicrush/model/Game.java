@@ -1,4 +1,4 @@
-package jordan.szalontai.unicrush;
+package unicrush.model;
 
 /**
  * Interface describing the basic behaviors of a {@code Game}.

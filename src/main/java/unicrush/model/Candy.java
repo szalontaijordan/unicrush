@@ -1,4 +1,4 @@
-package jordan.szalontai.unicrush;
+package unicrush.model;
 
 import java.util.Arrays;
 

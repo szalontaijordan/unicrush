@@ -1,4 +1,4 @@
-package jordan.szalontai.unicrush;
+package unicrush.model;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -20,10 +20,20 @@ public final class Level implements Transposable {
         "Tasty"
     };
 
+    /**
+     * Enum for the level types.
+     *
+     * @author Szalontai Jordán
+     */
+    public enum Type {
+
+        STANDARD, JELLY, INGREDIENT
+    }
+
     private final int boardSize;
     private final int scoreToComplete;
 
-    private final LevelType type;
+    private final Type type;
     private final String initialState;
     private final Integer[][] walls;
     private final Candy[][] board;
@@ -36,10 +46,8 @@ public final class Level implements Transposable {
      *
      * @param scoreToComplete the score required to complete the level
      * @param steps the maximum steps that can be used on this level
-     * @param boardSize the dimensions of the board, a {@code Level}'s board is
-     * always quadratic
-     * @param walls the template {@code String} representing the coordinates of
-     * the walls
+     * @param boardSize the dimensions of the board, a {@code Level}'s board is always quadratic
+     * @param walls the template {@code String} representing the coordinates of the walls
      */
     private Level(Builder builder) {
         this.boardSize = builder.boardSize;
@@ -94,11 +102,10 @@ public final class Level implements Transposable {
     }
 
     /**
-     * Swaps two {@code Candy} instances on the board, if a given statement is
-     * true.
+     * Swaps two {@code Candy} instances on the board, if a given statement is true.
      *
-     * @param coors an array representing the coordinates of the {@code Candy}
-     * instances in the board
+     * @param coors an array representing the coordinates of the {@code Candy} instances in the
+     * board
      * @return {@code true} if swap was successful, {@code false} if not
      */
     public boolean swap(Integer[][] coors) {
@@ -107,11 +114,11 @@ public final class Level implements Transposable {
         if (!success) {
             return false;
         }
-        
+
         if (board[coors[0][0]][coors[0][1]] == null || board[coors[1][0]][coors[1][1]] == null) {
             return false;
         }
-        
+
         Candy tmp = board[coors[0][0]][coors[0][1]];
         board[coors[0][0]][coors[0][1]] = board[coors[1][0]][coors[1][1]];
         board[coors[1][0]][coors[1][1]] = tmp;
@@ -158,8 +165,7 @@ public final class Level implements Transposable {
      *     [x, B, B, x]
      * </pre>
      *
-     * @return the {@code String} representation of {@code this} instance as the
-     * example shows above
+     * @return the {@code String} representation of {@code this} instance as the example shows above
      */
     @Override
     public String toString() {
@@ -180,6 +186,32 @@ public final class Level implements Transposable {
         return MESSAGES[(int) (Math.random() * MESSAGES.length)];
     }
 
+    /**
+     * Returns a 2D-array that represents coordinates.
+     *
+     * <p>
+     * The idea of this, is that in the template we list some coordinates separated, and we parse
+     * this template string.</p>
+     * <p>
+     * For example {@code Level.Builder.createCoordinates("1,2;3,4;5,6");} returns
+     * </p>
+     *
+     * <pre>
+     *     new Integer[][]{ { 1, 2 }, { 3, 4 }, { 5, 6 } }
+     * </pre>
+     *
+     *
+     * @param template a string that represents coordinates like in the example above
+     * @return a 2D-array that represents coordinates
+     */
+    public static Integer[][] createCoordinates(String template) {
+        return Arrays.stream(template.split(";"))
+                .map(coor -> Arrays.stream(coor.split(","))
+                .map(Integer::parseInt)
+                .toArray(Integer[]::new))
+                .toArray(Integer[][]::new);
+    }
+
     public static String[] getMESSAGES() {
         return MESSAGES;
     }
@@ -192,7 +224,7 @@ public final class Level implements Transposable {
         return scoreToComplete;
     }
 
-    public LevelType getType() {
+    public Type getType() {
         return type;
     }
 
@@ -216,14 +248,12 @@ public final class Level implements Transposable {
         return transposed;
     }
 
-    
-    
     /**
      * Static class for the level that follows the builder pattern.
      */
     public static class Builder {
 
-        private final LevelType type;
+        private final Type type;
         private final int boardSize;
 
         private int scoreToComplete;
@@ -235,15 +265,15 @@ public final class Level implements Transposable {
         private boolean transposed;
 
         /**
-         * Constructs a builder for a level, that will represent some pieces of
-         * essential information about the level.
+         * Constructs a builder for a level, that will represent some pieces of essential
+         * information about the level.
          *
          * @param type the type of the level
          * @param boardSize the size of the level (all levels are quadratic)
-         * @throws IllegalArgumentException if the {@code type} is {@code null}
-         * or the {@code boardSize} is less than 2
+         * @throws IllegalArgumentException if the {@code type} is {@code null} or the
+         * {@code boardSize} is less than 2
          */
-        public Builder(LevelType type, int boardSize) throws IllegalArgumentException {
+        public Builder(Type type, int boardSize) throws IllegalArgumentException {
             if (type == null || boardSize < 2) {
                 throw new IllegalArgumentException("Invalid level type, or too small board!");
             }
@@ -253,8 +283,7 @@ public final class Level implements Transposable {
         }
 
         /**
-         * Constructs a builder instance, which fields will be based on an
-         * existing level object.
+         * Constructs a builder instance, which fields will be based on an existing level object.
          *
          * @param src the level object as a starting point
          */
@@ -294,11 +323,11 @@ public final class Level implements Transposable {
         /**
          * Sets the walls array.
          *
-         * @param template the template string that represents coordinates
+         * @param walls the walls array
          * @return {@code this} so we can chain builder methods
          */
-        public Builder putWalls(final String template) {
-            this.walls = LevelManager.createCoordinates(template);
+        public Builder putWalls(final Integer[][] walls) {
+            this.walls = walls.clone();
             return this;
         }
 
@@ -313,11 +342,9 @@ public final class Level implements Transposable {
         }
 
         /**
-         * Sets the board 2D-array with {@code Candy} instances specified in a
-         * template string.
+         * Sets the board 2D-array with {@code Candy} instances specified in a template string.
          *
-         * @param template the template string representing information about
-         * the new board
+         * @param template the template string representing information about the new board
          * @return {@code this} so we can chain builder methods
          */
         public Builder fillBoard(String template) {
@@ -329,8 +356,8 @@ public final class Level implements Transposable {
          * Builds a new {@code Level} object.
          *
          * <p>
-         * This method also sets the {@code initialState} for the level, so we
-         * can refer to it in the future.</p>
+         * This method also sets the {@code initialState} for the level, so we can refer to it in
+         * the future.</p>
          *
          * @return a {@code Level} object with the builded fields
          */

@@ -1,4 +1,4 @@
-package jordan.szalontai.unicrush;
+package unicrush.controller;
 
 import java.io.IOException;
 import javafx.application.Application;
@@ -17,6 +17,9 @@ import org.slf4j.LoggerFactory;
 public class Main extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    
+    public static final int HELP_INTERVAL = 30000;
+    public static final int POP_INTERVAL = 450;
 
     /**
      * The names of the existing FXML files.

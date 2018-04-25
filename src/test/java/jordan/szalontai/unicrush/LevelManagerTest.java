@@ -1,6 +1,8 @@
 package jordan.szalontai.unicrush;
 
-import java.util.ArrayList;
+import unicrush.controller.SimpleLevelManager;
+import unicrush.model.Level;
+import unicrush.model.Candy;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -55,10 +57,10 @@ public class LevelManagerTest {
     @Before
     public void setUp() {
         try {
-            level = new Level.Builder(LevelType.STANDARD, 8)
+            level = new Level.Builder(Level.Type.STANDARD, 8)
                 .withCompleteScore(500)
                 .withAvailableSteps(20)
-                .putWalls("0,0;0,4;4,0;4,4")
+                .putWalls(Level.createCoordinates("0,0;0,4;4,0;4,4"))
                 .fillBoard()
                 .build();
         } catch (Exception e) {

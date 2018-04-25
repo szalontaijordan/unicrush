@@ -1,4 +1,4 @@
-package jordan.szalontai.unicrush;
+package unicrush.controller;
 
 import java.net.URL;
 import java.util.ResourceBundle;

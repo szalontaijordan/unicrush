@@ -1,7 +1,9 @@
-package jordan.szalontai.unicrush;
+package unicrush.controller;
 
+import unicrush.model.Level;
+import unicrush.model.CandyCrushGame;
+import unicrush.model.Candy;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -47,13 +49,13 @@ public class SimpleLevelManager implements LevelManager {
         }
     }
 
-    private void mark(Level level, int row, Integer[] v) {
-        if (v[0] >= 3) {
-            for (int i = 0; i < v[0]; i++) {
-                level.get(row, v[1] + i).setMarkedForPop(true);
+    private void mark(Level level, int row, Integer[] columns) {
+        if (columns[0] >= 3) {
+            for (int i = 0; i < columns[0]; i++) {
+                level.get(row, columns[1] + i).setMarkedForPop(true);
             }
         }
-        v[0]++;
+        columns[0]++;
     }
 
     private String inlineMatch(String top3, String row, int i, Level level) {
@@ -84,7 +86,6 @@ public class SimpleLevelManager implements LevelManager {
         };
 
         for (String regex : regexes) {
-            LOGGER.debug("{}", regex);
             if ((top3 + bot3).matches(regex) || (bot3 + top3).matches(regex)) {
                 LOGGER.debug("Parsing:\n{}\n{}", top3, bot3);
 
@@ -163,8 +164,6 @@ public class SimpleLevelManager implements LevelManager {
     public String lookForMoves(Level level) {
         String coor = "";
         String[] levelStates = level.getBoardState().split(";");
-
-        LOGGER.debug("{}", Arrays.toString(levelStates));
 
         for (int i = 0; i < levelStates.length - 1; i++) {
             for (int j = 0; j < levelStates[i].length() - 3; j++) {

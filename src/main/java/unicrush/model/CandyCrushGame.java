@@ -1,9 +1,10 @@
-package jordan.szalontai.unicrush;
+package unicrush.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * Class representing the game like Candy Crush with a list of levels you can
@@ -60,27 +61,19 @@ public class CandyCrushGame implements Game {
     public void startLevel(Level level) {
         LOGGER.debug("Reseting player score");
         this.playerScore = 0;
-        
-        LOGGER.info("Preprocessing current level ...");
-        int iterations = SimpleLevelManager.getInstance().process(level);
-
-        if (iterations == MAX_ITERATION) {
-            LOGGER.info("Maximum iteration, reseting level ...");
-            LevelManager.reset(level);
-            SimpleLevelManager.getInstance().process(level);
-        }
-
-        System.out.println("Start:");
+        this.currentLevelIndex = levels.indexOf(level);
         LOGGER.info("Started level:\n{}", level.toString());
     }
 
     @Override
     public void initLevels() throws Exception {
         // creating level, we didn't set up any DB connection yet
-        Level l = new Level.Builder(LevelType.STANDARD, 8)
+        String template = "0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7";
+                
+        Level l = new Level.Builder(Level.Type.STANDARD, 8)
                 .withCompleteScore(500)
                 .withAvailableSteps(20)
-                .putWalls("0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7")
+                .putWalls(Level.createCoordinates(template))
                 .fillBoard()
                 .build();
 

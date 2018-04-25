@@ -1,5 +1,6 @@
 package jordan.szalontai.unicrush;
 
+import unicrush.model.Candy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
