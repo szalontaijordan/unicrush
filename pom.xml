@@ -48,11 +48,12 @@
         <url>https://github.com/szalontaijordan/unicrush</url>
     </scm>
     -->
-    <!-- TODO
     <licenses>
-        <license></license>
+        <license>
+            <name>GNU General Public License (GPL) version 3.0</name>
+            <url>https://www.gnu.org/licenses/gpl-3.0.en.html</url>
+        </license>
     </licenses>
-    -->
     <profiles>
         <profile>
             <id>jdk7</id>
@@ -174,6 +175,12 @@
                 </executions>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
     </build>
     <reporting>
         <plugins>
@@ -200,14 +207,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0</version>
-                <reportSets>
-                    <reportSet>
-                        <reports>
-                            <report>checkstyle</report>
-                        </reports>
-                    </reportSet>
-                </reportSets>
+                <version>3.0.0</version>
+                <configuration>
+                    <configLocation>${basedir}/config/checkstyle.xml</configLocation>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>
