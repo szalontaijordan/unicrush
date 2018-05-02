@@ -1,4 +1,4 @@
-package unicrush.controller;
+package unicrush.model;
 
 /*-
  * #%L
@@ -21,7 +21,6 @@ package unicrush.controller;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,18 +34,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import unicrush.model.Game;
-
-import unicrush.model.Level;
+import unicrush.controller.Main;
 
 /**
  * Class for keeping the grid and the level consistent.
  *
  * @author szalontaijordan
  */
-public class GameGridManager implements GridManager {
+public final class GridManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GameGridManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GridManager.class);
 
     private Thread popThread;
     private Timer suggestionTimer;
@@ -56,7 +53,13 @@ public class GameGridManager implements GridManager {
 
     private String suggestedArea;
 
-    public GameGridManager(GridPane grid, Game game) {
+    /**
+     * Constructs a manager that helps keeping consistency between a game and a grid.
+     *
+     * @param grid the grid with {@code Button} nodes
+     * @param game the game with the level and the information about the player
+     */
+    public GridManager(GridPane grid, Game game) {
         this.grid = grid;
         this.game = game;
 
@@ -67,32 +70,46 @@ public class GameGridManager implements GridManager {
         popThread.setDaemon(true);
     }
 
-    public Task<Integer> startPopTask(List<String> boardStates, final long add) {
+    /**
+     * Starts a JavaFX {@code Task} that renders all board states to the grid with a small delay.
+     *
+     * <p>
+     * When the task is finished it hides the previous suggestion if there was any</p>
+     * 
+     * @param boardStates the list with the given board state strings
+     * @return the {@code Task} that started
+     * 
+     * @see #renderAll(java.util.List)
+     * @see #hideSuggestionMarkers() 
+     */
+    public Task<Integer> startPopTask(List<String> boardStates) {
         Task<Integer> popTask = new Task<Integer>() {
             @Override
             protected Integer call() {
-                return onPopTaskCalled(boardStates);
+                return renderAll(boardStates);
             }
         };
-        popTask.setOnSucceeded(e -> onPopTaskSucceeded());
         popThread = new Thread(popTask);
         popThread.start();
         return popTask;
     }
 
+    /**
+     * Starts a {@code Timer} that will look for available moves, when found the first one,
+     * highlights the area in which a move is possible.
+     */
     public void startSuggestionTask() {
         suggestionTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 LOGGER.debug("Highlighted coordinates: {}", suggestedArea);
-                suggestedArea = SimpleLevelManager.getInstance()
-                        .getAvailableMoves(game.getCurrentLevel());
+                suggestedArea = game.getCurrentLevel().getManager().getAvailableMoves();
                 showSuggestionMarkers(Level.createCoordinates(suggestedArea));
             }
         }, Main.HELP_INTERVAL, Main.HELP_INTERVAL);
     }
 
-    private Integer onPopTaskCalled(List<String> boardStates) {
+    private Integer renderAll(List<String> boardStates) {
         int stateIndex = 0;
 
         while (stateIndex < boardStates.size()) {
@@ -106,14 +123,6 @@ public class GameGridManager implements GridManager {
         return stateIndex;
     }
     
-    private void onPopTaskSucceeded() {
-        if (suggestedArea.equals("") || suggestedArea == null) {
-            return;
-        }
-        LOGGER.debug("Hiding help markers");
-        hideSuggestionMarkers(Level.createCoordinates(suggestedArea));
-    }
-    
     public void setMainGridDimensions() {
         setMainGridDimensions(game.getCurrentLevel());
     }
@@ -122,7 +131,20 @@ public class GameGridManager implements GridManager {
         firstRender(game.getCurrentLevel().getBoardState());
     }
     
-    @Override
+    public void hideSuggestionMarkers() {
+        if (suggestedArea.equals("") || suggestedArea == null) {
+            return;
+        }
+        LOGGER.debug("Hiding help markers");
+        hideSuggestionMarkers(Level.createCoordinates(suggestedArea));
+    }
+
+    /**
+     * Creates a number of n*n new columns and rows for the main grid of the {@code Scene}, where n
+     * is the size of the given {@code Level}'s board.
+     *
+     * @param level the {@code Level} instance from which we get the board size.
+     */
     public void setMainGridDimensions(Level level) {
         for (int i = 0; i < level.getBoardSize(); i++) {
             for (int j = 0; j < level.getBoardSize(); j++) {
@@ -131,8 +153,7 @@ public class GameGridManager implements GridManager {
             grid.getRowConstraints().add(new RowConstraints());
         }
     }
-
-    @Override
+    
     public void firstRender(String boardState) {
         String[] state = boardState.split(";");
 
@@ -153,8 +174,7 @@ public class GameGridManager implements GridManager {
             }
         }
     }
-
-    @Override
+    
     public void renderBoardState(String boardState) {
         String[] state = boardState.split(";");
 
@@ -168,20 +188,29 @@ public class GameGridManager implements GridManager {
             }
         }
     }
-
-    @Override
+    
     public void enableButtonClicks(EventHandler<? super MouseEvent> value) {
         grid.getChildren().stream().forEach(b -> b.setOnMouseClicked(value));
     }
 
-    @Override
     public void disableButtonClicks() {
         grid.getChildren().stream().forEach(b -> b.setOnMouseClicked(null));
     }
-
-    @Override
+    
     public Node getNode(int i, int j) {
         return grid.getChildren().get(i * game.getCurrentLevel().getBoardSize() + j);
+    }
+
+    public void showSuggestionMarkers(Integer[][] coordinates) {
+        for (Integer[] coor : coordinates) {
+            getNode(coor[0], coor[1]).getStyleClass().add("highlighted");
+        }
+    }
+
+    public void hideSuggestionMarkers(Integer[][] coordinates) {
+        for (Integer[] coor : coordinates) {
+            getNode(coor[0], coor[1]).getStyleClass().removeAll("highlighted");
+        }
     }
     
     public Thread getPopThread() {

@@ -21,7 +21,8 @@ package unicrush.controller;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import unicrush.model.LevelManager;
+import unicrush.model.GridManager;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
@@ -62,10 +63,9 @@ public class GameSceneController implements Initializable {
     private Label levelSteps;
 
     private Game game;
-    private LevelManager levelManager;
-    private GameGridManager gridManager;
+    private GridManager gridManager;
 
-    // TODO put this in the GameGridManager
+    // TODO put this in the GridManager
     private String[] selectedCandies;
 
     @Override
@@ -76,11 +76,10 @@ public class GameSceneController implements Initializable {
             game = new CandyCrushGame();
             game.initLevels();
             game.startCurrentLevel();
-            levelManager = SimpleLevelManager.getInstance();
-            
-            preprocessLevelWith(levelManager);
 
-            gridManager = new GameGridManager(mainGrid, game);
+            preprocessLevelWith(game.getCurrentLevel().getManager());
+
+            gridManager = new GridManager(mainGrid, game);
             gridManager.setMainGridDimensions();
             gridManager.firstRender();
             gridManager.enableButtonClicks(event -> onCandySelect(event));
@@ -94,12 +93,12 @@ public class GameSceneController implements Initializable {
 
     private void preprocessLevelWith(LevelManager levelManager) {
         LOGGER.info("Preprocessing current level ...");
-        int iterations = levelManager.process(game.getCurrentLevel());
-        
+        int iterations = game.getCurrentLevel().getManager().process();
+
         if (iterations == CandyCrushGame.MAX_ITERATION) {
             LOGGER.info("Maximum iteration, reseting level ...");
-            LevelManager.reset(game.getCurrentLevel());
-            levelManager.process(game.getCurrentLevel());
+            game.getCurrentLevel().getManager().reset();
+            game.getCurrentLevel().getManager().process();
         }
     }
 
@@ -116,7 +115,8 @@ public class GameSceneController implements Initializable {
                 message = "There are no more steps!";
             }
 
-            Main.loadNewScene(stage, Main.SCENES[1], "Game Over").<EndGameController>getController()
+            Main.loadNewScene(stage, Main.SCENES[1], "Game Over")
+                    .<EndGameController>getController()
                     .setGrat(message + " Your score is " + game.getPlayerScore());
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
@@ -149,7 +149,7 @@ public class GameSceneController implements Initializable {
         swapSelectedCandies(selectedCandies[0] != null && selectedCandies[1] != null);
     }
 
-    private void swapSelectedCandies(boolean ready) {
+    public void swapSelectedCandies(boolean ready) {
         gridManager.disableButtonClicks();
         if (ready) {
             levelMessage.setText("");
@@ -160,7 +160,7 @@ public class GameSceneController implements Initializable {
             game.getCurrentLevel().swap(coors);
             gridManager.renderBoardState(game.getCurrentLevel().getBoardState());
 
-            List<String> boardStates = levelManager.processWithState(game.getCurrentLevel());
+            List<String> boardStates = game.getCurrentLevel().getManager().processWithState();
 
             int[] result = Arrays.stream(boardStates.get(0).split(",")).mapToInt(Integer::parseInt)
                     .toArray();
@@ -179,7 +179,7 @@ public class GameSceneController implements Initializable {
 
         if (iterations == CandyCrushGame.MAX_ITERATION) {
             LOGGER.info("Maximum iterations, reseting level ...");
-            LevelManager.reset(game.getCurrentLevel());
+            game.getCurrentLevel().getManager().reset();
             boardStates.add(game.getCurrentLevel().getBoardState());
         }
 
@@ -191,14 +191,15 @@ public class GameSceneController implements Initializable {
 
         game.addToScore(add);
 
-        gridManager.startPopTask(boardStates, add);
-        // TODO implement label updates
+        gridManager.startPopTask(boardStates).setOnSucceeded(event -> onPopSuccess(add));
         eraseSelectedCandies(coors);
     }
 
-    public void onPopSuccess(final long add) {
+    private void onPopSuccess(final long add) {
         boolean isMaxScore = game.getPlayerScore() >= game.getCurrentLevel().getScoreToComplete();
         boolean isZeroSteps = game.getCurrentLevel().getAvailableSteps() == 0;
+
+        gridManager.hideSuggestionMarkers();
 
         scoreLabel.setText(game.getPlayerScore() + "");
 

@@ -1,0 +1,347 @@
+package unicrush.model;
+
+/*-
+ * #%L
+ * unicrush
+ * %%
+ * Copyright (C) 2018 Faculty of Informatics
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * Singleton class containing methods that manage the logics of the levels.
+ *
+ * @author Szalontai Jordán
+ */
+public final class LevelManager {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LevelManager.class);
+    
+    private Level level;
+    
+    public LevelManager(Level level) {
+        this.level = level;
+    }
+
+    /**
+     * Iterations processing the level and returning the score.
+     *
+     * <p>
+     * Iterations should consist of popping the matching {@code Candy} instances
+     * and then applying the gravity logic to the {@code Level}'s board.
+     *
+     * <p>
+     * We check how many iterations occurred, so this cannot be an infinite
+     * loop. This method might change the model of the {@code Level} given as a
+     * parameter.</p>
+     *
+     * @return how many iterations occurred
+     */
+    public int process() {
+        int iterations;
+        for (iterations = 0; iterations < CandyCrushGame.MAX_ITERATION; iterations++) {
+            if (popAllMarked()) {
+                applyGravity();
+            } else {
+                break;
+            }
+        }
+        return iterations;
+    }
+
+    /**
+     * Iterations processing the level and returning information in a list.
+     *
+     * <p>
+     * Iterations should consist of popping the matching {@code Candy} instances
+     * and then applying the gravity logic to the {@code Level}'s board.
+     * </p>
+     * <p>
+     * We should check how many iterations occurred, so this cannot be an
+     * infinite loop and in addition we summarize the points that
+     * {@code applyGravity} returns. It is important to be aware of the fact,
+     * that this method might change model of the {@code Level} given as a
+     * parameter AND add the given {@code Level}'s {@code boardState String} to
+     * the returned {@code List<String>}.</p>
+     *
+     * @return a list starting with information about the iteration and the rest
+     * are the board states of each iteration
+     */
+    public List<String> processWithState() {
+        List<String> states = new ArrayList<>();
+        long iterations;
+        long sum = 0;
+
+        for (iterations = 0; iterations < CandyCrushGame.MAX_ITERATION; iterations++) {
+            if (popAllMarked()) {
+                states.add(level.getBoardState());
+                sum += applyGravity();
+                states.add(level.getBoardState());
+            } else {
+                break;
+            }
+        }
+
+        states.add(0, iterations + "," + sum);
+        return states;
+    }
+
+    /**
+     * Resetting the {@code board} based on the original board state.
+     */
+    public void reset() {
+        level = new Level.Builder(level)
+                .fillBoard(level.getInitialState())
+                .build();
+    }
+    
+    /**
+     * Returns a template string containing the coordinates of a box, in which a
+     * move is possible.
+     *
+     * <p>
+     * This method finds a single possible move. More specific, the one
+     * horizontal box, which is the closest to the top of the level.</p>
+     *
+     * @return a string representing the coordinates of a box in which a move is
+     * possible
+     */
+    public String getAvailableMoves() {
+        String possibleCoordinates = "";
+
+        LOGGER.debug("Horizontal processing..");
+        possibleCoordinates = lookForMoves();
+
+        if (possibleCoordinates.length() == 0) {
+            level.transpose();
+
+            LOGGER.debug("Vertical processing..");
+            possibleCoordinates += lookForMoves();
+            level.transpose();
+        }
+
+        return possibleCoordinates;
+    }
+
+    /**
+     * Returns a template string with coordinates of a box area, in which a move
+     * is possible.
+     *
+     * <p>
+     * The first step is that we look for a possible move in a row. For
+     * example</p>
+     * <pre>
+     *   Let a level's toString be equal to
+     *
+     *     [x, B, B, G, x]
+     *     [B, B, G, B, x]
+     *     [x, P, x, x, x]
+     *     [x, x, x, x, x]
+     *     [x, x, x, x, x],
+     *
+     *   in this case the return value is
+     *
+     *     1,0;1,1;1,2;1,3;
+     * </pre>
+     * <p>
+     * If there is none in a row like above, we look for a 3x2 rectangle, in
+     * which we can perform a move.</p>
+     *
+     * @return a string representing a coordinate, we found first with the
+     * algorithm above
+     */
+    public String lookForMoves() {
+        String coor = "";
+        String[] levelStates = level.getBoardState().split(";");
+
+        for (int i = 0; i < levelStates.length - 1; i++) {
+            for (int j = 0; j < levelStates[i].length() - 3; j++) {
+                String top3 = levelStates[i].substring(j, j + 3);
+                String bot3 = levelStates[i + 1].substring(j, j + 3);
+
+                coor = inlineMatch(top3, levelStates[i], i);
+
+                if (coor.length() == 0) {
+                    coor = allMatch(top3, bot3, i, j);
+                }
+
+                if (coor.length() != 0) {
+                    return coor;
+                }
+            }
+        }
+        return coor;
+    }
+
+    /**
+     * Refreshes the {@code Candy.State} of {@code Candy} instances in the
+     * {@code level}'s board that are in a column or row with a length more than
+     * two.
+     *
+     * @return {@code true} if a change happened in the board, {@code false} if
+     * did not
+     */
+    public boolean popAllMarked() {
+        markAllCandies();
+        level.transpose();
+        markAllCandies();
+        level.transpose();
+
+        boolean popHappened = false;
+
+        for (int row = 0; row < level.getBoardSize(); row++) {
+            for (int col = 0; col < level.getBoardSize(); col++) {
+                if (level.get(row, col) != null && level.get(row, col).isMarkedForPop()) {
+                    level.get(row, col).setState(Candy.State.EMPTY);
+                    level.get(row, col).setMarkedForPop(false);
+                    popHappened = true;
+                }
+            }
+        }
+
+        LOGGER.trace("Current level:\n{}", level.toString());
+        return popHappened;
+    }
+
+    /**
+     * All {@code Candy} instances "fall" when there's empty space in their
+     * column.
+     *
+     * @return 60 multiplied by the {@code number of Candy instances} in
+     * {@code Candy.State.EMPTY}, multiplied by the {@code number of blocks}
+     * (one block = three or more {@code Candy} instances in a row or column)
+     */
+    public long applyGravity() {
+        long re = 0;
+
+        for (int i = 0; i < level.getBoardSize(); i++) {
+            List<Candy> candies = new ArrayList<>();
+
+            for (int col = 0; col < level.getBoardSize(); col++) {
+                if (level.get(col, i) != null) {
+                    candies.add(level.get(col, i));
+                }
+            }
+
+            LOGGER.trace("Candies in active column:\n{}", candies.toString());
+            Collections.sort(candies);
+
+            re += candies.stream()
+                    .filter(c -> c.isEmpty())
+                    .count();
+
+            candies.replaceAll(c -> {
+                if (c.isEmpty()) {
+                    return new Candy(Candy.getRandomColorState());
+                }
+                return c;
+            });
+
+            int index = 0;
+            for (int col = 0; col < level.getBoardSize(); col++) {
+                if (level.get(col, i) != null) {
+                    level.set(col, i, candies.get(index++));
+                }
+            }
+        }
+        return re / 3 * re * 60;
+    }
+    
+    private void markAllCandies() {
+        Map<String, Integer[]> candyCountMap = new HashMap<>();
+
+        for (int i = 0; i < level.getBoardSize(); i++) {
+            for (int j = 0; j < level.getBoardSize(); j++) {
+                String curr = level.get(i, j) == null ? "" : level.get(i, j).toString();
+                String next = level.get(i, j + 1) == null ? "" : level.get(i, j + 1).toString();
+
+                if (!curr.equals("") && curr.equals(next)) {
+                    if (candyCountMap.get(curr) == null) {
+                        candyCountMap.put(curr, new Integer[]{2, j});
+                    }
+                    mark(i, candyCountMap.get(curr));
+                } else {
+                    candyCountMap.remove(curr);
+                }
+            }
+            candyCountMap.clear();
+        }
+    }
+
+    private void mark(int row, Integer[] columns) {
+        if (columns[0] >= 3) {
+            for (int i = 0; i < columns[0]; i++) {
+                level.get(row, columns[1] + i).setMarkedForPop(true);
+            }
+        }
+        columns[0]++;
+    }
+
+    private String inlineMatch(String top3, String row, int i) {
+        String coor = "";
+        String reg = "(.*XX.X.*|.*X.XX.*)".replaceAll("X", "" + top3.charAt(0));
+
+        if (row.matches(reg)) {
+            int start = row.indexOf(top3.charAt(0));
+            for (int k = start; k < start + 4; k++) {
+                if (level.isTransposed()) {
+                    coor += k + "," + i + ";";
+                } else {
+                    coor += i + "," + k + ";";
+                }
+            }
+            return coor;
+        }
+        return coor;
+    }
+
+    private String allMatch(String top3, String bot3, int i, int j) {
+        String coor = "";
+        String[] regexes = {
+            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + top3.charAt(0)),
+            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + top3.charAt(0)),
+            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + bot3.charAt(0)),
+            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + bot3.charAt(0))
+        };
+
+        for (String regex : regexes) {
+            if ((top3 + bot3).matches(regex) || (bot3 + top3).matches(regex)) {
+                LOGGER.debug("Parsing:\n{}\n{}", top3, bot3);
+
+                for (int k = j; k < j + 3; k++) {
+                    if (level.isTransposed()) {
+                        coor += k + "," + i + ";";
+                        coor += k + "," + (i + 1) + ";";
+                    } else {
+                        coor += i + "," + k + ";";
+                        coor += (i + 1) + "," + k + ";";
+                    }
+                }
+                return coor;
+            }
+        }
+        return coor;
+    }
+}

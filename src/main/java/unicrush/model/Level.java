@@ -59,6 +59,7 @@ public final class Level implements Transposable {
     private final String initialState;
     private final Integer[][] walls;
     private final Candy[][] board;
+    private final LevelManager manager;
 
     private int availableSteps;
     private boolean transposed;
@@ -80,6 +81,7 @@ public final class Level implements Transposable {
         this.board = builder.board;
         this.availableSteps = builder.availableSteps;
         this.transposed = builder.transposed;
+        this.manager = builder.manager;
     }
 
     private boolean testSwap(Integer[][] coors) {
@@ -258,6 +260,10 @@ public final class Level implements Transposable {
         return walls;
     }
 
+    public LevelManager getManager() {
+        return manager;
+    }
+    
     public Candy[][] getBoard() {
         return board;
     }
@@ -282,6 +288,7 @@ public final class Level implements Transposable {
         private String initialState;
         private Integer[][] walls;
         private Candy[][] board;
+        private LevelManager manager;
 
         private int availableSteps;
         private boolean transposed;
@@ -318,6 +325,7 @@ public final class Level implements Transposable {
             this.board = src.board.clone();
             this.walls = src.walls.clone();
             this.initialState = src.initialState;
+            this.manager = src.manager;
         }
 
         /**
@@ -387,7 +395,13 @@ public final class Level implements Transposable {
             if (this.initialState == null || this.initialState.equals("")) {
                 this.initialState = setupInitialState();
             }
-            return new Level(this);
+            Level buildedLevel = new Level(this);
+            
+            if (this.manager == null) {
+                this.manager = new LevelManager(buildedLevel);
+            }
+            
+            return buildedLevel;
         }
 
         private String setupInitialState() {
