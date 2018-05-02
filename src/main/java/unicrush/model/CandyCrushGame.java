@@ -93,7 +93,7 @@ public class CandyCrushGame implements Game {
         String template = "0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7";
                 
         Level l = new Level.Builder(Level.Type.STANDARD, 8)
-                .withCompleteScore(500)
+                .withCompleteScore(10000)
                 .withAvailableSteps(20)
                 .putWalls(Level.createCoordinates(template))
                 .fillBoard()

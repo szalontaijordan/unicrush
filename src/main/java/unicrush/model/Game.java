@@ -62,8 +62,8 @@ public interface Game {
      *
      * @param level the {@code Level} we'd like to start
      *
-     * @see unicrush.controller.SimpleLevelManager#process
-     * @see unicrush.controller.SimpleLevelManager#reset
+     * @see LevelManager#process
+     * @see LevelManager#reset
      */
     public void startLevel(Level level);
     
