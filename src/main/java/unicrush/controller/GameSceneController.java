@@ -65,14 +65,9 @@ public class GameSceneController implements Initializable {
     private Game game;
     private GridManager gridManager;
 
-    // TODO put this in the GridManager
-    private String[] selectedCandies;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            selectedCandies = new String[2];
-
             game = new CandyCrushGame();
             game.initLevels();
             game.startCurrentLevel();
@@ -123,49 +118,29 @@ public class GameSceneController implements Initializable {
         }
     }
 
-    private void onCandySelect(MouseEvent e) {
+    public void onCandySelect(MouseEvent e) {
         Button b = (Button) e.getSource();
+        gridManager.updateSelectedCandies(GridPane.getRowIndex(b), GridPane.getColumnIndex(b));
 
-        String newSelect = String.format("%s,%s",
-                Integer.toString(GridPane.getRowIndex(b)),
-                Integer.toString(GridPane.getColumnIndex(b))
-        );
+        LOGGER.trace("Selected candies: {}", gridManager.getSelectedCandies());
 
-        for (int i = 0; i < 2; i++) {
-            if (selectedCandies[i] == null) {
-                selectedCandies[i] = newSelect;
-                b.getStyleClass().add("selected");
-                break;
-            }
-            if (selectedCandies[i].equals(newSelect)) {
-                selectedCandies[i] = null;
-                b.getStyleClass().removeAll("selected");
-                break;
-            }
-        }
-
-        LOGGER.trace("Selected candies: {}", Arrays.toString(selectedCandies));
-
-        swapSelectedCandies(selectedCandies[0] != null && selectedCandies[1] != null);
-    }
-
-    public void swapSelectedCandies(boolean ready) {
         gridManager.disableButtonClicks();
-        if (ready) {
+        if (gridManager.isSwapReady()) {
             levelMessage.setText("");
 
-            String coordinate = selectedCandies[0] + ";" + selectedCandies[1];
+            String coordinate = gridManager.getSelectedCandies();
             Integer[][] coors = Level.createCoordinates(coordinate);
 
-            game.getCurrentLevel().swap(coors);
+            game.getCurrentLevel().getManager().swap(coors);
             gridManager.renderBoardState(game.getCurrentLevel().getBoardState());
 
             List<String> boardStates = game.getCurrentLevel().getManager().processWithState();
 
-            int[] result = Arrays.stream(boardStates.get(0).split(",")).mapToInt(Integer::parseInt)
-                    .toArray();
+            int[] result = {
+                game.getCurrentLevel().getManager().getIterations(),
+                game.getCurrentLevel().getManager().getSum()
+            };
 
-            boardStates.remove(0);
             processChanges(coors, result, boardStates);
         }
         gridManager.enableButtonClicks(event -> onCandySelect(event));
@@ -185,14 +160,14 @@ public class GameSceneController implements Initializable {
 
         if (iterations == 0) {
             boardStates.add(game.getCurrentLevel().getBoardState());
-            game.getCurrentLevel().swap(coors);
+            game.getCurrentLevel().getManager().swap(coors);
             boardStates.add(game.getCurrentLevel().getBoardState());
         }
 
         game.addToScore(add);
 
         gridManager.startPopTask(boardStates).setOnSucceeded(event -> onPopSuccess(add));
-        eraseSelectedCandies(coors);
+        gridManager.eraseSelectedCandies(coors);
     }
 
     private void onPopSuccess(final long add) {
@@ -214,13 +189,5 @@ public class GameSceneController implements Initializable {
         if (isMaxScore || isZeroSteps) {
             endLevel();
         }
-    }
-
-    private void eraseSelectedCandies(Integer[][] coors) {
-        gridManager.getNode(coors[0][0], coors[0][1]).getStyleClass().removeAll("selected");
-        gridManager.getNode(coors[1][0], coors[1][1]).getStyleClass().removeAll("selected");
-
-        selectedCandies[0] = null;
-        selectedCandies[1] = null;
     }
 }

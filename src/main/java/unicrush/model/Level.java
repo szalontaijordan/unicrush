@@ -21,7 +21,6 @@ package unicrush.model;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -36,10 +35,7 @@ public final class Level implements Transposable {
      * The possible messages that can be displayed if we earn a lot of points.
      */
     public static final String[] MESSAGES = {
-        "Sweet",
-        "Delicious",
-        "Divine",
-        "Tasty"
+        "Sweet", "Delicious", "Divine", "Tasty"
     };
 
     /**
@@ -81,11 +77,7 @@ public final class Level implements Transposable {
         this.board = builder.board;
         this.availableSteps = builder.availableSteps;
         this.transposed = builder.transposed;
-        this.manager = builder.manager;
-    }
-
-    private boolean testSwap(Integer[][] coors) {
-        return Math.abs(coors[0][0] - coors[1][0]) + Math.abs(coors[0][1] - coors[1][1]) == 1;
+        this.manager = new LevelManager(this);
     }
 
     /**
@@ -125,31 +117,11 @@ public final class Level implements Transposable {
         return state.substring(0, state.length() - 1);
     }
 
-    /**
-     * Swaps two {@code Candy} instances on the board, if a given statement is true.
-     *
-     * @param coors an array representing the coordinates of the {@code Candy} instances in the
-     * board
-     * @return {@code true} if swap was successful, {@code false} if not
-     */
-    public boolean swap(Integer[][] coors) {
-        boolean success = testSwap(coors);
-
-        if (!success) {
-            return false;
-        }
-
-        if (board[coors[0][0]][coors[0][1]] == null || board[coors[1][0]][coors[1][1]] == null) {
-            return false;
-        }
-
-        Candy tmp = board[coors[0][0]][coors[0][1]];
-        board[coors[0][0]][coors[0][1]] = board[coors[1][0]][coors[1][1]];
-        board[coors[1][0]][coors[1][1]] = tmp;
-
-        return true;
+    @Override
+    public void transpose() {
+        this.transposed = !this.transposed;
     }
-
+    
     @Override
     public Candy get(int i, int j) {
         try {
@@ -161,11 +133,6 @@ public final class Level implements Transposable {
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
-    }
-
-    @Override
-    public void transpose() {
-        this.transposed = !this.transposed;
     }
 
     @Override
@@ -263,7 +230,7 @@ public final class Level implements Transposable {
     public LevelManager getManager() {
         return manager;
     }
-    
+
     public Candy[][] getBoard() {
         return board;
     }
@@ -288,7 +255,6 @@ public final class Level implements Transposable {
         private String initialState;
         private Integer[][] walls;
         private Candy[][] board;
-        private LevelManager manager;
 
         private int availableSteps;
         private boolean transposed;
@@ -325,7 +291,6 @@ public final class Level implements Transposable {
             this.board = src.board.clone();
             this.walls = src.walls.clone();
             this.initialState = src.initialState;
-            this.manager = src.manager;
         }
 
         /**
@@ -395,13 +360,8 @@ public final class Level implements Transposable {
             if (this.initialState == null || this.initialState.equals("")) {
                 this.initialState = setupInitialState();
             }
-            Level buildedLevel = new Level(this);
-            
-            if (this.manager == null) {
-                this.manager = new LevelManager(buildedLevel);
-            }
-            
-            return buildedLevel;
+
+            return new Level(this);
         }
 
         private String setupInitialState() {

@@ -21,7 +21,6 @@ package unicrush.model;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,29 +37,31 @@ import org.slf4j.LoggerFactory;
 public final class LevelManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LevelManager.class);
-    
+
     private Level level;
-    
+    private int iterations;
+    private int sum;
+
     public LevelManager(Level level) {
         this.level = level;
+        this.iterations = 0;
+        this.sum = 0;
     }
 
     /**
      * Iterations processing the level and returning the score.
      *
      * <p>
-     * Iterations should consist of popping the matching {@code Candy} instances
-     * and then applying the gravity logic to the {@code Level}'s board.
+     * Iterations should consist of popping the matching {@code Candy} instances and then applying
+     * the gravity logic to the {@code Level}'s board.
      *
      * <p>
-     * We check how many iterations occurred, so this cannot be an infinite
-     * loop. This method might change the model of the {@code Level} given as a
-     * parameter.</p>
+     * We check how many iterations occurred, so this cannot be an infinite loop. This method might
+     * change the model of the {@code Level} given as a parameter.</p>
      *
      * @return how many iterations occurred
      */
     public int process() {
-        int iterations;
         for (iterations = 0; iterations < CandyCrushGame.MAX_ITERATION; iterations++) {
             if (popAllMarked()) {
                 applyGravity();
@@ -75,24 +76,22 @@ public final class LevelManager {
      * Iterations processing the level and returning information in a list.
      *
      * <p>
-     * Iterations should consist of popping the matching {@code Candy} instances
-     * and then applying the gravity logic to the {@code Level}'s board.
+     * Iterations should consist of popping the matching {@code Candy} instances and then applying
+     * the gravity logic to the {@code Level}'s board.
      * </p>
      * <p>
-     * We should check how many iterations occurred, so this cannot be an
-     * infinite loop and in addition we summarize the points that
-     * {@code applyGravity} returns. It is important to be aware of the fact,
-     * that this method might change model of the {@code Level} given as a
-     * parameter AND add the given {@code Level}'s {@code boardState String} to
-     * the returned {@code List<String>}.</p>
+     * We should check how many iterations occurred, so this cannot be an infinite loop and in
+     * addition we summarize the points that {@code applyGravity} returns. It is important to be
+     * aware of the fact, that this method might change model of the {@code Level} given as a
+     * parameter AND add the given {@code Level}'s {@code boardState String} to the returned
+     * {@code List<String>}.</p>
      *
-     * @return a list starting with information about the iteration and the rest
-     * are the board states of each iteration
+     * @return a list starting with information about the iteration and the rest are the board
+     * states of each iteration
      */
     public List<String> processWithState() {
         List<String> states = new ArrayList<>();
-        long iterations;
-        long sum = 0;
+        sum = 0;
 
         for (iterations = 0; iterations < CandyCrushGame.MAX_ITERATION; iterations++) {
             if (popAllMarked()) {
@@ -104,7 +103,8 @@ public final class LevelManager {
             }
         }
 
-        states.add(0, iterations + "," + sum);
+        this.iterations = iterations;
+        this.sum = sum;
         return states;
     }
 
@@ -116,17 +116,38 @@ public final class LevelManager {
                 .fillBoard(level.getInitialState())
                 .build();
     }
-    
+
     /**
-     * Returns a template string containing the coordinates of a box, in which a
-     * move is possible.
+     * Swaps two {@code Candy} instances on the board, if a given statement is true.
+     *
+     * @param coors an array representing the coordinates of the {@code Candy} instances in the
+     * board
+     * @return {@code true} if swap was successful, {@code false} if not
+     */
+    public boolean swap(Integer[][] coors) {
+        if (Math.abs(coors[0][0] - coors[1][0]) + Math.abs(coors[0][1] - coors[1][1]) != 1) {
+            return false;
+        }
+
+        if (level.get(coors[0][0], coors[0][1]) == null || level.get(coors[1][0], coors[1][1]) == null) {
+            return false;
+        }
+
+        Candy tmp = level.get(coors[0][0], coors[0][1]);
+        level.set(coors[0][0], coors[0][1], level.get(coors[1][0], coors[1][1]));
+        level.set(coors[1][0], coors[1][1], tmp);
+
+        return true;
+    }
+
+    /**
+     * Returns a template string containing the coordinates of a box, in which a move is possible.
      *
      * <p>
-     * This method finds a single possible move. More specific, the one
-     * horizontal box, which is the closest to the top of the level.</p>
+     * This method finds a single possible move. More specific, the one horizontal box, which is the
+     * closest to the top of the level.</p>
      *
-     * @return a string representing the coordinates of a box in which a move is
-     * possible
+     * @return a string representing the coordinates of a box in which a move is possible
      */
     public String getAvailableMoves() {
         String possibleCoordinates = "";
@@ -146,12 +167,10 @@ public final class LevelManager {
     }
 
     /**
-     * Returns a template string with coordinates of a box area, in which a move
-     * is possible.
+     * Returns a template string with coordinates of a box area, in which a move is possible.
      *
      * <p>
-     * The first step is that we look for a possible move in a row. For
-     * example</p>
+     * The first step is that we look for a possible move in a row. For example</p>
      * <pre>
      *   Let a level's toString be equal to
      *
@@ -166,11 +185,10 @@ public final class LevelManager {
      *     1,0;1,1;1,2;1,3;
      * </pre>
      * <p>
-     * If there is none in a row like above, we look for a 3x2 rectangle, in
-     * which we can perform a move.</p>
+     * If there is none in a row like above, we look for a 3x2 rectangle, in which we can perform a
+     * move.</p>
      *
-     * @return a string representing a coordinate, we found first with the
-     * algorithm above
+     * @return a string representing a coordinate, we found first with the algorithm above
      */
     public String lookForMoves() {
         String coor = "";
@@ -196,12 +214,10 @@ public final class LevelManager {
     }
 
     /**
-     * Refreshes the {@code Candy.State} of {@code Candy} instances in the
-     * {@code level}'s board that are in a column or row with a length more than
-     * two.
+     * Refreshes the {@code Candy.State} of {@code Candy} instances in the {@code level}'s board
+     * that are in a column or row with a length more than two.
      *
-     * @return {@code true} if a change happened in the board, {@code false} if
-     * did not
+     * @return {@code true} if a change happened in the board, {@code false} if did not
      */
     public boolean popAllMarked() {
         markAllCandies();
@@ -226,12 +242,11 @@ public final class LevelManager {
     }
 
     /**
-     * All {@code Candy} instances "fall" when there's empty space in their
-     * column.
+     * All {@code Candy} instances "fall" when there's empty space in their column.
      *
-     * @return 60 multiplied by the {@code number of Candy instances} in
-     * {@code Candy.State.EMPTY}, multiplied by the {@code number of blocks}
-     * (one block = three or more {@code Candy} instances in a row or column)
+     * @return 60 multiplied by the {@code number of Candy instances} in {@code Candy.State.EMPTY},
+     * multiplied by the {@code number of blocks} (one block = three or more {@code Candy} instances
+     * in a row or column)
      */
     public long applyGravity() {
         long re = 0;
@@ -248,9 +263,7 @@ public final class LevelManager {
             LOGGER.trace("Candies in active column:\n{}", candies.toString());
             Collections.sort(candies);
 
-            re += candies.stream()
-                    .filter(c -> c.isEmpty())
-                    .count();
+            re += candies.stream().filter(c -> c.isEmpty()).count();
 
             candies.replaceAll(c -> {
                 if (c.isEmpty()) {
@@ -268,7 +281,7 @@ public final class LevelManager {
         }
         return re / 3 * re * 60;
     }
-    
+
     private void markAllCandies() {
         Map<String, Integer[]> candyCountMap = new HashMap<>();
 
@@ -344,4 +357,12 @@ public final class LevelManager {
         }
         return coor;
     }
+
+    public int getIterations() {
+        return iterations;
+    }
+
+    public int getSum() {
+        return sum;
+    }    
 }

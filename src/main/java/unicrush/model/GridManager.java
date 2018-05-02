@@ -52,6 +52,7 @@ public final class GridManager {
     private Game game;
 
     private String suggestedArea;
+    private String[] selectedCandies;
 
     /**
      * Constructs a manager that helps keeping consistency between a game and a grid.
@@ -63,11 +64,13 @@ public final class GridManager {
         this.grid = grid;
         this.game = game;
 
-        suggestedArea = "";
-        suggestionTimer = new Timer("Highlight Thread", true);
+        this.suggestedArea = "";
+        this.selectedCandies = new String[2];
 
-        popThread = new Thread("Pop Task Thread");
-        popThread.setDaemon(true);
+        this.suggestionTimer = new Timer("Highlight Thread", true);
+
+        this.popThread = new Thread("Pop Task Thread");
+        this.popThread.setDaemon(true);
     }
 
     /**
@@ -75,12 +78,12 @@ public final class GridManager {
      *
      * <p>
      * When the task is finished it hides the previous suggestion if there was any</p>
-     * 
+     *
      * @param boardStates the list with the given board state strings
      * @return the {@code Task} that started
-     * 
+     *
      * @see #renderAll(java.util.List)
-     * @see #hideSuggestionMarkers() 
+     * @see #hideSuggestionMarkers()
      */
     public Task<Integer> startPopTask(List<String> boardStates) {
         Task<Integer> popTask = new Task<Integer>() {
@@ -122,7 +125,7 @@ public final class GridManager {
         }
         return stateIndex;
     }
-    
+
     public void setMainGridDimensions() {
         setMainGridDimensions(game.getCurrentLevel());
     }
@@ -130,13 +133,44 @@ public final class GridManager {
     public void firstRender() {
         firstRender(game.getCurrentLevel().getBoardState());
     }
-    
+
     public void hideSuggestionMarkers() {
         if (suggestedArea.equals("") || suggestedArea == null) {
             return;
         }
         LOGGER.debug("Hiding help markers");
         hideSuggestionMarkers(Level.createCoordinates(suggestedArea));
+    }
+
+    public void updateSelectedCandies(int i, int j) {
+        for (int k = 0; k < 2; k++) {
+            if (selectedCandies[k] == null) {
+                selectedCandies[k] = i + "," + j;
+                getNode(i, j).getStyleClass().add("selected");
+                break;
+            }
+            if (selectedCandies[k].equals(i + "," + j)) {
+                selectedCandies[k] = null;
+                getNode(i, j).getStyleClass().removeAll("selected");
+                break;
+            }
+        }
+    }
+    
+    public String getSelectedCandies() {
+        return selectedCandies[0] + ";" + selectedCandies[1];
+    }
+    
+    public void eraseSelectedCandies(Integer[][] coors) {
+        getNode(coors[0][0], coors[0][1]).getStyleClass().removeAll("selected");
+        getNode(coors[1][0], coors[1][1]).getStyleClass().removeAll("selected");
+
+        selectedCandies[0] = null;
+        selectedCandies[1] = null;
+    }
+    
+    public boolean isSwapReady() {
+        return selectedCandies[0] != null && selectedCandies[1] != null;
     }
 
     /**
@@ -153,7 +187,7 @@ public final class GridManager {
             grid.getRowConstraints().add(new RowConstraints());
         }
     }
-    
+
     public void firstRender(String boardState) {
         String[] state = boardState.split(";");
 
@@ -174,7 +208,7 @@ public final class GridManager {
             }
         }
     }
-    
+
     public void renderBoardState(String boardState) {
         String[] state = boardState.split(";");
 
@@ -188,7 +222,7 @@ public final class GridManager {
             }
         }
     }
-    
+
     public void enableButtonClicks(EventHandler<? super MouseEvent> value) {
         grid.getChildren().stream().forEach(b -> b.setOnMouseClicked(value));
     }
@@ -196,7 +230,7 @@ public final class GridManager {
     public void disableButtonClicks() {
         grid.getChildren().stream().forEach(b -> b.setOnMouseClicked(null));
     }
-    
+
     public Node getNode(int i, int j) {
         return grid.getChildren().get(i * game.getCurrentLevel().getBoardSize() + j);
     }
@@ -212,7 +246,7 @@ public final class GridManager {
             getNode(coor[0], coor[1]).getStyleClass().removeAll("highlighted");
         }
     }
-    
+
     public Thread getPopThread() {
         return popThread;
     }
