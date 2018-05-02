@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Singleton class containing methods that manage the logics of the levels.
+ * Class containing methods that manage the logics of the levels.
  *
  * @author Szalontai Jordán
  */
@@ -42,6 +42,11 @@ public final class LevelManager {
     private int iterations;
     private int sum;
 
+    /**
+     * Constructs an object for a level, that can make changes to the logic of the level.
+     *
+     * @param level the level we would like to manage
+     */
     public LevelManager(Level level) {
         this.level = level;
         this.iterations = 0;
@@ -56,15 +61,14 @@ public final class LevelManager {
      * the gravity logic to the {@code Level}'s board.
      *
      * <p>
-     * We check how many iterations occurred, so this cannot be an infinite loop. This method might
-     * change the model of the {@code Level} given as a parameter.</p>
+     * We check how many iterations occurred, so this cannot be an infinite loop</p>
      *
      * @return how many iterations occurred
      */
     public int process() {
         for (iterations = 0; iterations < CandyCrushGame.MAX_ITERATION; iterations++) {
             if (popAllMarked()) {
-                applyGravity();
+                sum += applyGravity();
             } else {
                 break;
             }
@@ -81,13 +85,9 @@ public final class LevelManager {
      * </p>
      * <p>
      * We should check how many iterations occurred, so this cannot be an infinite loop and in
-     * addition we summarize the points that {@code applyGravity} returns. It is important to be
-     * aware of the fact, that this method might change model of the {@code Level} given as a
-     * parameter AND add the given {@code Level}'s {@code boardState String} to the returned
-     * {@code List<String>}.</p>
+     * addition we summarize the points that {@code applyGravity} returns.</p>
      *
-     * @return a list starting with information about the iteration and the rest are the board
-     * states of each iteration
+     * @return a list containing the board states of each iteration
      */
     public List<String> processWithState() {
         List<String> states = new ArrayList<>();
@@ -103,8 +103,6 @@ public final class LevelManager {
             }
         }
 
-        this.iterations = iterations;
-        this.sum = sum;
         return states;
     }
 
@@ -112,9 +110,7 @@ public final class LevelManager {
      * Resetting the {@code board} based on the original board state.
      */
     public void reset() {
-        level = new Level.Builder(level)
-                .fillBoard(level.getInitialState())
-                .build();
+        level = new Level.Builder(level).fillBoard(level.getInitialState()).build();
     }
 
     /**
@@ -128,7 +124,6 @@ public final class LevelManager {
         if (Math.abs(coors[0][0] - coors[1][0]) + Math.abs(coors[0][1] - coors[1][1]) != 1) {
             return false;
         }
-
         if (level.get(coors[0][0], coors[0][1]) == null || level.get(coors[1][0], coors[1][1]) == null) {
             return false;
         }
@@ -167,7 +162,7 @@ public final class LevelManager {
     }
 
     /**
-     * Returns a template string with coordinates of a box area, in which a move is possible.
+     * Returns a template string with coordinates of a rectangle area, in which a move is possible.
      *
      * <p>
      * The first step is that we look for a possible move in a row. For example</p>
@@ -185,7 +180,7 @@ public final class LevelManager {
      *     1,0;1,1;1,2;1,3;
      * </pre>
      * <p>
-     * If there is none in a row like above, we look for a 3x2 rectangle, in which we can perform a
+     * If there are no possible moves inline, we look for a 3x2 rectangle, in which we can perform a
      * move.</p>
      *
      * @return a string representing a coordinate, we found first with the algorithm above
@@ -202,12 +197,56 @@ public final class LevelManager {
                 coor = inlineMatch(top3, levelStates[i], i);
 
                 if (coor.length() == 0) {
-                    coor = allMatch(top3, bot3, i, j);
-                }
-
-                if (coor.length() != 0) {
+                    coor = reactangleMatch(top3, bot3, i, j);
+                } else {
                     return coor;
                 }
+            }
+        }
+        return coor;
+    }
+
+    private String inlineMatch(String top3, String row, int i) {
+        String coor = "";
+        String reg = "(.*XX.X.*|.*X.XX.*)".replaceAll("X", "" + top3.charAt(0));
+
+        if (row.matches(reg)) {
+            int start = row.indexOf(top3.charAt(0));
+            for (int k = start; k < start + 4; k++) {
+                if (level.isTransposed()) {
+                    coor += k + "," + i + ";";
+                } else {
+                    coor += i + "," + k + ";";
+                }
+            }
+            return coor;
+        }
+        return coor;
+    }
+
+    private String reactangleMatch(String top3, String bot3, int i, int j) {
+        String coor = "";
+        String[] regexes = {
+            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + top3.charAt(0)),
+            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + top3.charAt(0)),
+            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + bot3.charAt(0)),
+            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + bot3.charAt(0))
+        };
+
+        for (String regex : regexes) {
+            if ((top3 + bot3).matches(regex) || (bot3 + top3).matches(regex)) {
+                LOGGER.debug("Parsing:\n{}\n{}", top3, bot3);
+
+                for (int k = j; k < j + 3; k++) {
+                    if (level.isTransposed()) {
+                        coor += k + "," + i + ";";
+                        coor += k + "," + (i + 1) + ";";
+                    } else {
+                        coor += i + "," + k + ";";
+                        coor += (i + 1) + "," + k + ";";
+                    }
+                }
+                return coor;
             }
         }
         return coor;
@@ -248,29 +287,27 @@ public final class LevelManager {
      * multiplied by the {@code number of blocks} (one block = three or more {@code Candy} instances
      * in a row or column)
      */
-    public long applyGravity() {
-        long re = 0;
+    public int applyGravity() {
+        int re = 0;
 
         for (int i = 0; i < level.getBoardSize(); i++) {
             List<Candy> candies = new ArrayList<>();
 
             for (int col = 0; col < level.getBoardSize(); col++) {
-                if (level.get(col, i) != null) {
-                    candies.add(level.get(col, i));
+                if (level.get(col, i) == null) {
+                    continue;
+                }
+                candies.add(level.get(col, i));
+
+                if (level.get(col, i).isEmpty()) {
+                    re++;
                 }
             }
 
             LOGGER.trace("Candies in active column:\n{}", candies.toString());
+
             Collections.sort(candies);
-
-            re += candies.stream().filter(c -> c.isEmpty()).count();
-
-            candies.replaceAll(c -> {
-                if (c.isEmpty()) {
-                    return new Candy(Candy.getRandomColorState());
-                }
-                return c;
-            });
+            candies.replaceAll(c -> c.isEmpty() ? new Candy(Candy.getRandomColorState()) : c);
 
             int index = 0;
             for (int col = 0; col < level.getBoardSize(); col++) {
@@ -282,6 +319,8 @@ public final class LevelManager {
         return re / 3 * re * 60;
     }
 
+    // TODO: refactor this method!
+    //       maybe regexes ??
     private void markAllCandies() {
         Map<String, Integer[]> candyCountMap = new HashMap<>();
 
@@ -312,57 +351,11 @@ public final class LevelManager {
         columns[0]++;
     }
 
-    private String inlineMatch(String top3, String row, int i) {
-        String coor = "";
-        String reg = "(.*XX.X.*|.*X.XX.*)".replaceAll("X", "" + top3.charAt(0));
-
-        if (row.matches(reg)) {
-            int start = row.indexOf(top3.charAt(0));
-            for (int k = start; k < start + 4; k++) {
-                if (level.isTransposed()) {
-                    coor += k + "," + i + ";";
-                } else {
-                    coor += i + "," + k + ";";
-                }
-            }
-            return coor;
-        }
-        return coor;
-    }
-
-    private String allMatch(String top3, String bot3, int i, int j) {
-        String coor = "";
-        String[] regexes = {
-            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + top3.charAt(0)),
-            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + top3.charAt(0)),
-            "(XX...X|X.X.X.|.XXX..)".replaceAll("X", "" + bot3.charAt(0)),
-            "(..XXX.|.X.X.X|X...XX)".replaceAll("X", "" + bot3.charAt(0))
-        };
-
-        for (String regex : regexes) {
-            if ((top3 + bot3).matches(regex) || (bot3 + top3).matches(regex)) {
-                LOGGER.debug("Parsing:\n{}\n{}", top3, bot3);
-
-                for (int k = j; k < j + 3; k++) {
-                    if (level.isTransposed()) {
-                        coor += k + "," + i + ";";
-                        coor += k + "," + (i + 1) + ";";
-                    } else {
-                        coor += i + "," + k + ";";
-                        coor += (i + 1) + "," + k + ";";
-                    }
-                }
-                return coor;
-            }
-        }
-        return coor;
-    }
-
     public int getIterations() {
         return iterations;
     }
 
     public int getSum() {
         return sum;
-    }    
+    }
 }

@@ -47,8 +47,14 @@ public class Main extends Application {
      * The names of the existing FXML files.
      */
     public static final String[] SCENES = {
-        "GameScene",
-        "EndGameScene"
+        "GameScene", "EndGameScene"
+    };
+    
+    /**
+     * The possible messages that can be displayed if we earn a lot of points.
+     */
+    public static final String[] MESSAGES = {
+        "Sweet", "Delicious", "Divine", "Tasty"
     };
 
     private static boolean funmode = false;
@@ -96,6 +102,15 @@ public class Main extends Application {
             return "url('/candy/fun/" + candy + ".png')";
         }
         return "url('/candy/" + candy + ".png')";
+    }
+    
+    /**
+     * Gives a random message from the defined messages.
+     *
+     * @return a random element of {@code MESSAGES}
+     */
+    public static String getMessage() {
+        return MESSAGES[(int) (Math.random() * MESSAGES.length)];
     }
 
     /**

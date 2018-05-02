@@ -179,7 +179,7 @@ public class GameSceneController implements Initializable {
         scoreLabel.setText(game.getPlayerScore() + "");
 
         if (add >= 500) {
-            levelMessage.setText(Level.getMessage());
+            levelMessage.setText(Main.getMessage());
         }
 
         if (add != 0) {

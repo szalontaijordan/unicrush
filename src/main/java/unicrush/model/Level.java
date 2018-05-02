@@ -32,13 +32,6 @@ import java.util.stream.Collectors;
 public final class Level implements Transposable {
 
     /**
-     * The possible messages that can be displayed if we earn a lot of points.
-     */
-    public static final String[] MESSAGES = {
-        "Sweet", "Delicious", "Divine", "Tasty"
-    };
-
-    /**
      * Enum for the level types.
      *
      * @author Szalontai Jordán
@@ -169,15 +162,6 @@ public final class Level implements Transposable {
     }
 
     /**
-     * Gives a random message from the defined messages.
-     *
-     * @return a random element of {@code MESSAGES}
-     */
-    public static String getMessage() {
-        return MESSAGES[(int) (Math.random() * MESSAGES.length)];
-    }
-
-    /**
      * Returns a 2D-array that represents coordinates.
      *
      * <p>
@@ -201,10 +185,6 @@ public final class Level implements Transposable {
                 .map(Integer::parseInt)
                 .toArray(Integer[]::new))
                 .toArray(Integer[][]::new);
-    }
-
-    public static String[] getMESSAGES() {
-        return MESSAGES;
     }
 
     public int getBoardSize() {
