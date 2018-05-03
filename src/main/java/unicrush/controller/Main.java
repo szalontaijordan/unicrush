@@ -21,7 +21,6 @@ package unicrush.controller;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -39,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class Main extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    
+
     public static final int HELP_INTERVAL = 30000;
     public static final int POP_INTERVAL = 450;
 
@@ -49,15 +48,13 @@ public class Main extends Application {
     public static final String[] SCENES = {
         "GameScene", "EndGameScene"
     };
-    
+
     /**
      * The possible messages that can be displayed if we earn a lot of points.
      */
     public static final String[] MESSAGES = {
         "Sweet", "Delicious", "Divine", "Tasty"
     };
-
-    private static boolean funmode = false;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -72,8 +69,7 @@ public class Main extends Application {
      * @param stage the window
      * @param fxmlResName the FXML's name without the extension
      * @param windowText the title of the window
-     * @return the {@code FXMLLoader} object that loads the scene into the
-     * window
+     * @return the {@code FXMLLoader} object that loads the scene into the window
      * @throws IOException when there is no FXML file
      */
     public static FXMLLoader loadNewScene(Stage stage, String fxmlResName, String windowText) throws IOException {
@@ -93,17 +89,18 @@ public class Main extends Application {
     /**
      * Gives the URL of the specified image.
      *
-     * @param candy the name of the image file without the extension
-     * @return a value representing the path of the image given, that can be
-     * used in CSS
+     * @param firstChar the first character of a color state which is also the image file without
+     * the extension
+     * @return a value representing the path of the image given, that can be used in CSS
      */
-    public static String getCandyImageURL(String candy) {
-        if (funmode) {
-            return "url('/candy/fun/" + candy + ".png')";
+    public static String getCandyImageURL(char firstChar) {
+        if (firstChar == 'x') {
+            return null;
         }
-        return "url('/candy/" + candy + ".png')";
+        
+        return "url('/candy/" + firstChar + ".png')";
     }
-    
+
     /**
      * Gives a random message from the defined messages.
      *
@@ -114,11 +111,9 @@ public class Main extends Application {
     }
 
     /**
-     * This method is only required to call {@code launch(args} so the JavaFx
-     * application can start.
+     * This method is only required to call {@code launch(args} so the JavaFx application can start.
      *
-     * This might be used as a fallback method if the application fails to
-     * start.
+     * This might be used as a fallback method if the application fails to start.
      *
      * @param args the command line arguments
      */

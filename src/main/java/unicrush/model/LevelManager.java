@@ -43,12 +43,21 @@ public final class LevelManager {
     private int sum;
 
     /**
-     * Constructs an object for a level, that can make changes to the logic of the level.
+     * Constructs an object for a game, that can make changes to the logic of the level.
      *
      * @param level the level we would like to manage
      */
     public LevelManager(Level level) {
         this.level = level;
+        this.iterations = 0;
+        this.sum = 0;
+    }
+    
+    /**
+     * Constructs an object for a game, with no level to manage.
+     */
+    public LevelManager() {
+        this.level = null;
         this.iterations = 0;
         this.sum = 0;
     }
@@ -358,4 +367,12 @@ public final class LevelManager {
     public int getSum() {
         return sum;
     }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }   
 }

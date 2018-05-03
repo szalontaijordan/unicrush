@@ -48,7 +48,6 @@ public final class Level implements Transposable {
     private final String initialState;
     private final Integer[][] walls;
     private final Candy[][] board;
-    private final LevelManager manager;
 
     private int availableSteps;
     private boolean transposed;
@@ -70,7 +69,6 @@ public final class Level implements Transposable {
         this.board = builder.board;
         this.availableSteps = builder.availableSteps;
         this.transposed = builder.transposed;
-        this.manager = new LevelManager(this);
     }
 
     /**
@@ -206,10 +204,6 @@ public final class Level implements Transposable {
 
     public Integer[][] getWalls() {
         return walls;
-    }
-
-    public LevelManager getManager() {
-        return manager;
     }
 
     public Candy[][] getBoard() {
@@ -367,8 +361,7 @@ public final class Level implements Transposable {
                 }
             }
 
-            Arrays.stream(walls)
-                    .forEach(wall -> newBoard[wall[0]][wall[1]] = null);
+            Arrays.stream(walls).forEach(wall -> newBoard[wall[0]][wall[1]] = null);
 
             return newBoard;
         }

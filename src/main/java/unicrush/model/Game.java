@@ -80,7 +80,7 @@ public interface Game {
      *
      * @return the current score of a player
      */
-    public long getPlayerScore();
+    public int getPlayerScore();
     
     /**
      * Used for modifying the score of a player.

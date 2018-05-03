@@ -36,8 +36,8 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import unicrush.model.CandyCrushGame;
-import unicrush.model.Game;
 import unicrush.model.Level;
+import unicrush.model.Validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,8 @@ public class GameSceneController implements Initializable {
     @FXML
     private Label levelSteps;
 
-    private Game game;
+    private CandyCrushGame game;
+    private Validator validator;
     private GridManager gridManager;
 
     @Override
@@ -71,121 +72,145 @@ public class GameSceneController implements Initializable {
             game.initLevels();
             game.startCurrentLevel();
 
-            preprocessLevelWith(game.getCurrentLevel().getManager());
+            validator = new Validator();
+
+            preprocessLevelWith(game.getManager());
 
             gridManager = new GridManager(mainGrid, game);
-            gridManager.setMainGridDimensions();
             gridManager.firstRender();
             gridManager.enableButtonClicks(event -> onCandySelect(event));
             gridManager.startSuggestionTask();
 
             levelSteps.setText(game.getCurrentLevel().getAvailableSteps() + "");
         } catch (Exception ex) {
+            ex.printStackTrace();
             LOGGER.error(ex.getMessage());
         }
     }
 
-    private void preprocessLevelWith(LevelManager levelManager) {
+    /**
+     * Preprocesses the current level of the game with the given {@code LevelManager}.
+     *
+     * <p>
+     * This is necessary, because in the generation of the board is random, so there can be a board
+     * state where three or more candies match in a row or column.</p>
+     *
+     * @param levelManager the manager that processes the level.
+     * @return {@code true} if no problems happened during the processing, {@code false} if
+     * resetting the level was required
+     */
+    public boolean preprocessLevelWith(LevelManager levelManager) {
         LOGGER.info("Preprocessing current level ...");
-        int iterations = game.getCurrentLevel().getManager().process();
+        int iterations = game.getManager().process();
 
-        if (iterations == CandyCrushGame.MAX_ITERATION) {
+        if (validator.isMaxIterations(iterations)) {
             LOGGER.info("Maximum iteration, reseting level ...");
-            game.getCurrentLevel().getManager().reset();
-            game.getCurrentLevel().getManager().process();
+            game.getManager().reset();
+            game.getManager().process();
+
+            return false;
         }
+        return true;
     }
 
-    public void endLevel() {
-        try {
-            LOGGER.warn("Ending level...");
-            gridManager.getPopThread().interrupt();
-            gridManager.getSuggestionTimer().cancel();
-            gridManager.getSuggestionTimer().purge();
+    /**
+     * Ends the game on the current level and switches to the end-game scene.
+     */
+    public void endGame() {
+        LOGGER.warn("Ending game...");
+        gridManager.getPopThread().interrupt();
+        gridManager.getSuggestionTimer().cancel();
+        gridManager.getSuggestionTimer().purge();
 
+        switchToEndGameScene();
+    }
+
+    private void switchToEndGameScene() {
+        try {
             Stage stage = (Stage) mainGrid.getScene().getWindow();
             String message = "Congratulations!";
 
-            if (game.getPlayerScore() < game.getCurrentLevel().getScoreToComplete()) {
+            if (validator.isNoMoreSteps(Integer.parseInt(levelSteps.getText()))) {
                 message = "There are no more steps!";
             }
 
             Main.loadNewScene(stage, Main.SCENES[1], "Game Over")
                     .<EndGameController>getController()
                     .setGrat(message + " Your score is " + game.getPlayerScore());
-        } catch (IOException e) {
+        } catch (NumberFormatException | IOException e) {
             LOGGER.error(e.getMessage());
         }
     }
 
-    public void onCandySelect(MouseEvent e) {
-        Button b = (Button) e.getSource();
+    /**
+     * Selects a candy on the displayed board, then tries to swap it with the other selected one.
+     *
+     * @param event the mouse event object
+     */
+    public void onCandySelect(MouseEvent event) {
+        Button b = (Button) event.getSource();
         gridManager.updateSelectedCandies(GridPane.getRowIndex(b), GridPane.getColumnIndex(b));
 
         LOGGER.trace("Selected candies: {}", gridManager.getSelectedCandies());
-
+        
         gridManager.disableButtonClicks();
-        if (gridManager.isSwapReady()) {
+        
+        if (validator.isTwoSelected(gridManager.getSelectedCandies())) {
             levelMessage.setText("");
-
-            String coordinate = gridManager.getSelectedCandies();
-            Integer[][] coors = Level.createCoordinates(coordinate);
-
-            game.getCurrentLevel().getManager().swap(coors);
-            gridManager.renderBoardState(game.getCurrentLevel().getBoardState());
-
-            List<String> boardStates = game.getCurrentLevel().getManager().processWithState();
-
-            int[] result = {
-                game.getCurrentLevel().getManager().getIterations(),
-                game.getCurrentLevel().getManager().getSum()
-            };
-
-            processChanges(coors, result, boardStates);
+            swapSelectedCandies(gridManager.getSelectedCandies());
         }
-        gridManager.enableButtonClicks(event -> onCandySelect(event));
+
+        gridManager.enableButtonClicks(onClick -> onCandySelect(onClick));
     }
 
-    private void processChanges(Integer[][] coors, int[] result, List<String> boardStates) {
+    private void swapSelectedCandies(String template) {
+        Integer[][] coors = Level.createCoordinates(template);
+
+        game.getManager().swap(coors);
+        gridManager.renderBoardState(game.getCurrentLevel().getBoardState());
+
+        List<String> boardStates = game.getManager().processWithState();
+
+        int boardIterations = game.getManager().getIterations();
+        int boardSum = game.getManager().getSum();
+
+        showCanges(coors, boardIterations, boardSum, boardStates);
+    }
+
+    private void showCanges(Integer[][] coors, int iterations, int sum, List<String> boardStates) {
         LOGGER.info("Cancelling help task ...");
 
-        int iterations = result[0];
-        int add = result[1];
+        if (validator.isNoIterations(iterations)) {
+            boardStates.add(game.getCurrentLevel().getBoardState());
+            game.getManager().swap(coors);
+            boardStates.add(game.getCurrentLevel().getBoardState());
+        }
 
-        if (iterations == CandyCrushGame.MAX_ITERATION) {
+        if (validator.isMaxIterations(iterations)) {
             LOGGER.info("Maximum iterations, reseting level ...");
-            game.getCurrentLevel().getManager().reset();
+            game.getManager().reset();
             boardStates.add(game.getCurrentLevel().getBoardState());
         }
 
-        if (iterations == 0) {
-            boardStates.add(game.getCurrentLevel().getBoardState());
-            game.getCurrentLevel().getManager().swap(coors);
-            boardStates.add(game.getCurrentLevel().getBoardState());
-        }
+        game.addToScore(sum);
 
-        game.addToScore(add);
-
-        gridManager.startPopTask(boardStates).setOnSucceeded(event -> onPopSuccess(add));
-        gridManager.eraseSelectedCandies(coors);
+        gridManager.startPopTask(boardStates).setOnSucceeded(event -> onPopSuccess(sum));
+        gridManager.eraseSelectedCandies();
     }
 
     private void onPopSuccess(final long add) {
-        boolean isMaxScore = game.getPlayerScore() >= game.getCurrentLevel().getScoreToComplete();
-        boolean isZeroSteps = levelSteps.getText().equals("0");
-
         if (add != 0) {
             levelSteps.setText("" + (Integer.parseInt(levelSteps.getText()) - 1));
         }
         if (add >= 500) {
             levelMessage.setText(Main.getMessage());
         }
-        
+
         gridManager.hideSuggestionMarkers();
         scoreLabel.setText(game.getPlayerScore() + "");
-        
-        if (isMaxScore || isZeroSteps) {
-            endLevel();
+
+        if (validator.isEndGameSituation(game, Integer.parseInt(levelSteps.getText()))) {
+            endGame();
         }
     }
 }
