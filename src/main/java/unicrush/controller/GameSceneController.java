@@ -25,7 +25,6 @@ import unicrush.model.LevelManager;
 import unicrush.model.GridManager;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -102,6 +101,7 @@ public class GameSceneController implements Initializable {
             LOGGER.warn("Ending level...");
             gridManager.getPopThread().interrupt();
             gridManager.getSuggestionTimer().cancel();
+            gridManager.getSuggestionTimer().purge();
 
             Stage stage = (Stage) mainGrid.getScene().getWindow();
             String message = "Congratulations!";
@@ -172,20 +172,18 @@ public class GameSceneController implements Initializable {
 
     private void onPopSuccess(final long add) {
         boolean isMaxScore = game.getPlayerScore() >= game.getCurrentLevel().getScoreToComplete();
-        boolean isZeroSteps = game.getCurrentLevel().getAvailableSteps() == 0;
-
-        gridManager.hideSuggestionMarkers();
-
-        scoreLabel.setText(game.getPlayerScore() + "");
-
-        if (add >= 500) {
-            levelMessage.setText(Main.getMessage());
-        }
+        boolean isZeroSteps = levelSteps.getText().equals("0");
 
         if (add != 0) {
             levelSteps.setText("" + (Integer.parseInt(levelSteps.getText()) - 1));
         }
-
+        if (add >= 500) {
+            levelMessage.setText(Main.getMessage());
+        }
+        
+        gridManager.hideSuggestionMarkers();
+        scoreLabel.setText(game.getPlayerScore() + "");
+        
         if (isMaxScore || isZeroSteps) {
             endLevel();
         }

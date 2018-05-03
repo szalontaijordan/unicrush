@@ -67,7 +67,7 @@ public final class GridManager {
         this.suggestedArea = "";
         this.selectedCandies = new String[2];
 
-        this.suggestionTimer = new Timer("Highlight Thread", true);
+        this.suggestionTimer = new Timer("Suggestion Timer", true);
 
         this.popThread = new Thread("Pop Task Thread");
         this.popThread.setDaemon(true);

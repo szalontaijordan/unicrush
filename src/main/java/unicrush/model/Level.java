@@ -181,6 +181,7 @@ public final class Level implements Transposable {
      */
     public static Integer[][] createCoordinates(String template) {
         return Arrays.stream(template.split(";"))
+                .filter(coor -> coor.length() > 0)
                 .map(coor -> Arrays.stream(coor.split(","))
                 .map(Integer::parseInt)
                 .toArray(Integer[]::new))
