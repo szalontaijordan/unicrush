@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package unicrush.model;
 
 import org.junit.After;
@@ -11,6 +6,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,11 +15,14 @@ import org.junit.Assert;
  */
 public class ValidatorTest {
     
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidatorTest.class);
+    
     public ValidatorTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
+        LOGGER.info("Testing class Validator");
     }
     
     @AfterClass
@@ -42,6 +42,7 @@ public class ValidatorTest {
      */
     @Test
     public void testIsEndGameSituation() {
+        LOGGER.info("- Testing method isEndGameSituation");
     }
 
     /**
@@ -49,6 +50,7 @@ public class ValidatorTest {
      */
     @Test
     public void testIsMaxScore() {
+        LOGGER.info("- Testing method isMaxScore");
     }
 
     /**
@@ -56,6 +58,7 @@ public class ValidatorTest {
      */
     @Test
     public void testIsNoMoreSteps() {
+        LOGGER.info("- Testing method isNoMoreSteps");
     }
 
     /**
@@ -63,6 +66,7 @@ public class ValidatorTest {
      */
     @Test
     public void testIsTwoSelected() {
+        LOGGER.info("- Testing method isTwoSelected");
     }
 
     /**
@@ -70,6 +74,7 @@ public class ValidatorTest {
      */
     @Test
     public void testIsMaxIterations() {
+        LOGGER.info("- Testing method isMaxIterations");
     }
 
     /**
@@ -77,6 +82,7 @@ public class ValidatorTest {
      */
     @Test
     public void testIsNoIterations() {
+        LOGGER.info("- Testing method isNoIterations");
     }
 
     /**
@@ -84,6 +90,7 @@ public class ValidatorTest {
      */
     @Test
     public void testIsEmptyString() {
+        LOGGER.info("- Testing method isEmptyString");
     }
 
     /**
@@ -91,6 +98,7 @@ public class ValidatorTest {
      */
     @Test
     public void testGetChecks() {
+        LOGGER.info("- Testing method getChecks");
     }
     
 }

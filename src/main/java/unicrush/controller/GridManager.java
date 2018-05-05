@@ -1,4 +1,4 @@
-package unicrush.model;
+package unicrush.controller;
 
 /*-
  * #%L
@@ -34,7 +34,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import unicrush.controller.Main;
+import unicrush.model.CandyCrushGame;
+import unicrush.model.Level;
+import unicrush.model.Validator;
 
 /**
  * Class for keeping the grid and the level consistent.
@@ -109,7 +111,15 @@ public final class GridManager {
             public void run() {
                 LOGGER.debug("Highlighted coordinates: {}", suggestedArea);
                 suggestedArea = game.getManager().getAvailableMoves();
-                showSuggestionMarkers();
+
+                if (validator.isEmptyString(suggestedArea)) {
+                    LOGGER.warn("No more possible steps, reseting...");
+                    game.getManager().reset();
+                    game.getManager().process();
+                    renderBoardState(game.getCurrentLevel().getBoardState());
+                } else {
+                    showSuggestionMarkers();
+                }
             }
         }, Main.HELP_INTERVAL, Main.HELP_INTERVAL);
     }

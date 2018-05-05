@@ -52,7 +52,7 @@ public final class LevelManager {
         this.iterations = 0;
         this.sum = 0;
     }
-    
+
     /**
      * Constructs an object for a game, with no level to manage.
      */
@@ -119,7 +119,20 @@ public final class LevelManager {
      * Resetting the {@code board} based on the original board state.
      */
     public void reset() {
-        level = new Level.Builder(level).fillBoard(level.getInitialState()).build();
+        String[] boardStates = level.getInitialState().split(";", level.getBoardSize());
+        for (int i = 0; i < boardStates.length; i++) {
+            for (int j = 0; j < boardStates[i].length(); j++) {
+                if (boardStates[i].charAt(j) == 'x') {
+                    level.set(i, j, null);
+                } else {
+                    level.set(i, j, new Candy(Candy.getStateFromChar(boardStates[i].charAt(j))));
+                }
+            }
+        }
+
+        if (level.isTransposed()) {
+            level.transpose();
+        }
     }
 
     /**
@@ -148,8 +161,13 @@ public final class LevelManager {
      * Returns a template string containing the coordinates of a box, in which a move is possible.
      *
      * <p>
-     * This method finds a single possible move. More specific, the one horizontal box, which is the
-     * closest to the top of the level.</p>
+     * This method looks for available moves in the following order:</p>
+     * <ol>
+     * <li>row + inline</li>
+     * <li>row + box</li>
+     * <li>column + inline</li>
+     * <li>column + box</li>
+     * </ol>
      *
      * @return a string representing the coordinates of a box in which a move is possible
      */
@@ -163,7 +181,7 @@ public final class LevelManager {
             level.transpose();
 
             LOGGER.debug("Vertical processing..");
-            possibleCoordinates += lookForMoves();
+            possibleCoordinates = lookForMoves();
             level.transpose();
         }
 
@@ -205,10 +223,16 @@ public final class LevelManager {
 
                 coor = inlineMatch(top3, levelStates[i], i);
 
-                if (coor.length() == 0) {
-                    coor = reactangleMatch(top3, bot3, i, j);
-                } else {
+                if (coor.length() != 0) {
                     return coor;
+                } else {
+                    coor = reactangleMatch(top3, bot3, i, j);
+                }
+
+                if (coor.length() != 0) {
+                    return coor;
+                } else {
+                    continue;
                 }
             }
         }
@@ -292,9 +316,8 @@ public final class LevelManager {
     /**
      * All {@code Candy} instances "fall" when there's empty space in their column.
      *
-     * @return 60 multiplied by the {@code number of Candy instances} in {@code Candy.State.EMPTY},
-     * multiplied by the {@code number of blocks} (one block = three or more {@code Candy} instances
-     * in a row or column)
+     * @return the score that is calculated by the following formula:
+     * <pre>EMPTY_CANDIES / 3 * EMPTY_CANDIES * 60</pre>
      */
     public int applyGravity() {
         int re = 0;
@@ -373,6 +396,9 @@ public final class LevelManager {
     }
 
     public void setLevel(Level level) {
+        // just to make sure reset everything
+        this.iterations = 0;
+        this.sum = 0;
         this.level = level;
-    }   
+    }
 }

@@ -22,16 +22,14 @@ package unicrush.model;
  * #L%
  */
 
-import unicrush.model.Candy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class with {@code JUnit} unit tests for the class {@code Candy}.
@@ -40,6 +38,8 @@ import org.junit.Test;
  */
 public class CandyTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CandyTest.class);
+    
     private static final Candy.State[] COLOR_STATES = {
         Candy.State.BLUE,
         Candy.State.GREEN,
@@ -57,21 +57,8 @@ public class CandyTest {
 
     @BeforeClass
     public static void setUpClass() {
-        System.out.println("-- Testing class Candy");
+        LOGGER.info("Testing class Candy");
         colorStates = new ArrayList<>(Arrays.asList(COLOR_STATES));
-    }
-
-    @AfterClass
-    public static void tearDownClass() {
-        System.out.println("--");
-    }
-
-    @Before
-    public void setUp() {
-    }
-
-    @After
-    public void tearDown() {
     }
 
     /**
@@ -79,7 +66,7 @@ public class CandyTest {
      */
     @Test
     public void testIsEmpty() {
-        System.out.println("-- -- Testing method isEmpty");
+        LOGGER.info("- Testing method isEmpty");
 
         colorStates.stream()
                 .forEach(state -> Assert.assertFalse(new Candy(state).isEmpty()));
@@ -93,7 +80,7 @@ public class CandyTest {
      */
     @Test
     public void testGetRandomColorState() {
-        System.out.println("-- -- Testing method getRandomColorState");
+        LOGGER.info("- Testing method getRandomColorState");
         for (int i = 0; i < 10; i++) {
             Candy.State state = Candy.getRandomColorState();
 
@@ -106,7 +93,7 @@ public class CandyTest {
      */
     @Test
     public void testGetStateFromChar() {
-        System.out.println("-- -- Testing method getStateFromChar");
+        LOGGER.info("- Testing method getStateFromChar");
 
         char[] colorChars = "BGOPRY".toCharArray();
 
@@ -124,7 +111,7 @@ public class CandyTest {
      */
     @Test
     public void testCompare() {
-        System.out.println("-- -- Testing method compare");
+        LOGGER.info("- Testing method compare");
 
         int expResult;
         int result;

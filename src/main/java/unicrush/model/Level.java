@@ -112,7 +112,7 @@ public final class Level implements Transposable {
     public void transpose() {
         this.transposed = !this.transposed;
     }
-    
+
     @Override
     public Candy get(int i, int j) {
         try {
@@ -304,9 +304,13 @@ public final class Level implements Transposable {
         /**
          * Sets the board 2D-array with random {@code Candy} instances.
          *
+         * <p>
+         * It is important that you must put walls first into a level, so only the real parts of the
+         * board will be filled.</p>
+         *
          * @return {@code this} so we can chain builder methods
          */
-        public Builder fillBoard() {
+        public Builder fillBoard() throws IllegalArgumentException {
             this.board = fillUpRandom();
             return this;
         }
@@ -314,10 +318,14 @@ public final class Level implements Transposable {
         /**
          * Sets the board 2D-array with {@code Candy} instances specified in a template string.
          *
+         * <p>
+         * It is important that you must put walls first into a level, and the template string must
+         * be consistent with these walls</p>
+         *
          * @param template the template string representing information about the new board
          * @return {@code this} so we can chain builder methods
          */
-        public Builder fillBoard(String template) {
+        public Builder fillBoard(String template) throws IllegalArgumentException {
             this.board = fillUpFromState(template);
             return this;
         }

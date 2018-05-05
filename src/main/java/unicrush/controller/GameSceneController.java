@@ -22,7 +22,6 @@ package unicrush.controller;
  * #L%
  */
 import unicrush.model.LevelManager;
-import unicrush.model.GridManager;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;

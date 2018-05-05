@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -18,19 +20,28 @@ import org.junit.Assert;
  */
 public class CandyCrushGameTest {
     
+    private static final Logger LOGGER = LoggerFactory.getLogger(CandyCrushGameTest.class);
+    
+    private CandyCrushGame game;
+    
     public CandyCrushGameTest() {
+        this.game = new CandyCrushGame();
     }
     
     @BeforeClass
     public static void setUpClass() {
+        LOGGER.info("Testing class CandyCrushGame");
+        // setup DB connection
     }
     
     @AfterClass
     public static void tearDownClass() {
+        // close DB connection
     }
     
     @Before
     public void setUp() {
+        
     }
     
     @After
@@ -38,10 +49,12 @@ public class CandyCrushGameTest {
     }
     
     /**
-     * Test of getCurrentLevel method, of class CandyCrushGame.
+     * Test of initLevels method, of class CandyCrushGame.
      */
     @Test
-    public void testGetCurrentLevel() {
+    public void testInitLevels() {
+        // TODO implement JPA, then create individual level instaces with
+        //      the builer, and test some of them
     }
     
 }
