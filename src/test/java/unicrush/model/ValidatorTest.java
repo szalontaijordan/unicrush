@@ -1,11 +1,11 @@
 package unicrush.model;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
+import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,27 +14,26 @@ import org.slf4j.LoggerFactory;
  * @author szalontaijordan
  */
 public class ValidatorTest {
-    
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidatorTest.class);
-    
+    private static Validator validator;
+    private static CandyCrushGame game;
+
     public ValidatorTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
         LOGGER.info("Testing class Validator");
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
+        validator = Validator.getInstance();
+
+        game = new CandyCrushGame();
+        List<Level> levels = new ArrayList<>();
+        levels.add(new Level.Builder(Level.Type.STANDARD, 5)
+                .withCompleteScore(100).fillBoard().build());
+        game.setLevels(levels);
+        game.setCurrentLevelIndex(0);
+        game.setPlayerScore(101);
     }
 
     /**
@@ -43,6 +42,12 @@ public class ValidatorTest {
     @Test
     public void testIsEndGameSituation() {
         LOGGER.info("- Testing method isEndGameSituation");
+
+        Assert.assertTrue(validator.isEndGameSituation(game, 0));
+
+        game.setPlayerScore(0);
+        Assert.assertTrue(validator.isEndGameSituation(game, 0));
+        Assert.assertFalse(validator.isEndGameSituation(game, 1));
     }
 
     /**
@@ -51,6 +56,12 @@ public class ValidatorTest {
     @Test
     public void testIsMaxScore() {
         LOGGER.info("- Testing method isMaxScore");
+
+        game.setPlayerScore(101);
+        Assert.assertTrue(validator.isMaxScore(game));
+
+        game.setPlayerScore(0);
+        Assert.assertFalse(validator.isMaxScore(game));
     }
 
     /**
@@ -59,6 +70,12 @@ public class ValidatorTest {
     @Test
     public void testIsNoMoreSteps() {
         LOGGER.info("- Testing method isNoMoreSteps");
+
+        Assert.assertTrue(validator.isNoMoreSteps(0));
+
+        for (int i = 0; i < 100; i++) {
+            Assert.assertFalse(validator.isNoMoreSteps((int) (Math.random() * 100) + 1));
+        }
     }
 
     /**
@@ -67,6 +84,11 @@ public class ValidatorTest {
     @Test
     public void testIsTwoSelected() {
         LOGGER.info("- Testing method isTwoSelected");
+
+        Assert.assertTrue(validator.isTwoSelected("0,0;0,1"));
+        Assert.assertFalse(validator.isTwoSelected("null;0,1"));
+        Assert.assertFalse(validator.isTwoSelected("null;null"));
+        Assert.assertFalse(validator.isTwoSelected("0,0;null"));
     }
 
     /**
@@ -75,6 +97,15 @@ public class ValidatorTest {
     @Test
     public void testIsMaxIterations() {
         LOGGER.info("- Testing method isMaxIterations");
+
+        Assert.assertTrue(validator.isMaxIterations(CandyCrushGame.MAX_ITERATION));
+
+        for (int i = 0; i < 100; i++) {
+            int rand = (int) (Math.random() * 100);
+            if (rand != CandyCrushGame.MAX_ITERATION) {
+                Assert.assertFalse(validator.isMaxIterations(rand));
+            }
+        }
     }
 
     /**
@@ -83,6 +114,12 @@ public class ValidatorTest {
     @Test
     public void testIsNoIterations() {
         LOGGER.info("- Testing method isNoIterations");
+
+        Assert.assertTrue(validator.isNoIterations(0));
+
+        for (int i = 0; i < 100; i++) {
+            Assert.assertFalse(validator.isNoIterations((int) (Math.random() * 100) + 1));
+        }
     }
 
     /**
@@ -91,14 +128,12 @@ public class ValidatorTest {
     @Test
     public void testIsEmptyString() {
         LOGGER.info("- Testing method isEmptyString");
+        
+        Assert.assertTrue(validator.isEmptyString(""));
+        Assert.assertTrue(validator.isEmptyString(null));
+        Assert.assertFalse(validator.isEmptyString("empty"));
+        Assert.assertFalse(validator.isEmptyString("candy crush"));
+        Assert.assertFalse(validator.isEmptyString("????"));
     }
 
-    /**
-     * Test of getChecks method, of class Validator.
-     */
-    @Test
-    public void testGetChecks() {
-        LOGGER.info("- Testing method getChecks");
-    }
-    
 }

@@ -66,7 +66,7 @@ public final class GridManager {
     public GridManager(GridPane grid, CandyCrushGame game) {
         this.grid = grid;
         this.game = game;
-        this.validator = new Validator();
+        this.validator = Validator.getInstance();
 
         this.suggestedArea = "";
         this.selectedCandies = new String[2];
@@ -153,7 +153,7 @@ public final class GridManager {
      * Sets the background of all the nodes in the grid to the corresponding image of the candy in
      * the board.
      *
-     * @param boardState
+     * @param boardState the board state we render
      */
     public void renderBoardState(String boardState) {
         String[] state = boardState.split(";");

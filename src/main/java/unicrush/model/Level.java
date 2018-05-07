@@ -174,19 +174,11 @@ public final class Level implements Transposable {
      *     new Integer[][]{ { 1, 2 }, { 3, 4 }, { 5, 6 } }
      * </pre>
      *
-     * <p>
-     * The regular expression pattern is from StackOverflow, from this article:
-     * {@link https://stackoverflow.com/questions/3175802/regex-colon-separated-list}
-     * </p>
-     *
      * @param template a string that represents coordinates like in the example above
      * @return a 2D-array that represents coordinates
      */
     public static Integer[][] createCoordinates(String template) {
-        if (template == null) {
-            return null;
-        }
-        if (!template.matches("\\s*([0-9]+,[0-9]+)\\s*(?:(?:;(?:\\s*([0-9]+,[0-9]+)+\\s*)?)+)?")) {
+        if (!Validator.getInstance().isTemplate(template)) {
             return null;
         }
         template = template.replaceAll("\\s*", "");

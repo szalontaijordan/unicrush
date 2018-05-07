@@ -71,7 +71,7 @@ public class GameSceneController implements Initializable {
             game.initLevels();
             game.startCurrentLevel();
 
-            validator = new Validator();
+            validator = Validator.getInstance();
 
             preprocessLevelWith(game.getManager());
 

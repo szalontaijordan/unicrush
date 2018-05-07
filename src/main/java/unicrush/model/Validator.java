@@ -7,13 +7,9 @@ package unicrush.model;
  */
 public class Validator {
 
-    private int checks;
+    private static Validator instance;
 
-    /**
-     * Constructs an object that is responsible for doing validation checks during the game.
-     */
-    public Validator() {
-        this.checks = 0;
+    private Validator() {
     }
 
     /**
@@ -29,7 +25,6 @@ public class Validator {
      * zero, {@code false} otherwise
      */
     public boolean isEndGameSituation(Game game, int steps) {
-        checks++;
         return isMaxScore(game) || isNoMoreSteps(steps);
     }
 
@@ -62,8 +57,7 @@ public class Validator {
      * otherwise
      */
     public boolean isTwoSelected(String selectedCandies) {
-        checks++;
-        return !selectedCandies.contains("null");
+        return isTemplate(selectedCandies);
     }
 
     /**
@@ -74,7 +68,6 @@ public class Validator {
      * @return {@code true} if the parameter equals the defined constant, {@code false} otherwise
      */
     public boolean isMaxIterations(int iterations) {
-        checks++;
         return iterations == CandyCrushGame.MAX_ITERATION;
     }
 
@@ -91,19 +84,53 @@ public class Validator {
     /**
      * Returns if the given string is either null or empty.
      *
-     * @param string the string object we inspect
+     * @param str the string object we inspect
      * @return {@code true} if the string is either null or empty, {@code false} otherwise
      */
-    public boolean isEmptyString(String string) {
-        return string == null || string.equals("");
+    public boolean isEmptyString(String str) {
+        return str == null || str.equals("");
+    }
+
+    /**
+     * Returns if the given string is a template string containing coordinates
+     *
+     * <p>
+     * The regular expression pattern is from StackOverflow, from <a
+     * href="https://stackoverflow.com/questions/3175802/regex-colon-separated-list">this
+     * article</a>
+     * </p>
+     *
+     * @param str the string object we inspect
+     * @return {@code true} if the string matches the regular expression that validates any string
+     * with coordinates separated by semi-colons, {@code false} otherwise (coordinates are numbers
+     * separated by commas)
+     */
+    public boolean isTemplate(String str) {
+        return isTemplate(str, "\\s*([0-9]+,[0-9]+)\\s*(?:(?:;(?:\\s*([0-9]+,[0-9]+)+\\s*)?)+)?");
+    }
+
+    /**
+     * Returns if the given string is a template string containing coordinates depending on the
+     * given regular expression.
+     *
+     * @param str the string object we inspect
+     * @param regex the regex that determines if a string is a template or not
+     * @return {@code true} if the string matches the regular expression that validates it,
+     * {@code false} otherwise
+     */
+    public boolean isTemplate(String str, String regex) {
+        return !isEmptyString(str) && str.matches(regex);
     }
 
     private boolean isZero(int value) {
-        checks++;
         return value == 0;
     }
 
-    public int getChecks() {
-        return checks;
+    public static Validator getInstance() {
+        if (instance == null) {
+            instance = new Validator();
+        }
+
+        return instance;
     }
 }
