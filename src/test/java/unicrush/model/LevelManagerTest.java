@@ -58,7 +58,7 @@ public class LevelManagerTest {
             + "GRxPO;"
             + "OPGRO;"
             + "xBOGx";
-    
+
     public static final String CHAIN_REACTION_LEVEL
             = "xRGBx;"
             + "RBBRG;"
@@ -73,22 +73,23 @@ public class LevelManagerTest {
             + "GBBRB;"
             + "xBGPx";
 
+    private static Level.Builder builder;
+
     private LevelManager manager;
-    private Level.Builder builder;
 
     public LevelManagerTest() {
         this.manager = new LevelManager();
-
-        String template = "0,0;4,0;0,4;4,4;2,2";
-        this.builder = new Level.Builder(Level.Type.STANDARD, BOARD_SIZE)
-                .withCompleteScore(Integer.MAX_VALUE)
-                .withAvailableSteps(Integer.MAX_VALUE)
-                .putWalls(Level.createCoordinates(template));
     }
 
     @BeforeClass
     public static void setUpClass() {
         LOGGER.info("Testing class LevelManager");
+
+        String template = "0,0;4,0;0,4;4,4;2,2";
+        builder = new Level.Builder(Level.Type.STANDARD, BOARD_SIZE)
+                .withCompleteScore(Integer.MAX_VALUE)
+                .withAvailableSteps(Integer.MAX_VALUE)
+                .putWalls(Level.createCoordinates(template));
     }
 
     /**
@@ -172,16 +173,16 @@ public class LevelManagerTest {
 
         boolean isSuccesfulSwap;
         manager.setLevel(builder.fillBoard(INLINE_ROW_MATCH_FIRST_LEVEL).build());
-        
+
         isSuccesfulSwap = manager.swap(new Integer[][]{{1, 2}, {1, 3}});
         Assert.assertTrue(isSuccesfulSwap);
-        
+
         isSuccesfulSwap = manager.swap(new Integer[][]{{1, 3}, {1, 2}});
         Assert.assertTrue(isSuccesfulSwap);
-        
+
         isSuccesfulSwap = manager.swap(new Integer[][]{{0, 2}, {1, 3}});
         Assert.assertFalse(isSuccesfulSwap);
-        
+
         isSuccesfulSwap = manager.swap(new Integer[][]{{1, 2}, {1, 2}});
         Assert.assertFalse(isSuccesfulSwap);
     }
@@ -192,19 +193,19 @@ public class LevelManagerTest {
     @Test
     public void testGetAvailableMoves() {
         LOGGER.info("- Testing method getAvailableMoves");
-        
+
         manager.setLevel(builder.fillBoard(NO_MATCH_LEVEL).build());
         Assert.assertEquals("", manager.getAvailableMoves());
-        
+
         manager.setLevel(builder.fillBoard(INLINE_ROW_MATCH_FIRST_LEVEL).build());
         Assert.assertEquals("1,0;1,1;1,2;1,3;", manager.getAvailableMoves());
-        
+
         manager.setLevel(builder.fillBoard(INLINE_COL_MATCH_FIRST_LEVEL).build());
         Assert.assertEquals("1,0;1,1;1,2;1,3;", manager.getAvailableMoves());
-        
+
         manager.setLevel(builder.fillBoard(BOX_ROW_MATCH_FIRST_LEVEL).build());
         Assert.assertEquals("2,0;3,0;2,1;3,1;2,2;3,2;", manager.getAvailableMoves());
-        
+
         manager.setLevel(builder.fillBoard(BOX_COL_MATCH_FIRST_LEVEL).build());
         Assert.assertEquals("0,0;0,1;1,0;1,1;2,0;2,1;", manager.getAvailableMoves());
     }
@@ -215,13 +216,13 @@ public class LevelManagerTest {
     @Test
     public void testPopAllMarked() {
         LOGGER.info("- Testing method popAllMarked");
-        
+
         boolean isSuccessfulPop;
-        
+
         manager.setLevel(builder.fillBoard(CHAIN_REACTION_LEVEL).build());
         isSuccessfulPop = manager.popAllMarked();
         Assert.assertTrue(isSuccessfulPop);
-        
+
         manager.setLevel(builder.fillBoard(NO_MATCH_LEVEL).build());
         isSuccessfulPop = manager.popAllMarked();
         Assert.assertFalse(isSuccessfulPop);
@@ -233,17 +234,17 @@ public class LevelManagerTest {
     @Test
     public void testApplyGravity() {
         LOGGER.info("- Testing method applyGravity");
-        
+
         int sum;
-        
+
         manager.setLevel(builder.fillBoard(ALL_EMPTY_LEVEL).build());
-        sum =  manager.applyGravity();
+        sum = manager.applyGravity();
         Assert.assertEquals(20 / 3 * 20 * 60, sum);
-        
+
         manager.setLevel(builder.fillBoard(NO_MATCH_LEVEL).build());
         sum = manager.applyGravity();
         Assert.assertEquals(0, sum);
-        
+
         manager.setLevel(builder.fillBoard(CHAIN_REACTION_LEVEL.replace("OOO", "EEE")).build());
         sum = manager.applyGravity();
         Assert.assertEquals(3 / 3 * 3 * 60, sum);

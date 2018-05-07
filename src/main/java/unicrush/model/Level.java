@@ -164,20 +164,33 @@ public final class Level implements Transposable {
      *
      * <p>
      * The idea of this, is that in the template we list some coordinates separated, and we parse
-     * this template string.</p>
+     * this template string. This method ignores whitesapce between the coordinates, because it is
+     * using a regular expression pattern.</p>
      * <p>
-     * For example {@code Level.Builder.createCoordinates("1,2;3,4;5,6");} returns
+     * For example {@code Level.Builder.createCoordinates("1,2 ; 3,4 ; 5,6");} returns
      * </p>
      *
      * <pre>
      *     new Integer[][]{ { 1, 2 }, { 3, 4 }, { 5, 6 } }
      * </pre>
      *
+     * <p>
+     * The regular expression pattern is from StackOverflow, from this article:
+     * {@link https://stackoverflow.com/questions/3175802/regex-colon-separated-list}
+     * </p>
      *
      * @param template a string that represents coordinates like in the example above
      * @return a 2D-array that represents coordinates
      */
     public static Integer[][] createCoordinates(String template) {
+        if (template == null) {
+            return null;
+        }
+        if (!template.matches("\\s*([0-9]+,[0-9]+)\\s*(?:(?:;(?:\\s*([0-9]+,[0-9]+)+\\s*)?)+)?")) {
+            return null;
+        }
+        template = template.replaceAll("\\s*", "");
+        
         return Arrays.stream(template.split(";"))
                 .filter(coor -> coor.length() > 0)
                 .map(coor -> Arrays.stream(coor.split(","))
@@ -297,7 +310,7 @@ public final class Level implements Transposable {
          * @return {@code this} so we can chain builder methods
          */
         public Builder putWalls(final Integer[][] walls) {
-            this.walls = walls.clone();
+            this.walls = walls;
             return this;
         }
 
@@ -340,6 +353,9 @@ public final class Level implements Transposable {
          * @return a {@code Level} object with the builded fields
          */
         public Level build() {
+            if (this.board == null) {
+                throw new IllegalArgumentException("Board is not set yet.");
+            }
             if (this.initialState == null || this.initialState.equals("")) {
                 this.initialState = setupInitialState();
             }
@@ -356,11 +372,7 @@ public final class Level implements Transposable {
                     .collect(Collectors.joining(";"));
         }
 
-        private Candy[][] fillUpRandom() throws IllegalArgumentException {
-            if (walls == null) {
-                throw new IllegalArgumentException("Walls must be set first!");
-            }
-
+        private Candy[][] fillUpRandom() {
             Candy[][] newBoard = new Candy[boardSize][boardSize];
 
             for (int i = 0; i < boardSize; i++) {
@@ -369,16 +381,14 @@ public final class Level implements Transposable {
                 }
             }
 
-            Arrays.stream(walls).forEach(wall -> newBoard[wall[0]][wall[1]] = null);
+            if (walls != null) {
+                Arrays.stream(walls).forEach(wall -> newBoard[wall[0]][wall[1]] = null);
+            }
 
             return newBoard;
         }
 
         private Candy[][] fillUpFromState(String template) throws IllegalArgumentException {
-            if (walls == null) {
-                throw new IllegalArgumentException("The walls must be set, before altering the board!");
-            }
-
             Candy[][] newBoard = new Candy[boardSize][boardSize];
             String[] state = template.split(";");
 
