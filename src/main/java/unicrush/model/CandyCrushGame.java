@@ -23,8 +23,12 @@ package unicrush.model;
  */
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unicrush.model.db.LevelDAO;
+import unicrush.model.db.LevelDAOFactory;
+import unicrush.model.db.LevelPOJO;
 
 /**
  * Class representing the game with a list of levels you can play with the help of the defined
@@ -70,17 +74,36 @@ public class CandyCrushGame implements Game {
 
     @Override
     public void initLevels() throws Exception {
-        // creating level, we didn't set up any DB connection yet
-        String template = "0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7";
+        if (levels != null && !levels.isEmpty()) {
+            levels.clear();
+            LOGGER.warn("Clearing level list");
+        }
+        LOGGER.info("Creating DAO for levels");
+        LevelDAO levelDao = LevelDAOFactory.getInstance().createLevelDAO();
 
-        Level l = new Level.Builder(Level.Type.STANDARD, 8)
-                .withCompleteScore(10000)
-                .withAvailableSteps(20)
-                .putWalls(Level.createCoordinates(template))
+        LOGGER.info("Creating new test level");
+        //levelDao.create(100, 8, "0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7", 5000, 20);
+
+        LOGGER.info("Fetching levels");
+        levels = levelDao.findAll().stream()
+                .map(pojo -> buildLevelFromPojo(pojo))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Builds a {@code Level} instance from a plain old java object representing a level entity in
+     * the database.
+     *
+     * @param pojo the entity that represents a level in the database
+     * @return a {@code Level} instance based on the entity
+     */
+    public Level buildLevelFromPojo(LevelPOJO pojo) {
+        return new Level.Builder(pojo.getLevelId(), Level.Type.STANDARD, pojo.getBoardSize())
+                .withCompleteScore(pojo.getScoreToComplete())
+                .withAvailableSteps(pojo.getAvailableSteps())
+                .putWalls(Level.createCoordinates(pojo.getWalls()))
                 .fillBoard()
                 .build();
-
-        levels.add(l);
     }
 
     @Override

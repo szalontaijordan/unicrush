@@ -43,7 +43,7 @@ public final class Level implements Transposable {
 
     private final int boardSize;
     private final int scoreToComplete;
-
+    private final int ID;
     private final Type type;
     private final String initialState;
     private final Integer[][] walls;
@@ -61,6 +61,7 @@ public final class Level implements Transposable {
      * @param walls the template {@code String} representing the coordinates of the walls
      */
     private Level(Builder builder) {
+        this.ID = builder.ID;
         this.boardSize = builder.boardSize;
         this.scoreToComplete = builder.scoreToComplete;
         this.type = builder.type;
@@ -190,7 +191,7 @@ public final class Level implements Transposable {
                 .toArray(Integer[]::new))
                 .toArray(Integer[][]::new);
     }
-
+    
     public int getBoardSize() {
         return boardSize;
     }
@@ -223,6 +224,10 @@ public final class Level implements Transposable {
         return transposed;
     }
 
+    public int getID() {
+        return ID;
+    }    
+
     /**
      * Static class for the level that follows the builder pattern.
      */
@@ -230,7 +235,7 @@ public final class Level implements Transposable {
 
         private final Type type;
         private final int boardSize;
-
+        private int ID;
         private int scoreToComplete;
         private String initialState;
         private Integer[][] walls;
@@ -248,29 +253,14 @@ public final class Level implements Transposable {
          * @throws IllegalArgumentException if the {@code type} is {@code null} or the
          * {@code boardSize} is less than 2
          */
-        public Builder(Type type, int boardSize) throws IllegalArgumentException {
+        public Builder(int ID, Type type, int boardSize) throws IllegalArgumentException {
             if (type == null || boardSize < 2) {
                 throw new IllegalArgumentException("Invalid level type, or too small board!");
             }
+            this.ID = ID;
             this.type = type;
             this.boardSize = boardSize;
             this.transposed = false;
-        }
-
-        /**
-         * Constructs a builder instance, which fields will be based on an existing level object.
-         *
-         * @param src the level object as a starting point
-         */
-        public Builder(Level src) {
-            this.type = src.type;
-            this.boardSize = src.boardSize;
-            this.transposed = src.transposed;
-            this.scoreToComplete = src.scoreToComplete;
-            this.availableSteps = src.availableSteps;
-            this.board = src.board.clone();
-            this.walls = src.walls.clone();
-            this.initialState = src.initialState;
         }
 
         /**

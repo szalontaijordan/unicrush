@@ -29,7 +29,7 @@ public class ValidatorTest {
 
         game = new CandyCrushGame();
         List<Level> levels = new ArrayList<>();
-        levels.add(new Level.Builder(Level.Type.STANDARD, 5)
+        levels.add(new Level.Builder(0, Level.Type.STANDARD, 5)
                 .withCompleteScore(100).fillBoard().build());
         game.setLevels(levels);
         game.setCurrentLevelIndex(0);

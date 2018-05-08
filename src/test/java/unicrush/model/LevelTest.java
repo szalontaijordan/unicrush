@@ -25,7 +25,7 @@ public class LevelTest {
     public static void setUpClass() {
         LOGGER.info("Testing class Level");
 
-        level = new Level.Builder(Level.Type.STANDARD, 5)
+        level = new Level.Builder(0, Level.Type.STANDARD, 5)
                 .withAvailableSteps(Integer.MAX_VALUE)
                 .withCompleteScore(Integer.MAX_VALUE)
                 .putWalls(new Integer[][]{{0, 0}})
