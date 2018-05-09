@@ -27,6 +27,8 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import unicrush.model.db.DAOFactory;
+import unicrush.model.db.ScoreDAO;
 
 /**
  * FXML Controller class.
@@ -40,7 +42,8 @@ public class EndGameController implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        ScoreDAO scoreDao = DAOFactory.getInstance().createScoreDAO();
+        scoreDao.create(960, 100, 5000);
     }    
     
     public void setGrat(String text) {

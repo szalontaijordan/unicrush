@@ -47,6 +47,10 @@ public class DAOFactory implements AutoCloseable {
         return new UserDAOSimple(entityManager);
     }
 
+    public ScoreDAO createScoreDAO() {
+        return new ScoreDAOSimple(entityManager);
+    }
+    
     @Override
     public void close() throws Exception {
         entityManager.close();
