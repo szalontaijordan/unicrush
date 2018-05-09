@@ -65,12 +65,14 @@ public class GameSceneController implements Initializable {
     private GridManager gridManager;
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        try {
-            game = new CandyCrushGame();
-            game.initLevels();
-            game.startCurrentLevel();
+    public void initialize(URL location, ResourceBundle resources) {   
+    }
 
+    public void init(CandyCrushGame game) {
+        try {
+            // we init the game in the other scene
+            this.game = game;
+            game.startCurrentLevel();
             validator = Validator.getInstance();
 
             preprocessLevelWith(game.getManager());
@@ -86,7 +88,7 @@ public class GameSceneController implements Initializable {
             LOGGER.error(ex.getMessage());
         }
     }
-
+    
     /**
      * Preprocesses the current level of the game with the given {@code LevelManager}.
      *
@@ -133,7 +135,7 @@ public class GameSceneController implements Initializable {
                 message = "There are no more steps!";
             }
 
-            Main.loadNewScene(stage, Main.SCENES[1], "Game Over")
+            Main.loadNewScene(stage, Main.SCENES[2], "Game Over")
                     .<EndGameController>getController()
                     .setGrat(message + " Your score is " + game.getPlayerScore());
         } catch (NumberFormatException | IOException e) {

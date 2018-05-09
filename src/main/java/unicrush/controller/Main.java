@@ -46,7 +46,7 @@ public class Main extends Application {
      * The names of the existing FXML files.
      */
     public static final String[] SCENES = {
-        "GameScene", "EndGameScene"
+        "LogInScene", "GameScene", "EndGameScene"
     };
 
     /**
@@ -59,7 +59,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Application started!");
-        loadNewScene(stage, SCENES[0], "Game Scene");
+        loadNewScene(stage, SCENES[0], "Login Scene");
         LOGGER.info("Switched to root scene");
     }
 

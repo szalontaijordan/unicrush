@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import unicrush.model.db.LevelDAO;
-import unicrush.model.db.LevelDAOFactory;
-import unicrush.model.db.LevelPOJO;
+import unicrush.model.db.DAOFactory;
+import unicrush.model.db.LevelEntity;
 
 /**
  * Class representing the game with a list of levels you can play with the help of the defined
@@ -46,6 +46,7 @@ public class CandyCrushGame implements Game {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CandyCrushGame.class);
 
+    private String playerName;
     private int playerScore;
     private int currentLevelIndex;
 
@@ -79,10 +80,7 @@ public class CandyCrushGame implements Game {
             LOGGER.warn("Clearing level list");
         }
         LOGGER.info("Creating DAO for levels");
-        LevelDAO levelDao = LevelDAOFactory.getInstance().createLevelDAO();
-
-        LOGGER.info("Creating new test level");
-        //levelDao.create(100, 8, "0,0;1,0;6,0;7,0;0,7;1,7;6,7;7,7", 5000, 20);
+        LevelDAO levelDao = DAOFactory.getInstance().createLevelDAO();
 
         LOGGER.info("Fetching levels");
         levels = levelDao.findAll().stream()
@@ -97,7 +95,7 @@ public class CandyCrushGame implements Game {
      * @param pojo the entity that represents a level in the database
      * @return a {@code Level} instance based on the entity
      */
-    public Level buildLevelFromPojo(LevelPOJO pojo) {
+    public Level buildLevelFromPojo(LevelEntity pojo) {
         return new Level.Builder(pojo.getLevelId(), Level.Type.STANDARD, pojo.getBoardSize())
                 .withCompleteScore(pojo.getScoreToComplete())
                 .withAvailableSteps(pojo.getAvailableSteps())
@@ -121,6 +119,10 @@ public class CandyCrushGame implements Game {
         return playerScore;
     }
 
+    public String getPlayerName() {
+        return playerName;
+    }
+
     public List<Level> getLevels() {
         return levels;
     }
@@ -135,6 +137,10 @@ public class CandyCrushGame implements Game {
 
     public void setLevels(List<Level> levels) {
         this.levels = levels;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public void setCurrentLevelIndex(int currentLevelIndex) {

@@ -12,7 +12,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "UC_LEVEL")
-public class LevelPOJO {
+public class LevelEntity {
 
     @Id
     @Column(name = "id")
@@ -30,10 +30,10 @@ public class LevelPOJO {
     @Column(name = "steps")
     private int availableSteps;
 
-    public LevelPOJO() {
+    public LevelEntity() {
     }
 
-    public LevelPOJO(int id, int boardSize, String walls, int scoreToComplete, int availableSteps) {
+    public LevelEntity(int id, int boardSize, String walls, int scoreToComplete, int availableSteps) {
         this.levelId = id;
         this.boardSize = boardSize;
         this.walls = walls;

@@ -9,20 +9,20 @@ import javax.persistence.Persistence;
  *
  * @author Szalontai Jordán
  */
-public class LevelDAOFactory implements AutoCloseable {
+public class DAOFactory implements AutoCloseable {
 
-    private static LevelDAOFactory instance;
+    private static DAOFactory instance;
 
     private static EntityManager entityManager;
     private static EntityManagerFactory factory;
 
     static {
-        instance = new LevelDAOFactory();
+        instance = new DAOFactory();
         factory = Persistence.createEntityManagerFactory("UNICRUSH");
         entityManager = factory.createEntityManager();
     }
 
-    private LevelDAOFactory() {
+    private DAOFactory() {
     }
 
     /**
@@ -30,7 +30,7 @@ public class LevelDAOFactory implements AutoCloseable {
      *
      * @return the singleton instance
      */
-    public static LevelDAOFactory getInstance() {
+    public static DAOFactory getInstance() {
         return instance;
     }
 
@@ -40,7 +40,11 @@ public class LevelDAOFactory implements AutoCloseable {
      * @return an object that defines actions for a level entity
      */
     public LevelDAO createLevelDAO() {
-        return new SimpleLevelDAO(entityManager);
+        return new LevelDAOSimple(entityManager);
+    }
+    
+    public UserDAO createUserDAO() {
+        return new UserDAOSimple(entityManager);
     }
 
     @Override

@@ -15,14 +15,14 @@ public interface LevelDAO {
      * @param id the id field of the database entity
      * @return an object representing a level entity in the database
      */
-    public LevelPOJO findLevel(int id);
+    public LevelEntity findLevel(int id);
 
     /**
      * Returns all the level entities that can be found in the database.
      *
      * @return a list containing level entities
      */
-    public List<LevelPOJO> findAll();
+    public List<LevelEntity> findAll();
 
     /**
      * Creates a new level entity in the database with fields based on the given parameters.

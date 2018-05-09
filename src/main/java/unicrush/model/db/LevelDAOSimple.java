@@ -12,7 +12,7 @@ import javax.persistence.TypedQuery;
  *
  * @author Szalontai Jordán
  */
-public class SimpleLevelDAO implements LevelDAO {
+public class LevelDAOSimple implements LevelDAO {
 
     private EntityManager em;
 
@@ -21,19 +21,19 @@ public class SimpleLevelDAO implements LevelDAO {
      *
      * @param em the manager for the entities
      */
-    public SimpleLevelDAO(EntityManager em) {
+    public LevelDAOSimple(EntityManager em) {
         this.em = em;
     }
 
     @Override
-    public LevelPOJO findLevel(int id) {
-        return em.find(LevelPOJO.class, id);
+    public LevelEntity findLevel(int id) {
+        return em.find(LevelEntity.class, id);
     }
 
     @Override
-    public List<LevelPOJO> findAll() {
-        TypedQuery<LevelPOJO> query
-                = em.createQuery("SELECT l FROM LevelPOJO l ORDER BY l.levelId", LevelPOJO.class);
+    public List<LevelEntity> findAll() {
+        TypedQuery<LevelEntity> query
+                = em.createQuery("SELECT l FROM LevelEntity l ORDER BY l.levelId", LevelEntity.class);
 
         return query.getResultList();
     }
@@ -41,7 +41,7 @@ public class SimpleLevelDAO implements LevelDAO {
     @Override
     public void create(int id, int size, String walls, int score, int steps) {
         em.getTransaction().begin();
-        em.persist(new LevelPOJO(id, size, walls, score, steps));
+        em.persist(new LevelEntity(id, size, walls, score, steps));
         em.getTransaction().commit();
     }
 

@@ -33,6 +33,14 @@
     -fx-cursor: move;
 }
 
+.start-button {
+    -fx-pref-width: 171px;
+}
+
+.start-button:hover {
+    -fx-cursor: default;
+}
+
 .selected {
     -fx-background-color: rgba(255,0,0,0.2);
 }
