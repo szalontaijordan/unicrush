@@ -36,9 +36,9 @@ import org.slf4j.LoggerFactory;
  * @author Szalontai Jordán
  */
 public class Main extends Application {
-
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-
+    
     public static final int HELP_INTERVAL = 30000;
     public static final int POP_INTERVAL = 450;
 
@@ -55,12 +55,11 @@ public class Main extends Application {
     public static final String[] MESSAGES = {
         "Sweet", "Delicious", "Divine", "Tasty"
     };
-
+    
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Application started!");
-        loadNewScene(stage, SCENES[0], "Login Scene");
-        LOGGER.info("Switched to root scene");
+        loadNewScene(stage, SCENES[0], "Welcome");
     }
 
     /**
@@ -73,16 +72,17 @@ public class Main extends Application {
      * @throws IOException when there is no FXML file
      */
     public static FXMLLoader loadNewScene(Stage stage, String fxmlResName, String windowText) throws IOException {
+        LOGGER.info("Switch to scene: {}", fxmlResName);
         FXMLLoader fl = new FXMLLoader(Main.class.getResource("/fxml/" + fxmlResName + ".fxml"));
         Parent root = fl.load();
-
+        
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/styles.css");
-
+        
         stage.setTitle(windowText);
         stage.setScene(scene);
         stage.show();
-
+        
         return fl;
     }
 

@@ -1,6 +1,8 @@
 package unicrush.model.db;
 
+import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -9,11 +11,11 @@ import javax.persistence.EntityManager;
 public class ScoreDAOSimple implements ScoreDAO {
 
     private EntityManager em;
-    
+
     public ScoreDAOSimple(EntityManager em) {
         this.em = em;
     }
-    
+
     @Override
     public void create(int userId, int levelId, int score) {
         em.getTransaction().begin();
@@ -23,17 +25,25 @@ public class ScoreDAOSimple implements ScoreDAO {
 
     @Override
     public void update(int userId, int levelId, int score) {
-        // TODO
+        ScoreEntity se = find(userId, levelId);
+        if (score > se.getScore()) {
+            em.getTransaction().begin();
+            se.setScore(score);
+            em.getTransaction().commit();
+        }
     }
 
     @Override
-    public void find(int userId, int levelId) {
-        // TODO
+    public ScoreEntity find(int userId, int levelId) {
+        return em.find(ScoreEntity.class, new ScoreKey(userId, levelId));
     }
 
     @Override
-    public void findAll() {
-        // TODO
+    public List<ScoreEntity> findAll() {
+        TypedQuery<ScoreEntity> query
+                = em.createQuery("SELECT s FROM ScoreEntity s", ScoreEntity.class);
+
+        return query.getResultList();
     }
-    
+
 }

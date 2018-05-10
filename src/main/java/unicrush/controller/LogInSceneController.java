@@ -51,18 +51,23 @@ public class LogInSceneController implements Initializable {
         validator = Validator.getInstance();
 
         try {
-            game = new CandyCrushGame();
-            game.initLevels();
+            if (game == null) {
+                game = new CandyCrushGame();
+                game.initLevels();
 
-            game.getLevels().forEach(level -> {
-                MenuItem item = new MenuItem(""+level.getID());
-                item.setOnAction(e -> levelSelect.setText(item.getText()));
-                levelSelect.getItems().add(item);
-            });
-
+                game.getLevels().forEach(level -> {
+                    MenuItem item = new MenuItem("" + level.getID());
+                    item.setOnAction(e -> levelSelect.setText(item.getText()));
+                    levelSelect.getItems().add(item);
+                });
+            }
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
         }
+    }
+
+    public void setGame(CandyCrushGame game) {
+        this.game = game;
     }
 
     @FXML
@@ -78,13 +83,13 @@ public class LogInSceneController implements Initializable {
             errorLabel.setText("Please select a level!");
             return;
         }
-        
+
         int id = Integer.parseInt(selectedLevel);
         Level levelToStart = game.getLevels().stream()
                 .filter(level -> level.getID() == id)
                 .findFirst()
                 .get();
-        
+
         registerUser(name);
         switchToGameScene(levelToStart);
     }
@@ -96,7 +101,7 @@ public class LogInSceneController implements Initializable {
             userDao.create(name);
             LOGGER.info("Username created with name: {}", name);
         }
-        
+
         game.setPlayerName(name);
     }
 

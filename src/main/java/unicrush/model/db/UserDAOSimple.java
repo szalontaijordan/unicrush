@@ -22,7 +22,7 @@ public class UserDAOSimple implements UserDAO {
         
         do {
             id = (int) (Math.random() * 1000);
-        } while(em.find(UserEntity.class, id) != null);
+        } while(get(id) != null);
         
         em.getTransaction().begin();
         em.persist(new UserEntity(id, username));
@@ -35,6 +35,11 @@ public class UserDAOSimple implements UserDAO {
                 + username + "'", UserEntity.class);
 
         return q.getResultList();
+    }
+
+    @Override
+    public UserEntity get(int id) {
+        return em.find(UserEntity.class, id);
     }
 
 }

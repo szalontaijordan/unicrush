@@ -65,14 +65,14 @@ public class GameSceneController implements Initializable {
     private GridManager gridManager;
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {   
+    public void initialize(URL location, ResourceBundle resources) {
     }
 
     public void init(CandyCrushGame game) {
         try {
             // we init the game in the other scene
             this.game = game;
-            game.startCurrentLevel();
+            this.game.startCurrentLevel();
             validator = Validator.getInstance();
 
             preprocessLevelWith(game.getManager());
@@ -88,7 +88,7 @@ public class GameSceneController implements Initializable {
             LOGGER.error(ex.getMessage());
         }
     }
-    
+
     /**
      * Preprocesses the current level of the game with the given {@code LevelManager}.
      *
@@ -129,15 +129,15 @@ public class GameSceneController implements Initializable {
     private void switchToEndGameScene() {
         try {
             Stage stage = (Stage) mainGrid.getScene().getWindow();
-            String message = "Congratulations!";
+            String message = "Congratulations, " + game.getPlayerName() + "!";
 
             if (validator.isNoMoreSteps(Integer.parseInt(levelSteps.getText()))) {
-                message = "There are no more steps!";
+                message = "There are no more steps, " + game.getPlayerName() + "!";
             }
 
             Main.loadNewScene(stage, Main.SCENES[2], "Game Over")
-                    .<EndGameController>getController()
-                    .setGrat(message + " Your score is " + game.getPlayerScore());
+                    .<EndGameSceneController>getController()
+                    .init(message, game);
         } catch (NumberFormatException | IOException e) {
             LOGGER.error(e.getMessage());
         }
@@ -153,9 +153,9 @@ public class GameSceneController implements Initializable {
         gridManager.updateSelectedCandies(GridPane.getRowIndex(b), GridPane.getColumnIndex(b));
 
         LOGGER.trace("Selected candies: {}", gridManager.getSelectedCandies());
-        
+
         gridManager.disableButtonClicks();
-        
+
         if (validator.isTwoSelected(gridManager.getSelectedCandies())) {
             levelMessage.setText("");
             swapSelectedCandies(gridManager.getSelectedCandies());
@@ -179,7 +179,7 @@ public class GameSceneController implements Initializable {
     }
 
     private void showCanges(Integer[][] coors, int iterations, int sum, List<String> boardStates) {
-        LOGGER.info("Cancelling help task ...");
+        LOGGER.info("Showing changes ...");
 
         if (validator.isNoIterations(iterations)) {
             boardStates.add(game.getCurrentLevel().getBoardState());
@@ -208,7 +208,9 @@ public class GameSceneController implements Initializable {
         }
 
         gridManager.hideSuggestionMarkers();
-        scoreLabel.setText(game.getPlayerScore() + "");
+        scoreLabel.setText(String.format("%5d / %5d",
+                game.getPlayerScore(),
+                game.getCurrentLevel().getScoreToComplete()));
 
         if (validator.isEndGameSituation(game, Integer.parseInt(levelSteps.getText()))) {
             endGame();

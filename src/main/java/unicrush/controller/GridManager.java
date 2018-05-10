@@ -121,7 +121,7 @@ public final class GridManager {
                     showSuggestionMarkers();
                 }
             }
-        }, Main.HELP_INTERVAL, Main.HELP_INTERVAL);
+        }, 0, Main.HELP_INTERVAL);
     }
 
     /**

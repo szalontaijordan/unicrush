@@ -33,11 +33,11 @@
     -fx-cursor: move;
 }
 
-.start-button {
+.start-button, .new-game {
     -fx-pref-width: 171px;
 }
 
-.start-button:hover {
+.start-button:hover, .new-game:hover {
     -fx-cursor: default;
 }
 

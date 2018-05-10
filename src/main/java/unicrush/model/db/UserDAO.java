@@ -10,5 +10,7 @@ public interface UserDAO {
     
     public void create(String username);
     
+    public UserEntity get(int id);
+    
     public List<UserEntity> findByName(String username);
 }

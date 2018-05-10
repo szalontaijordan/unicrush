@@ -1,5 +1,7 @@
 package unicrush.model.db;
 
+import java.util.List;
+
 /**
  *
  * @author Szalontai Jordán
@@ -10,7 +12,7 @@ public interface ScoreDAO {
     
     public void update(int userId, int levelId, int score);
     
-    public void find(int userId, int levelId);
+    public ScoreEntity find(int userId, int levelId);
     
-    public void findAll();
+    public List<ScoreEntity> findAll();
 }

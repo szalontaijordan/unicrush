@@ -28,7 +28,7 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %boldBlue(%.-5level) %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <root level="INFO">
+    <root level="ALL">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
