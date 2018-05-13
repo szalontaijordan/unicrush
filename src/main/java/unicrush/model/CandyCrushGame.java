@@ -34,6 +34,20 @@ import unicrush.model.db.LevelEntity;
  * Class representing the game with a list of levels you can play with the help of the defined
  * manager.
  *
+ * <pre>
+ * 
+ *  CandyCrushGame game = new CandyCrushGame();
+ * </pre>
+ *
+ * <p>
+ * When you initialize a game, you can add levels to its list by
+ * {@code game.getLevels().add(level)}, where {@code level} is a {@code Level} instance. Or if you
+ * have an account in the oracle database, you can call {@code game.initLevels()}</p>
+ *
+ * <p>
+ * Starting a level includes resetting the user's score, setting the current index to the index of
+ * this level, and setting the manager to manage this level instance.</p>
+ *
  * @author Szalontai Jordán
  */
 public class CandyCrushGame implements Game {
@@ -154,7 +168,7 @@ public class CandyCrushGame implements Game {
         return manager;
     }
     //CHECKSTYLE:ON
-    
+
     @Override
     public void addToScore(long plus) {
         this.playerScore += plus;

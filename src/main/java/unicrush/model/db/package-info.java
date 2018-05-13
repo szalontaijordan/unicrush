@@ -5,6 +5,14 @@
  * Most of these classes are data access objects and entity classes.</p>
  *
  * <p>
+ * For example you can create a new {@link LevelEntity} with the following code:</p>
+ * 
+ * <pre>
+ *  LevelDAO levelDao = DAOFactory.createLevelDAO();
+ *  levelDao.create(109, 5, null, 1000, 20);
+ * </pre>
+ *
+ * <p>
  * The scheme of the database is the following:</p>
  * <pre>
  *  UC_LEVEL(id:NUMBER, boardSize:NUMBER, walls:VARCHAR2, score:NUMBER, steps:NUMBER)

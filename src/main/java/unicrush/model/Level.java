@@ -22,11 +22,38 @@ package unicrush.model;
  * #L%
  */
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * Class representing a level of a game.
+ *
+ * <p>
+ * This class has a builder, so we can make levels easily. The essential components of a level are
+ * the following:</p>
+ *
+ * <ul>
+ * <li>an id</li>
+ * <li>a board size, that is not less than 3</li>
+ * <li>a filled board</li>
+ * </ul>
+ *
+ * <pre>
+ * 
+ *  // a basic 5x5 level, with no extra information
+ *  Level level = new Level.Builder(0, 5)
+ *          .fillBoard()
+ *          .build();
+ * 
+ * </pre>
+ * 
+ * <p>
+ * You may also set the score that is needed to complete a level, and put walls in some coordinates,
+ * where no candies can be. All levels are {@link Transposable}, so we can get a candy in a row or a
+ * column easily.</p>
+ *
+ * <p>
+ * A {@code Level}'s state is a template string, for more information, check
+ * {@link Level#getBoardState()}
  *
  * @author Szalontai Jordán
  */

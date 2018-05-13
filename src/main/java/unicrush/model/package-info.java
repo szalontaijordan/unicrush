@@ -7,7 +7,9 @@
  * operations on a level such as swapping two candy instances are done by a manager.</p>
  *
  * <p>
- * The levels of a game are loaded from an oracle database.</p>
+ * The levels of a game are loaded from an oracle database. The database contains only the most
+ * important information about a level, the {@code Level} objects that a game uses, and manages are
+ * builded from these pieces of information.</p>
  *
  * <p>
  * It is important to note, that the board of level instance is always a quadratic (N x N) matrix,

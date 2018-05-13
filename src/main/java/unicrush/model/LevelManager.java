@@ -32,6 +32,80 @@ import org.slf4j.LoggerFactory;
 /**
  * Class containing methods that manage the logics of the levels.
  *
+ * The flow of the game is the following:
+ *
+ * <ol>
+ * <li>we swap two candies</li>
+ * <li>if we have three or more in a row or column, we mark all candies for pop</li>
+ * <li>we apply the gravity logic, so all marked candies pop, and new instances fall</li>
+ * <li>if candies fall in such way that it satisfies the second step, we iterate</li>
+ * </ol>
+ *
+ * <pre>
+ * 
+ *  // let's have a game
+ *  CandyCrushGame game = new CandyCrushGame();
+ * </pre>
+ *
+ * <p>
+ * By default the game's level manager will get the null reference to manage so we need to set the
+ * levels of the game, and start one.</p>
+ *
+ * <pre>
+ *  game.initLevels();
+ *  game.startCurrentLevel();
+ *
+ *  // ...
+ *
+ *  game.getManager().swap(Level.createCoordinates("0,0;0,1"));
+ *
+ *  // let's suppose, that we can actually swap the candies at <em>(0,0)</em> and <em>(0,1)</em>
+ *
+ *  while (game.getManager().popAllMarked()) {
+ *      game.getManager().applyGravity();
+ *  }
+ * </pre>
+ *
+ * <p>
+ * The code above may give us an infinite loop, so it is handy to have a variable set for maximum
+ * iterations. However, there are two ways the manager won't make an infinite loop.</p>
+ *
+ * <pre>
+ *  int iterations = game.getManager.process();
+ *
+ *  // or
+ *
+ *  List&lt;String&gt; boardStates = game.getManager().processWithState();
+ * </pre>
+ *
+ * <p>
+ * The first example processes the level as mentioned above, and returns the iterations, the second
+ * way gives us a list of strings, that somehow refer to snapshots of the level during the
+ * processing.</p>
+ *
+ * <p>
+ * If you would like to get information about an area in which a swap is possible, you may do one
+ * the following:</p>
+ *
+ * <pre>
+ *  String template;
+ *  template = game.getManager().getAvailableMoves();
+ *
+ *  // or
+ *
+ *  template = game.getManager().lookForMoves();
+ * </pre>
+ *
+ * <p>
+ * In every situation you can get how many iterations occurred during the processing, and also you
+ * can get the score the player would get, by using {@code getIterations()} and {@code getSum()}</p>
+ *
+ * <p>
+ * Note, that is gives back only a template string, with the area, and no concrete information,
+ * about which candies can be swapped. The coordinate template strings follow a pattern: A single
+ * coordinate (e.g. <em>0,0</em>) or more coordinates separated by semi colons (e.g.
+ * <em>0,0;0,1;0,2</em>)</p>
+ *
  * @author Szalontai Jordán
  */
 public final class LevelManager {
@@ -43,7 +117,7 @@ public final class LevelManager {
     private int iterations;
     private int sum;
     //CHECKSTYLE:ON
-    
+
     /**
      * Constructs an object for a game, that can make changes to the logic of the level.
      *
@@ -288,7 +362,7 @@ public final class LevelManager {
         return coor;
     }
     //CHECKSTYLE:ON
-    
+
     /**
      * Refreshes the {@code Candy.State} of {@code Candy} instances in the {@code level}'s board
      * that are in a column or row with a length more than two.
@@ -385,7 +459,7 @@ public final class LevelManager {
         }
         columns[0]++;
     }
-    
+
     public int getIterations() {
         return iterations;
     }

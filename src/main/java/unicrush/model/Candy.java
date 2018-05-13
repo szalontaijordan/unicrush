@@ -26,6 +26,10 @@ import java.util.Arrays;
 /**
  * Class representing a {@code Candy} on the board.
  *
+ * <p>
+ * All candies can be in a state, and all candies can be marked to pop by the {@link LevelManager}.
+ * If we would like to represent a popped candy, just set its state to {@code CandyState.EMPTY}</p>
+ *
  * @author Szalontai Jordán
  */
 public class Candy implements Comparable<Candy> {
