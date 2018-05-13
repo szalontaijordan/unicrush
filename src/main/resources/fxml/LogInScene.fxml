@@ -11,33 +11,33 @@
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="unicrush.controller.LogInSceneController">
-   <children>
-      <BorderPane prefHeight="400.0" prefWidth="600.0">
-         <top>
-            <Label text="Welcome to the UniCrush Game!" BorderPane.alignment="CENTER" />
-         </top>
-         <right>
-            <VBox prefHeight="357.0" prefWidth="411.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Label text="Enter your name" />
-                  <TextField fx:id="login" prefHeight="25.0" prefWidth="229.0" />
-                  <Label text="Choose a level!" />
-                  <MenuButton fx:id="levelSelect" mnemonicParsing="false" prefHeight="25.0" prefWidth="229.0" />
-                  <Label fx:id="errorLabel" prefHeight="17.0" prefWidth="229.0" />
-                  <Button fx:id="start" mnemonicParsing="false" onAction="#startGame" prefHeight="26.0" prefWidth="250.0" styleClass="start-button" text="Play" />
-               </children>
-            </VBox>
-         </right>
-         <bottom>
-            <Label text="Szalontai Jordán" BorderPane.alignment="CENTER" />
-         </bottom>
-         <left>
-            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
-               <image>
-                  <Image url="@../candy/logo.png" />
-               </image>
-            </ImageView>
-         </left>
-      </BorderPane>
-   </children>
+    <children>
+        <BorderPane prefHeight="400.0" prefWidth="600.0">
+            <top>
+                <Label text="Welcome to the UniCrush Game!" BorderPane.alignment="CENTER" />
+            </top>
+            <right>
+                <VBox prefHeight="357.0" prefWidth="411.0" BorderPane.alignment="CENTER">
+                    <children>
+                        <Label text="Enter your name" />
+                        <TextField fx:id="login" prefHeight="25.0" prefWidth="229.0" />
+                        <Label text="Choose a level!" />
+                        <MenuButton fx:id="levelSelect" mnemonicParsing="false" prefHeight="25.0" prefWidth="229.0" />
+                        <Label fx:id="errorLabel" prefHeight="17.0" prefWidth="229.0" />
+                        <Button fx:id="start" mnemonicParsing="false" onAction="#startGame" prefHeight="26.0" prefWidth="250.0" styleClass="start-button" text="Play" />
+                    </children>
+                </VBox>
+            </right>
+            <bottom>
+                <Label text="Szalontai Jordán" BorderPane.alignment="CENTER" />
+            </bottom>
+            <left>
+                <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" BorderPane.alignment="CENTER">
+                    <image>
+                        <Image url="@../candy/logo.png" />
+                    </image>
+                </ImageView>
+            </left>
+        </BorderPane>
+    </children>
 </AnchorPane>

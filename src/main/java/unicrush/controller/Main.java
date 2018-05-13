@@ -26,6 +26,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +69,7 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Application started!");
+        stage.getIcons().add(new Image(Main.class.getResourceAsStream("/candy/icon.png")));
         stage.setFullScreen(false);
         stage.setResizable(false);
         stage.setOnCloseRequest(event -> {
@@ -91,7 +93,7 @@ public class Main extends Application {
         LOGGER.info("Switch to scene: {}", fxmlResName);
         FXMLLoader fl = new FXMLLoader(Main.class.getResource("/fxml/" + fxmlResName + ".fxml"));
         Parent root = fl.load();
-
+        
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/styles.css");
 
