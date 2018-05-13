@@ -1,13 +1,17 @@
 /**
- * Package containing class that are required to communicate with the database.
- * 
+ * Package containing classes that communicate with the database.
+ *
+ * <p>
+ * Most of these classes are data access objects and entity classes.</p>
+ *
  * <p>
  * The scheme of the database is the following:</p>
  * <pre>
- *  UC_LEVEL(id, boardSize, walls, score, steps)
- *  UC_USER(id, username)
- *  UC_GAME(levelId, userId, score)
+ *  UC_LEVEL(id:NUMBER, boardSize:NUMBER, walls:VARCHAR2, score:NUMBER, steps:NUMBER)
+ *  UC_USER(id:NUMBER, username:VARCHAR2)
+ *  UC_GAME(levelId:NUMBER, userId:NUMBER, score:VARCHAR2)
  * </pre>
+ *
  */
 package unicrush.model.db;
 

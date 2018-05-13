@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Test class for {@code unicrush.model.LevelManager}.
  *
- * @author szalontaijordan
+ * @author Szalontai Jordán
  */
 public class LevelManagerTest {
 
@@ -86,7 +86,7 @@ public class LevelManagerTest {
         LOGGER.info("Testing class LevelManager");
 
         String template = "0,0;4,0;0,4;4,4;2,2";
-        builder = new Level.Builder(0, Level.Type.STANDARD, BOARD_SIZE)
+        builder = new Level.Builder(0, BOARD_SIZE)
                 .withCompleteScore(Integer.MAX_VALUE)
                 .withAvailableSteps(Integer.MAX_VALUE)
                 .putWalls(Level.createCoordinates(template));

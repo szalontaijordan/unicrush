@@ -19,7 +19,30 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-.button {
+Root {
+    -fx-font-family: 'monospace';
+}
+
+VBox {
+    -fx-alignment: center;
+    -fx-padding: 16px;
+}
+
+VBox > Label,
+VBox > TextArea {
+    -fx-pref-width: 300px;
+    -fx-text-align: center;
+}
+
+VBox > MenuButton {
+    -fx-pref-width: 50px;
+}
+
+Label {
+    -fx-padding: 8px;
+}
+
+Button {
     -fx-background-position: center;
     -fx-background-size: 35px 35px;
     -fx-background-repeat: no-repeat;
@@ -29,12 +52,14 @@
     -fx-pref-height: 40px;
 }
 
-.button:hover {
+Button:hover {
     -fx-cursor: move;
 }
 
-.start-button, .new-game {
-    -fx-pref-width: 171px;
+.start-button,
+.new-game {
+    -fx-bacground-color: rgb(15, 190, 15);
+    -fx-pref-width: 250px;
 }
 
 .start-button:hover, .new-game:hover {

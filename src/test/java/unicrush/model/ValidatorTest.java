@@ -5,13 +5,14 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
-import org.junit.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unicrush.model.db.ScoreEntity;
 
 /**
+ * Test class for {@code unicrush.model.Validator}.
  *
- * @author szalontaijordan
+ * @author Szalontai Jordán
  */
 public class ValidatorTest {
 
@@ -29,7 +30,7 @@ public class ValidatorTest {
 
         game = new CandyCrushGame();
         List<Level> levels = new ArrayList<>();
-        levels.add(new Level.Builder(0, Level.Type.STANDARD, 5)
+        levels.add(new Level.Builder(0, 5)
                 .withCompleteScore(100).fillBoard().build());
         game.setLevels(levels);
         game.setCurrentLevelIndex(0);
@@ -128,7 +129,7 @@ public class ValidatorTest {
     @Test
     public void testIsEmptyString() {
         LOGGER.info("- Testing method isEmptyString");
-        
+
         Assert.assertTrue(validator.isEmptyString(""));
         Assert.assertTrue(validator.isEmptyString(null));
         Assert.assertFalse(validator.isEmptyString("empty"));
@@ -136,4 +137,15 @@ public class ValidatorTest {
         Assert.assertFalse(validator.isEmptyString("????"));
     }
 
+    /**
+     * Test of isNewHighScore method, of class Validator.
+     */
+    @Test
+    public void testIsNewHighScore() {
+        LOGGER.info("- Testing method isNewHighScore");
+
+        Assert.assertTrue(validator.isNewHighScore(new ScoreEntity(0, 0, 100), 101));
+        Assert.assertTrue(validator.isNewHighScore(null, 101));
+        Assert.assertFalse(validator.isNewHighScore(new ScoreEntity(0, 0, 100), 0));
+    }
 }

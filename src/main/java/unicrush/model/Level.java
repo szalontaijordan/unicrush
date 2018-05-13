@@ -22,6 +22,7 @@ package unicrush.model;
  * #L%
  */
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -31,46 +32,28 @@ import java.util.stream.Collectors;
  */
 public final class Level implements Transposable {
 
-    /**
-     * Enum for the level types.
-     *
-     * @author Szalontai Jordán
-     */
-    public enum Type {
-
-        STANDARD, JELLY, INGREDIENT
-    }
-
+    //CHECKSTYLE:OFF
     private final int boardSize;
     private final int scoreToComplete;
     private final int ID;
-    private final Type type;
     private final String initialState;
     private final Integer[][] walls;
     private final Candy[][] board;
 
-    private int availableSteps;
+    private final int availableSteps;
     private boolean transposed;
 
-    /**
-     * Constructs a level with the basic fields initialized.
-     *
-     * @param scoreToComplete the score required to complete the level
-     * @param steps the maximum steps that can be used on this level
-     * @param boardSize the dimensions of the board, a {@code Level}'s board is always quadratic
-     * @param walls the template {@code String} representing the coordinates of the walls
-     */
     private Level(Builder builder) {
         this.ID = builder.ID;
         this.boardSize = builder.boardSize;
         this.scoreToComplete = builder.scoreToComplete;
-        this.type = builder.type;
         this.initialState = builder.initialState;
         this.walls = builder.walls;
         this.board = builder.board;
         this.availableSteps = builder.availableSteps;
         this.transposed = builder.transposed;
     }
+    //CHECKSTYLE:ON
 
     /**
      * Represents the board with a {@code String} that can be processed easily.
@@ -136,6 +119,43 @@ public final class Level implements Transposable {
         }
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + this.scoreToComplete;
+        hash = 53 * hash + this.ID;
+        hash = 53 * hash + Arrays.deepHashCode(this.walls);
+        hash = 53 * hash + this.availableSteps;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Level other = (Level) obj;
+        if (this.scoreToComplete != other.scoreToComplete) {
+            return false;
+        }
+        if (this.ID != other.ID) {
+            return false;
+        }
+        if (this.availableSteps != other.availableSteps) {
+            return false;
+        }
+        if (!Arrays.deepEquals(this.walls, other.walls)) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Returns a {@code String} representation of {@code this} instance.
      *
@@ -183,7 +203,7 @@ public final class Level implements Transposable {
             return null;
         }
         template = template.replaceAll("\\s*", "");
-        
+
         return Arrays.stream(template.split(";"))
                 .filter(coor -> coor.length() > 0)
                 .map(coor -> Arrays.stream(coor.split(","))
@@ -191,17 +211,14 @@ public final class Level implements Transposable {
                 .toArray(Integer[]::new))
                 .toArray(Integer[][]::new);
     }
-    
+
+    //CHECKSTYLE:OFF
     public int getBoardSize() {
         return boardSize;
     }
 
     public int getScoreToComplete() {
         return scoreToComplete;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public String getInitialState() {
@@ -226,14 +243,15 @@ public final class Level implements Transposable {
 
     public int getID() {
         return ID;
-    }    
+    }
+    //CHECKSTYLE:ON
 
     /**
-     * Static class for the level that follows the builder pattern.
+     * Class for building a level that follows the builder pattern.
      */
     public static class Builder {
 
-        private final Type type;
+        //CHECKSTYLE:OFF
         private final int boardSize;
         private int ID;
         private int scoreToComplete;
@@ -243,22 +261,22 @@ public final class Level implements Transposable {
 
         private int availableSteps;
         private boolean transposed;
+        //CHECKSTYLE:ON
 
         /**
          * Constructs a builder for a level, that will represent some pieces of essential
          * information about the level.
          *
-         * @param type the type of the level
+         * @param ID the ID of the level
          * @param boardSize the size of the level (all levels are quadratic)
          * @throws IllegalArgumentException if the {@code type} is {@code null} or the
          * {@code boardSize} is less than 2
          */
-        public Builder(int ID, Type type, int boardSize) throws IllegalArgumentException {
-            if (type == null || boardSize < 2) {
+        public Builder(int ID, int boardSize) throws IllegalArgumentException {
+            if (boardSize < 3) {
                 throw new IllegalArgumentException("Invalid level type, or too small board!");
             }
             this.ID = ID;
-            this.type = type;
             this.boardSize = boardSize;
             this.transposed = false;
         }
@@ -305,7 +323,7 @@ public final class Level implements Transposable {
          *
          * @return {@code this} so we can chain builder methods
          */
-        public Builder fillBoard() throws IllegalArgumentException {
+        public Builder fillBoard() {
             this.board = fillUpRandom();
             return this;
         }
@@ -319,6 +337,7 @@ public final class Level implements Transposable {
          *
          * @param template the template string representing information about the new board
          * @return {@code this} so we can chain builder methods
+         * @throws IllegalArgumentException if the template is malformed
          */
         public Builder fillBoard(String template) throws IllegalArgumentException {
             this.board = fillUpFromState(template);
@@ -333,8 +352,9 @@ public final class Level implements Transposable {
          * the future.</p>
          *
          * @return a {@code Level} object with the builded fields
+         * @throws IllegalArgumentException if the board of the level is not set yet
          */
-        public Level build() {
+        public Level build() throws IllegalArgumentException {
             if (this.board == null) {
                 throw new IllegalArgumentException("Board is not set yet.");
             }
@@ -345,6 +365,7 @@ public final class Level implements Transposable {
             return new Level(this);
         }
 
+        //CHECKSTYLE:OFF
         private String setupInitialState() {
             return Arrays.stream(board)
                     .map(row -> Arrays.toString(row)
@@ -389,5 +410,6 @@ public final class Level implements Transposable {
             }
             return newBoard;
         }
+        //CHECKSTYLE:ON
     }
 }

@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
  */
 public class GameSceneController implements Initializable {
 
+    //CHECKSTYLE:OFF
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSceneController.class);
 
     @FXML
@@ -67,7 +68,17 @@ public class GameSceneController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     }
+    //CHECKSTYLE:ON
 
+    /**
+     * Initializes the game scene.
+     *
+     * <p>
+     * This method starts the level selected by the user before, and initializes the grid manager
+     * that controls the main grid of the game.</p>
+     *
+     * @param game the game object containing information about the player and the levels
+     */
     public void init(CandyCrushGame game) {
         try {
             // we init the game in the other scene
@@ -126,6 +137,7 @@ public class GameSceneController implements Initializable {
         switchToEndGameScene();
     }
 
+    //CHECKSTYLE:OFF
     private void switchToEndGameScene() {
         try {
             Stage stage = (Stage) mainGrid.getScene().getWindow();
@@ -142,6 +154,7 @@ public class GameSceneController implements Initializable {
             LOGGER.error(e.getMessage());
         }
     }
+    //CHECKSTYLE:ON
 
     /**
      * Selects a candy on the displayed board, then tries to swap it with the other selected one.
@@ -164,6 +177,7 @@ public class GameSceneController implements Initializable {
         gridManager.enableButtonClicks(onClick -> onCandySelect(onClick));
     }
 
+    //CHECKSTYLE:OFF
     private void swapSelectedCandies(String template) {
         Integer[][] coors = Level.createCoordinates(template);
 
@@ -216,4 +230,5 @@ public class GameSceneController implements Initializable {
             endGame();
         }
     }
+    //CHECKSTYLE:ON
 }

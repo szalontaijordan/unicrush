@@ -42,7 +42,7 @@ public interface Game {
     public void initLevels() throws Exception;
 
     /**
-     * Returns a concrete {@code Level} instance of the game-
+     * Returns a concrete {@code Level} instance of the game.
      *
      * @param index the index of a level we need
      * @return a {@code Level} instance representing the level we wanted to get

@@ -11,19 +11,21 @@ import javax.persistence.Persistence;
  */
 public class DAOFactory implements AutoCloseable {
 
+    //CHECKSTYLE:OFF
     private static DAOFactory instance;
 
     private static EntityManager entityManager;
     private static EntityManagerFactory factory;
-
+    
     static {
         instance = new DAOFactory();
         factory = Persistence.createEntityManagerFactory("UNICRUSH");
         entityManager = factory.createEntityManager();
     }
-
+    
     private DAOFactory() {
     }
+    //CHECKSTYLE:ON
 
     /**
      * Returns the singleton instance of this class.
@@ -35,22 +37,37 @@ public class DAOFactory implements AutoCloseable {
     }
 
     /**
-     * Creates a new data access object for a level entity.
-     * 
-     * @return an object that defines actions for a level entity
+     * Creates a new data access object for level entities.
+     *
+     * @return an object that defines actions for level entities
      */
     public LevelDAO createLevelDAO() {
         return new LevelDAOSimple(entityManager);
     }
-    
+
+    /**
+     * Creates a new data access object for user entities.
+     *
+     * @return an object that defines actions for user entities
+     */
     public UserDAO createUserDAO() {
         return new UserDAOSimple(entityManager);
     }
 
+    /**
+     * Creates a new data access object for score entities.
+     *
+     * @return an object that defines actions for score entities
+     */
     public ScoreDAO createScoreDAO() {
         return new ScoreDAOSimple(entityManager);
     }
-    
+
+    /**
+     * Closes the {@code EntityManager} and the {@code EntityManagerFactory} objects.
+     *
+     * @throws Exception if an error occurs during the closing process
+     */
     @Override
     public void close() throws Exception {
         entityManager.close();

@@ -45,6 +45,7 @@ import unicrush.model.Validator;
  */
 public final class GridManager {
 
+    //CHECKSTYLE:OFF
     private static final Logger LOGGER = LoggerFactory.getLogger(GridManager.class);
 
     private Thread popThread;
@@ -56,7 +57,8 @@ public final class GridManager {
 
     private String suggestedArea;
     private String[] selectedCandies;
-
+    //CHECKSTYLE:ON
+    
     /**
      * Constructs a manager that helps keeping consistency between a game and a grid.
      *
@@ -169,6 +171,7 @@ public final class GridManager {
         }
     }
 
+    //CHECKSTYLE:OFF
     private Integer renderAll(List<String> boardStates) {
         int stateIndex = 0;
 
@@ -193,6 +196,7 @@ public final class GridManager {
             grid.getRowConstraints().add(new RowConstraints());
         }
     }
+    //CHECKSTYLE:ON
 
     /**
      * Adds the {@code highlighted} class to the CSS class list of the {@code Node} instances, so
@@ -285,10 +289,11 @@ public final class GridManager {
         grid.getChildren().stream().forEach(button -> button.setOnMouseClicked(null));
     }
 
+    //CHECKSTYLE:OFF
     private Node getNode(int i, int j) {
         return grid.getChildren().get(i * game.getCurrentLevel().getBoardSize() + j);
     }
-
+    
     public Thread getPopThread() {
         return popThread;
     }
@@ -300,4 +305,5 @@ public final class GridManager {
     public String getSuggestedArea() {
         return suggestedArea;
     }
+    //CHECKSTYLE:ON
 }

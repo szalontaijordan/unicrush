@@ -1,8 +1,5 @@
 package unicrush.model;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Assert;
@@ -10,8 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Test class for {@code unicrush.model.Level}.
  *
- * @author szalontaijordan
+ * @author Szalontai Jordán
  */
 public class LevelTest {
 
@@ -25,7 +23,7 @@ public class LevelTest {
     public static void setUpClass() {
         LOGGER.info("Testing class Level");
 
-        level = new Level.Builder(0, Level.Type.STANDARD, 5)
+        level = new Level.Builder(0, 5)
                 .withAvailableSteps(Integer.MAX_VALUE)
                 .withCompleteScore(Integer.MAX_VALUE)
                 .putWalls(new Integer[][]{{0, 0}})
@@ -82,7 +80,7 @@ public class LevelTest {
         expected = new Integer[][]{{0, 1}, {2, 3}, {4, 5}};
         Assert.assertArrayEquals(expected, Level.createCoordinates("0,1;2,3;4,5"));
         Assert.assertArrayEquals(expected, Level.createCoordinates(" 0,1 ; 2,3 ;       4,5 "));
-        
+
         Assert.assertNull(Level.createCoordinates(""));
         Assert.assertNull(Level.createCoordinates("a,b;c,d;e,f"));
         Assert.assertNull(Level.createCoordinates("lorem ipsum"));

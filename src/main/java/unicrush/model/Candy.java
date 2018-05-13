@@ -21,7 +21,6 @@ package unicrush.model;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.Arrays;
 
 /**
@@ -31,15 +30,10 @@ import java.util.Arrays;
  */
 public class Candy implements Comparable<Candy> {
 
-    /**
-     * The possible states of a {@code Candy}.
-     */
-    public static enum State {
-        EMPTY, RED, GREEN, BLUE, ORANGE, PRUPLE, YELLOW
-    }
-
-    private State state;
+    //CHECKSTYLE:OFF
+    private CandyState state;
     private boolean markedForPop;
+    //CHECKSTYLE:ON
 
     /**
      * Constructs a {@code Candy} with the given state.
@@ -66,7 +60,7 @@ public class Candy implements Comparable<Candy> {
      *
      * @param state the given state the candy will have
      */
-    public Candy(State state) {
+    public Candy(CandyState state) {
         this.state = state;
     }
 
@@ -83,11 +77,11 @@ public class Candy implements Comparable<Candy> {
     /**
      * Decides if the {@code Candy} is in the {@code State.EMPTY} state.
      *
-     * @return {@code true} if the {@code Candy} is in the {@code State.EMPTY}
-     * state, {@code false} otherwise
+     * @return {@code true} if the {@code Candy} is in the {@code State.EMPTY} state, {@code false}
+     * otherwise
      */
     public boolean isEmpty() {
-        return this.state == State.EMPTY;
+        return this.state == CandyState.EMPTY;
     }
 
     @Override
@@ -107,31 +101,29 @@ public class Candy implements Comparable<Candy> {
      * Available color states</p>
      *
      * <pre>
-     *   Candy.State.RED,
-     *   Candy.State.GREEN,
-     *   Candy.State.BLUE,
-     *   Candy.State.ORANGE,
-     *   Candy.State.PRUPLE,
-     *   Candy.State.YELLOW
+     *   CandyState.RED,
+     *   CandyState.GREEN,
+     *   CandyState.BLUE,
+     *   CandyState.ORANGE,
+     *   CandyState.PRUPLE,
+     *   CandyState.YELLOW
      * </pre>
      *
      * @return a {@code Candy.State} representing the state of the candy
      */
-    public static State getRandomColorState() {
-        return Arrays.asList(State.values())
-                .get((int) (Math.random() * (State.values().length - 1)) + 1);
+    public static CandyState getRandomColorState() {
+        return Arrays.asList(CandyState.values())
+                .get((int) (Math.random() * (CandyState.values().length - 1)) + 1);
     }
 
     /**
-     * Returns the {@code State} that's string representation starts with the
-     * given parameter.
+     * Returns the {@code State} that's string representation starts with the given parameter.
      *
-     * @param c the first character of the desired {@code State}'s string
-     * representation
+     * @param c the first character of the desired {@code State}'s string representation
      * @return a {@code State} that starts with the given character
      */
-    public static State getStateFromChar(char c) {
-        return Arrays.stream(State.values())
+    public static CandyState getStateFromChar(char c) {
+        return Arrays.stream(CandyState.values())
                 .filter(s -> s.toString().charAt(0) == c)
                 .findFirst()
                 .orElse(null);
@@ -141,13 +133,11 @@ public class Candy implements Comparable<Candy> {
      * Comparing method for two {@code Candy} instances.
      *
      * <p>
-     * The purpose of this method is that the instances with the
-     * {@code State.EMPTY} state will be first in a list or an array if a sort
-     * occurs to it.</p>
+     * The purpose of this method is that the instances with the {@code State.EMPTY} state will be
+     * first in a list or an array if a sort occurs to it.</p>
      *
      * <p>
-     * The basic concept is, that we map an integer value to each {@code Candy}
-     * like this:</p>
+     * The basic concept is, that we map an integer value to each {@code Candy} like this:</p>
      *
      * <pre>
      *     Candy in State.EMPTY --&gt; -1,
@@ -155,30 +145,31 @@ public class Candy implements Comparable<Candy> {
      * </pre>
      *
      * <p>
-     * So a collection of {@code Candy} instances act like a list of integers
-     * and the negative numbers will be first</p>
+     * So a collection of {@code Candy} instances act like a list of integers and the negative
+     * numbers will be first</p>
      *
      * @param firstCandy the first {@code Candy}
      * @param secondCandy the second {@code Candy}
-     * @return 0, 1, -1 based on the {@code compare} method of the
-     * {@code Integer} class because of the example above
+     * @return 0, 1, -1 based on the {@code compare} method of the {@code Integer} class because of
+     * the example above
      */
     public static int compare(Candy firstCandy, Candy secondCandy) {
         int first = 1;
         int second = 1;
 
-        if (firstCandy.state == State.EMPTY) {
+        if (firstCandy.state == CandyState.EMPTY) {
             first = -1;
         }
 
-        if (secondCandy.state == State.EMPTY) {
+        if (secondCandy.state == CandyState.EMPTY) {
             second = -1;
         }
 
         return Integer.compare(first, second);
     }
 
-    public State getState() {
+    //CHECKSTYLE:OFF
+    public CandyState getState() {
         return state;
     }
 
@@ -186,12 +177,13 @@ public class Candy implements Comparable<Candy> {
         return markedForPop;
     }
 
-    public void setState(State state) {
+    public void setState(CandyState state) {
         this.state = state;
     }
 
     public void setMarkedForPop(boolean markedForPop) {
         this.markedForPop = markedForPop;
     }
+    //CHECKSTYLE:ON
 
 }

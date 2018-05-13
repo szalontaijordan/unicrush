@@ -36,10 +36,19 @@ import org.slf4j.LoggerFactory;
  * @author Szalontai Jordán
  */
 public class Main extends Application {
-    
+
+    //CHECKSTYLE:OFF
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    
+    //CHECKSTYLE:ON
+
+    /**
+     * The time period in which the suggestion for a step occurs in milliseconds.
+     */
     public static final int HELP_INTERVAL = 30000;
+
+    /**
+     * The delay between two board state renders.
+     */
     public static final int POP_INTERVAL = 450;
 
     /**
@@ -55,10 +64,15 @@ public class Main extends Application {
     public static final String[] MESSAGES = {
         "Sweet", "Delicious", "Divine", "Tasty"
     };
-    
+
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Application started!");
+        stage.setOnCloseRequest(event -> {
+            event.consume();
+            LOGGER.info("Closing application!");
+            System.exit(0);
+        });
         loadNewScene(stage, SCENES[0], "Welcome");
     }
 
@@ -75,14 +89,14 @@ public class Main extends Application {
         LOGGER.info("Switch to scene: {}", fxmlResName);
         FXMLLoader fl = new FXMLLoader(Main.class.getResource("/fxml/" + fxmlResName + ".fxml"));
         Parent root = fl.load();
-        
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add("/styles/styles.css");
-        
+
         stage.setTitle(windowText);
         stage.setScene(scene);
         stage.show();
-        
+
         return fl;
     }
 
@@ -97,7 +111,7 @@ public class Main extends Application {
         if (firstChar == 'x') {
             return null;
         }
-        
+
         return "url('/candy/" + firstChar + ".png')";
     }
 

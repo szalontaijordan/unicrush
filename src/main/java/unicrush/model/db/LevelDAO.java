@@ -10,7 +10,7 @@ import java.util.List;
 public interface LevelDAO {
 
     /**
-     * Returns a plain old java object that represents an entity in a database.
+     * Returns a plain old java object that represents a level entity in a database.
      *
      * @param id the id field of the database entity
      * @return an object representing a level entity in the database
@@ -27,6 +27,7 @@ public interface LevelDAO {
     /**
      * Creates a new level entity in the database with fields based on the given parameters.
      *
+     * @param id the id of the level
      * @param size the size of the board
      * @param walls the template string that represents coordinates where walls should be
      * @param score the score required to complete this level

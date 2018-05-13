@@ -9,5 +9,7 @@
         <module name="JavadocMethod"/>
         <module name="JavadocVariable"/>
         <module name="JavadocStyle"/>
+        <module name="FileContentsHolder"/>
     </module>
+    <module name="SuppressionCommentFilter"/>
 </module>

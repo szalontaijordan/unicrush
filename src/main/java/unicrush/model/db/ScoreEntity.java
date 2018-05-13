@@ -15,6 +15,7 @@ import javax.persistence.Table;
 @IdClass(ScoreKey.class)
 public class ScoreEntity {
     
+    //CHECKSTYLE:OFF
     @Id
     @Column(name = "userId")
     private int userId;
@@ -25,7 +26,7 @@ public class ScoreEntity {
     
     @Column(name = "score")
     private int score;
-
+    
     public ScoreEntity() {
     }
 
@@ -58,6 +59,5 @@ public class ScoreEntity {
     public void setScore(int score) {
         this.score = score;
     }
-    
-    
+    //CHECKSTYLE:ON
 }

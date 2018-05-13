@@ -44,6 +44,7 @@ public class CandyCrushGame implements Game {
      */
     public static final int MAX_ITERATION = 50;
 
+    //CHECKSTYLE:OFF
     private static final Logger LOGGER = LoggerFactory.getLogger(CandyCrushGame.class);
 
     private String playerName;
@@ -52,6 +53,7 @@ public class CandyCrushGame implements Game {
 
     private List<Level> levels;
     private LevelManager manager;
+    //CHECKSTYLE:ON
 
     /**
      * Constructs an object that wraps its levels and information about the player playing the game.
@@ -84,7 +86,7 @@ public class CandyCrushGame implements Game {
 
         LOGGER.info("Fetching levels");
         levels = levelDao.findAll().stream()
-                .map(pojo -> buildLevelFromPojo(pojo))
+                .map(pojo -> buildLevelFromEntity(pojo))
                 .collect(Collectors.toList());
     }
 
@@ -92,14 +94,14 @@ public class CandyCrushGame implements Game {
      * Builds a {@code Level} instance from a plain old java object representing a level entity in
      * the database.
      *
-     * @param pojo the entity that represents a level in the database
+     * @param entity the entity that represents a level in the database
      * @return a {@code Level} instance based on the entity
      */
-    public Level buildLevelFromPojo(LevelEntity pojo) {
-        return new Level.Builder(pojo.getLevelId(), Level.Type.STANDARD, pojo.getBoardSize())
-                .withCompleteScore(pojo.getScoreToComplete())
-                .withAvailableSteps(pojo.getAvailableSteps())
-                .putWalls(Level.createCoordinates(pojo.getWalls()))
+    public Level buildLevelFromEntity(LevelEntity entity) {
+        return new Level.Builder(entity.getLevelId(), entity.getBoardSize())
+                .withCompleteScore(entity.getScoreToComplete())
+                .withAvailableSteps(entity.getAvailableSteps())
+                .putWalls(Level.createCoordinates(entity.getWalls()))
                 .fillBoard()
                 .build();
     }
@@ -119,6 +121,7 @@ public class CandyCrushGame implements Game {
         return playerScore;
     }
 
+    //CHECKSTYLE:OFF
     public String getPlayerName() {
         return playerName;
     }
@@ -150,7 +153,8 @@ public class CandyCrushGame implements Game {
     public LevelManager getManager() {
         return manager;
     }
-
+    //CHECKSTYLE:ON
+    
     @Override
     public void addToScore(long plus) {
         this.playerScore += plus;

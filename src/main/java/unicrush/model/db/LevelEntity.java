@@ -1,5 +1,6 @@
 package unicrush.model.db;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 @Table(name = "UC_LEVEL")
 public class LevelEntity {
 
+    //CHECKSTYLE:OFF
     @Id
     @Column(name = "id")
     private int levelId;
@@ -29,7 +31,7 @@ public class LevelEntity {
 
     @Column(name = "steps")
     private int availableSteps;
-
+    
     public LevelEntity() {
     }
 
@@ -80,4 +82,5 @@ public class LevelEntity {
     public void setAvailableSteps(int availableSteps) {
         this.availableSteps = availableSteps;
     }
+    //CHECKSTYLE:ON
 }

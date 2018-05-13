@@ -2,8 +2,11 @@
  * Package containing controller classes for the FXML files.
  *
  * <p>
- * These classes are used to control the FXML files in resources/fxml. There are three main
- * {@code Scene} instances, these are the login, the game and the end-game</p>
+ * These classes are used to control the FXML files in src/main/resources/fxml. There are three main
+ * {@code Scene} instances, these are the login, the game and the end-game. One of the other two
+ * classes are a manager class, that helps managing the main grid on the game scene, and the other
+ * is the main class.</p>
+ * 
  */
 package unicrush.controller;
 

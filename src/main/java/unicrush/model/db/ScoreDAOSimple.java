@@ -5,13 +5,24 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 /**
+ * Class implementing the {@code ScoreDAO} interface.
+ *
+ * <p>
+ * This class utilizes an {@code EntityManager} to do the work with the database</p>
  *
  * @author Szalontai Jordán
  */
 public class ScoreDAOSimple implements ScoreDAO {
 
+    //CHECKSTYLE:OFF
     private EntityManager em;
+    //CHECKSTYLE:ON
 
+    /**
+     * Constructs a data access object that utilizes the {@code EntityManager} class.
+     *
+     * @param em the manager for the entities
+     */
     public ScoreDAOSimple(EntityManager em) {
         this.em = em;
     }

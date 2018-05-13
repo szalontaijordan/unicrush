@@ -1,5 +1,7 @@
 package unicrush.model;
 
+import unicrush.model.db.ScoreEntity;
+
 /**
  * Class for wrapping the validation logics of the game.
  *
@@ -7,10 +9,12 @@ package unicrush.model;
  */
 public class Validator {
 
+    //CHECKSTYLE:OFF
     private static Validator instance;
 
     private Validator() {
     }
+    //CHECKSTYLE:ON
 
     /**
      * Returns if the given game is in an end-game situation.
@@ -92,7 +96,7 @@ public class Validator {
     }
 
     /**
-     * Returns if the given string is a template string containing coordinates
+     * Returns if the given string is a template string containing coordinates.
      *
      * <p>
      * The regular expression pattern is from StackOverflow, from <a
@@ -122,10 +126,29 @@ public class Validator {
         return !isEmptyString(str) && str.matches(regex);
     }
 
+    /**
+     * Returns if the user has reached a new high score.
+     *
+     * @param found the entity that was found with some score
+     * @param userScore the user's score
+     * @return {@code true} if the found entity is null or the user's score is greater than the
+     * score we found
+     */
+    public boolean isNewHighScore(ScoreEntity found, int userScore) {
+        return found == null || userScore > found.getScore();
+    }
+
+    //CHECKSTYLE:OFF
     private boolean isZero(int value) {
         return value == 0;
     }
-
+    //CHECKSTYLE:ON
+    
+    /**
+     * Returns the singleton instance of this class.
+     *
+     * @return the validator object
+     */
     public static Validator getInstance() {
         if (instance == null) {
             instance = new Validator();

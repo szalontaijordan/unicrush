@@ -21,7 +21,6 @@ package unicrush.model;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,24 +31,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class with {@code JUnit} unit tests for the class {@code Candy}.
+ * Test class for {@code unicrush.model.Candy}.
  *
  * @author Szalontai Jordán
  */
 public class CandyTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CandyTest.class);
-    
-    private static final Candy.State[] COLOR_STATES = {
-        Candy.State.BLUE,
-        Candy.State.GREEN,
-        Candy.State.ORANGE,
-        Candy.State.PRUPLE,
-        Candy.State.RED,
-        Candy.State.YELLOW
+
+    private static final CandyState[] COLOR_STATES = {
+        CandyState.BLUE,
+        CandyState.GREEN,
+        CandyState.ORANGE,
+        CandyState.PRUPLE,
+        CandyState.RED,
+        CandyState.YELLOW
     };
 
-    public static List<Candy.State> colorStates;
+    public static List<CandyState> colorStates;
 
     public CandyTest() {
 
@@ -71,7 +70,7 @@ public class CandyTest {
         colorStates.stream()
                 .forEach(state -> Assert.assertFalse(new Candy(state).isEmpty()));
 
-        Candy empty = new Candy(Candy.State.EMPTY);
+        Candy empty = new Candy(CandyState.EMPTY);
         Assert.assertTrue(empty.isEmpty());
     }
 
@@ -82,7 +81,7 @@ public class CandyTest {
     public void testGetRandomColorState() {
         LOGGER.info("- Testing method getRandomColorState");
         for (int i = 0; i < 10; i++) {
-            Candy.State state = Candy.getRandomColorState();
+            CandyState state = Candy.getRandomColorState();
 
             Assert.assertTrue(colorStates.contains(state));
         }
@@ -101,8 +100,8 @@ public class CandyTest {
             Assert.assertEquals(colorStates.get(i),
                     Candy.getStateFromChar(colorChars[i]));
         }
-        
-        Assert.assertEquals(Candy.State.EMPTY, Candy.getStateFromChar('E'));
+
+        Assert.assertEquals(CandyState.EMPTY, Candy.getStateFromChar('E'));
         Assert.assertEquals(null, Candy.getStateFromChar('x'));
     }
 
@@ -120,8 +119,8 @@ public class CandyTest {
         Candy c2;
 
         // test 1
-        c1 = new Candy(Candy.State.BLUE);
-        c2 = new Candy(Candy.State.EMPTY);
+        c1 = new Candy(CandyState.BLUE);
+        c2 = new Candy(CandyState.EMPTY);
 
         expResult = 1;
         result = Candy.compare(c1, c2);
@@ -131,11 +130,11 @@ public class CandyTest {
         // test 2
         expResult = -1;
         result = Candy.compare(c2, c1);
-        
+
         Assert.assertEquals(expResult, result);
 
         // test 3
-        c2.setState(Candy.State.BLUE);
+        c2.setState(CandyState.BLUE);
 
         expResult = 0;
         result = Candy.compare(c1, c2);
@@ -143,7 +142,7 @@ public class CandyTest {
         Assert.assertEquals(expResult, result);
 
         // test 4
-        c1.setState(Candy.State.RED);
+        c1.setState(CandyState.RED);
 
         expResult = 0;
         result = Candy.compare(c1, c2);
@@ -151,8 +150,8 @@ public class CandyTest {
         Assert.assertEquals(expResult, result);
 
         // test 5
-        c1.setState(Candy.State.EMPTY);
-        c2.setState(Candy.State.EMPTY);
+        c1.setState(CandyState.EMPTY);
+        c2.setState(CandyState.EMPTY);
 
         expResult = 0;
         result = Candy.compare(c1, c2);

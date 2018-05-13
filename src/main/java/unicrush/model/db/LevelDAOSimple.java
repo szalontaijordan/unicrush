@@ -14,10 +14,12 @@ import javax.persistence.TypedQuery;
  */
 public class LevelDAOSimple implements LevelDAO {
 
+    //CHECKSTYLE:OFF
     private EntityManager em;
-
+    //CHECKSTYLE:ON
+    
     /**
-     * Creates a data access object that utilizes the {@code EntityManager} class.
+     * Constructs a data access object that utilizes the {@code EntityManager} class.
      *
      * @param em the manager for the entities
      */

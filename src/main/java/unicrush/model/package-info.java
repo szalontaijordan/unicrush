@@ -2,13 +2,21 @@
  * Package containing the classes, that define the logic of the game.
  *
  * <p>
- * The basic concept of the UniCrush game, is that you can play on levels. These levels are
+ * The basic concept of the UniCrush game, is that you can play the game on levels. These levels are
  * responsible for keeping track of the board. On the board you have candies you can swap. These
  * operations on a level such as swapping two candy instances are done by a manager.</p>
  *
  * <p>
+ * The levels of a game are loaded from an oracle database.</p>
+ *
+ * <p>
  * It is important to note, that the board of level instance is always a quadratic (N x N) matrix,
- * and it can be transposed in order to handle the rows and the columns easily</p>
+ * and it can be transposed in order to handle the rows and the columns easily. If you would like to
+ * play on a level, but have an empty space somewhere put {@code null} on its coordinates.</p>
+ *
+ * <p>
+ * This package also contains a validator singleton class that has methods with {@code boolean}
+ * return value. This class is used in most of the classes to validate values.</p>
  */
 package unicrush.model;
 

@@ -36,12 +36,14 @@ import org.slf4j.LoggerFactory;
  */
 public final class LevelManager {
 
+    //CHECKSTYLE:OFF
     private static final Logger LOGGER = LoggerFactory.getLogger(LevelManager.class);
 
     private Level level;
     private int iterations;
     private int sum;
-
+    //CHECKSTYLE:ON
+    
     /**
      * Constructs an object for a game, that can make changes to the logic of the level.
      *
@@ -239,6 +241,7 @@ public final class LevelManager {
         return coor;
     }
 
+    //CHECKSTYLE:OFF
     private String inlineMatch(String top3, String row, int i) {
         String coor = "";
         String reg = "(.*XX.X.*|.*X.XX.*)".replaceAll("X", "" + top3.charAt(0));
@@ -284,7 +287,8 @@ public final class LevelManager {
         }
         return coor;
     }
-
+    //CHECKSTYLE:ON
+    
     /**
      * Refreshes the {@code Candy.State} of {@code Candy} instances in the {@code level}'s board
      * that are in a column or row with a length more than two.
@@ -302,7 +306,7 @@ public final class LevelManager {
         for (int row = 0; row < level.getBoardSize(); row++) {
             for (int col = 0; col < level.getBoardSize(); col++) {
                 if (level.get(row, col) != null && level.get(row, col).isMarkedForPop()) {
-                    level.get(row, col).setState(Candy.State.EMPTY);
+                    level.get(row, col).setState(CandyState.EMPTY);
                     level.get(row, col).setMarkedForPop(false);
                     popHappened = true;
                 }
@@ -351,8 +355,7 @@ public final class LevelManager {
         return re / 3 * re * 60;
     }
 
-    // TODO: refactor this method!
-    //       maybe regexes ??
+    //CHECKSTYLE:OFF
     private void markAllCandies() {
         Map<String, Integer[]> candyCountMap = new HashMap<>();
 
@@ -382,7 +385,7 @@ public final class LevelManager {
         }
         columns[0]++;
     }
-
+    
     public int getIterations() {
         return iterations;
     }
@@ -401,4 +404,5 @@ public final class LevelManager {
         this.sum = 0;
         this.level = level;
     }
+    //CHECKSTYLE:ON
 }
