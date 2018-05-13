@@ -9,7 +9,7 @@ When playing this game, you can play on levels, that are loaded from the oracle 
 In the database we store the user's name and we generate an ID for them, the levels, and information about players' highscore on levels.
 
 ## Setup
-If you are not a student (or teacher) of *University of Debrecen*, you can' play levels from the database, you have to modify the code in the `CandyCrushGame.java` file.
+We assume that you have Java 1.7+ and Maven already installed on your computer. If you are not a student (or teacher) of *University of Debrecen*, you can't play levels from the database, you have to modify the code in the `CandyCrushGame.java` file.
 
 1. Create oracle account [here](https://www.oracle.com/webapps/maven/register/license.html) for the OJDBC.
 
@@ -55,12 +55,24 @@ If you are not a student (or teacher) of *University of Debrecen*, you can' play
 
 3. Clone this repository somewhere on your computer, and navigate there in the command line
 
-4. Run the following command
-
-``$ mvn package``
+4. Run: `$ mvn package`
 
 ## Play
 
 Use the following command to play:
 
 ``$ java -jar target/unicrush-1.0.jar``
+
+## Advanced
+
+Generate the site with all the API documentation and the reports
+
+``$ mvn site``
+
+Running the applicaton with *logback*
+
+``$ mvn exec:java``
+
+Running the application with *tinylog*
+
+``$ mvn exec:java -Ptinylog``
