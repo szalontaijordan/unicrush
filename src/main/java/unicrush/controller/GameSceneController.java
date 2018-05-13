@@ -94,6 +94,9 @@ public class GameSceneController implements Initializable {
             gridManager.startSuggestionTask();
 
             levelSteps.setText(game.getCurrentLevel().getAvailableSteps() + "");
+            scoreLabel.setText(String.format("%5d / %5d",
+                this.game.getPlayerScore(),
+                this.game.getCurrentLevel().getScoreToComplete()));
         } catch (Exception ex) {
             ex.printStackTrace();
             LOGGER.error(ex.getMessage());

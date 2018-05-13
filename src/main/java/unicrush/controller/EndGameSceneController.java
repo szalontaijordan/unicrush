@@ -79,6 +79,8 @@ public class EndGameSceneController implements Initializable {
         scoreTable.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("userName"));
         scoreTable.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("levelId"));
         scoreTable.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("score"));
+        
+        scoreTable.setEditable(false);
     }
     //CHECKSTYLE:ON
     
@@ -122,7 +124,7 @@ public class EndGameSceneController implements Initializable {
             currentScore.setText("New high score: " + userScore + "");
             scoreDao.update(userId, levelId, userScore);
         } else {
-            currentScore.setText("Your score: " + userScore + "");
+            currentScore.setText("Your score is " + userScore + "");
 
             if (found == null) {
                 scoreDao.create(userId, levelId, userScore);

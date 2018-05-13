@@ -150,6 +150,9 @@ dist/
 nbdist/
 .nb-gradle/
 nbactions.xml
+/nbproject/
+.nbproject/
+nbproject/
 
 ### VisualStudioCode ###
 .vscode/*
@@ -161,4 +164,5 @@ nbactions.xml
 
 
 # End of https://www.gitignore.io/api/maven,eclipse,netbeans,intellij,visualstudiocode
-/nbproject/
+
+messages.log

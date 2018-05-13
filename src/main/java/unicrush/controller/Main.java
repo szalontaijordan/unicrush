@@ -68,6 +68,8 @@ public class Main extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Application started!");
+        stage.setFullScreen(false);
+        stage.setResizable(false);
         stage.setOnCloseRequest(event -> {
             event.consume();
             LOGGER.info("Closing application!");
