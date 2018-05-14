@@ -9,7 +9,7 @@ When playing this game, you can play on levels, that are loaded from the oracle 
 In the database we store the user's name and we generate an ID for them, the levels, and information about players' highscore on levels.
 
 ## Setup
-We assume that you have Java 1.7+ and Maven already installed on your computer. If you are not a student (or teacher) of *University of Debrecen*, you can't play levels from the database, you have to modify the code in the `CandyCrushGame.java` file.
+We assume that you have Java 1.7.x - 1.8.x and Maven already installed on your computer. If you are not a student (or teacher) of *University of Debrecen*, you can't play levels from the database, you have to modify the code in the `CandyCrushGame.java` file.
 
 1. Create oracle account [here](https://www.oracle.com/webapps/maven/register/license.html) for the OJDBC.
 
