@@ -39,7 +39,11 @@ CREATE TABLE uc_score(
   constraint pk primary key(userId, levelId)
 );
 
-INSERT INTO uc_level(100, 8, '0,0;1,0;0,7;1,7;7,0;6,0;7,7;6,7', 5000, 20);
+INSERT INTO uc_level (id, boardSize, walls, score, steps)
+  SELECT id, boardSize, walls, score, steps
+    FROM U_GYKK9I.UC_LEVEL
+;
+
 COMMIT;
 ```
 
@@ -93,7 +97,7 @@ Then the `settings.xml` is:
 
 Use the following command to play:
 
-``$ java -jar target/unicrush-1.0-shaded.jar``
+``$ java -jar target/unicrush-1.0-jar-with-dependencies.jar``
 
 ## Advanced
 
