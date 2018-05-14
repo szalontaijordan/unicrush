@@ -70,6 +70,8 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         LOGGER.info("Application started!");
         stage.getIcons().add(new Image(Main.class.getResourceAsStream("/candy/icon.png")));
+        stage.setWidth(600.0);
+        stage.setHeight(400.0);
         stage.setFullScreen(false);
         stage.setResizable(false);
         stage.setOnCloseRequest(event -> {
