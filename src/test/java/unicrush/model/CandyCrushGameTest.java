@@ -27,11 +27,13 @@ package unicrush.model;
  * #L%
  */
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unicrush.model.db.DAOFactory;
 
 /**
  * Test class for {@code unicrush.model.CandyCrushGame}.
@@ -51,6 +53,14 @@ public class CandyCrushGameTest {
     @BeforeClass
     public static void setUpClass() {
         LOGGER.info("Testing class CandyCrushGame");
+    }
+    
+    @AfterClass
+    public static void tearDownClass() {
+        try {
+            DAOFactory.getInstance().close();
+        } catch (Exception ex) {
+        }
     }
 
     /**

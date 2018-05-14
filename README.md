@@ -14,6 +14,38 @@ We assume that you have Java 1.7+ and Maven already installed on your computer. 
 1. Create oracle account [here](https://www.oracle.com/webapps/maven/register/license.html) for the OJDBC.
 
 2. At your maven home create the proper `settings.xml` file, so you can connect to the oracle database. (the structure is the following)
+If you'd like to use your own credentials for the database, and not the developer's, you have to create the neccesary tables with the data in it.
+
+For example in oracle sql developer:
+
+```sql
+CREATE TABLE uc_level(
+  id number primary key,
+  boardSize number not null check (boardSize > 3),
+  walls varchar2(50),
+  score number not null,
+  steps number not null
+);
+
+CREATE TABLE uc_user(
+  id number primary key,
+  username varchar2(20) not null
+);
+
+CREATE TABLE uc_score(
+  userId number,
+  levelId number,
+  score number,
+  constraint pk primary key(userId, levelId)
+);
+
+INSERT INTO uc_level(100, 8, '0,0;1,0;0,7;1,7;7,0;6,0;7,7;6,7', 5000, 20);
+COMMIT;
+```
+
+Then the `settings.xml` is:
+
+
 ```xml
 <profiles>
   <profile>
@@ -61,7 +93,7 @@ We assume that you have Java 1.7+ and Maven already installed on your computer. 
 
 Use the following command to play:
 
-``$ java -jar target/unicrush-1.0.jar``
+``$ java -jar target/unicrush-1.0-shaded.jar``
 
 ## Advanced
 

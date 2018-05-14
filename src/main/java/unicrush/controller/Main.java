@@ -30,6 +30,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import unicrush.model.db.DAOFactory;
 
 /**
  * Main class starting the JavaFx application.
@@ -74,6 +75,11 @@ public class Main extends Application {
         stage.setResizable(false);
         stage.setOnCloseRequest(event -> {
             event.consume();
+            try {
+                DAOFactory.getInstance().close();
+            } catch (Exception ex) {
+                LOGGER.error("{}", ex.getMessage());
+            }
             LOGGER.info("Closing application!");
             System.exit(0);
         });

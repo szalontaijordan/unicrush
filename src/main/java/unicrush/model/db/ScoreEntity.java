@@ -21,7 +21,6 @@ package unicrush.model.db;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -29,6 +28,7 @@ import javax.persistence.IdClass;
 import javax.persistence.Table;
 
 /**
+ * Class for a score entity.
  *
  * @author Szalontai Jordán
  */
@@ -36,19 +36,19 @@ import javax.persistence.Table;
 @Table(name = "UC_SCORE")
 @IdClass(ScoreKey.class)
 public class ScoreEntity {
-    
+
     //CHECKSTYLE:OFF
     @Id
     @Column(name = "userId")
     private int userId;
-    
+
     @Id
     @Column(name = "levelId")
     private int levelId;
-    
+
     @Column(name = "score")
     private int score;
-    
+
     public ScoreEntity() {
     }
 

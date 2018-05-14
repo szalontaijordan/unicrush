@@ -21,7 +21,7 @@ package unicrush.model.db;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,6 +43,14 @@ public class DAOFactoryTest {
     @BeforeClass
     public static void setUpClass() {
         LOGGER.info("Testing class DAOFactory");
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+        try {
+            DAOFactory.getInstance().close();
+        } catch (Exception ex) {
+        }
     }
 
     /**

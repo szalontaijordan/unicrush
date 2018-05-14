@@ -71,7 +71,7 @@ public class EndGameSceneController implements Initializable {
 
     private CandyCrushGame game;
     private Validator validator;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         this.validator = Validator.getInstance();
@@ -79,13 +79,14 @@ public class EndGameSceneController implements Initializable {
         scoreTable.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("userName"));
         scoreTable.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("levelId"));
         scoreTable.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("score"));
-        
+
         scoreTable.setEditable(false);
     }
     //CHECKSTYLE:ON
-    
+
     /**
-     * Initializes the labels of the scene, and sets the content of the high score table.
+     * Initializes the labels of the scene, and sets the content of the high
+     * score table.
      *
      * <p>
      * This method is usually called from another controller class.</p>
@@ -120,15 +121,12 @@ public class EndGameSceneController implements Initializable {
         LOGGER.info("Setting current score and highscore");
         ScoreEntity found = scoreDao.find(userId, levelId);
 
-        if (validator.isNewHighScore(found, userScore)) {
+        if (found == null) {
+            scoreDao.create(userId, levelId, userScore);
+            currentScore.setText("Your score is " + userScore + "");
+        } else if (validator.isNewHighScore(found, userScore)) {
             currentScore.setText("New high score: " + userScore + "");
             scoreDao.update(userId, levelId, userScore);
-        } else {
-            currentScore.setText("Your score is " + userScore + "");
-
-            if (found == null) {
-                scoreDao.create(userId, levelId, userScore);
-            }
         }
 
         setHighScoreTable(scoreDao.findAll());
@@ -136,7 +134,8 @@ public class EndGameSceneController implements Initializable {
     //CHECKSTYLE:ON
 
     /**
-     * Updates the {@code TableView} in the scene with the data fetched from the database.
+     * Updates the {@code TableView} in the scene with the data fetched from the
+     * database.
      *
      * @param scores the list containing entities from the database
      */
@@ -159,8 +158,8 @@ public class EndGameSceneController implements Initializable {
     }
 
     /**
-     * When the user clicks the <em>new game</em> button, the game takes them back to the log in
-     * screen.
+     * When the user clicks the <em>new game</em> button, the game takes them
+     * back to the log in screen.
      *
      * @param event the click event
      */
@@ -168,7 +167,7 @@ public class EndGameSceneController implements Initializable {
     public void onNewGame(ActionEvent event) {
         switchToLogInScene((Stage) newGame.getScene().getWindow());
     }
-    
+
     //CHECKSTYLE:OFF
     private void switchToLogInScene(Stage stage) {
         try {
@@ -196,7 +195,7 @@ public class EndGameSceneController implements Initializable {
             this.levelId = new SimpleIntegerProperty(levelId);
             this.score = new SimpleIntegerProperty(score);
         }
-        
+
         public String getUserName() {
             return userName.get();
         }

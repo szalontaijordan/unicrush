@@ -77,7 +77,7 @@ public class LogInSceneController implements Initializable {
         try {
             if (game == null) {
                 game = new CandyCrushGame();
-                errorLabel.setText("Loading from database ...");
+                errorLabel.setText("Loading from database\n(this may take a while)");
                 Task<Integer> loader = loadLevelsFromDb();
                 loader.setOnSucceeded(event -> setItems());
                 new Thread(loader, "DB Loader Thread").start();
