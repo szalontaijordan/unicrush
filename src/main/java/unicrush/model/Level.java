@@ -23,13 +23,15 @@ package unicrush.model;
  */
 import java.util.Arrays;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class representing a level of a game.
  *
  * <p>
- * This class has a builder, so we can make levels easily. The essential components of a level are
- * the following:</p>
+ * This class has a builder, so we can make levels easily. The essential
+ * components of a level are the following:</p>
  *
  * <ul>
  * <li>an id</li>
@@ -38,18 +40,18 @@ import java.util.stream.Collectors;
  * </ul>
  *
  * <pre>
- * 
+ *
  *  // a basic 5x5 level, with no extra information
  *  Level level = new Level.Builder(0, 5)
  *          .fillBoard()
  *          .build();
- * 
+ *
  * </pre>
- * 
+ *
  * <p>
- * You may also set the score that is needed to complete a level, and put walls in some coordinates,
- * where no candies can be. All levels are {@link Transposable}, so we can get a candy in a row or a
- * column easily.</p>
+ * You may also set the score that is needed to complete a level, and put walls
+ * in some coordinates, where no candies can be. All levels are
+ * {@link Transposable}, so we can get a candy in a row or a column easily.</p>
  *
  * <p>
  * A {@code Level}'s state is a template string, for more information, check
@@ -58,6 +60,8 @@ import java.util.stream.Collectors;
  * @author Szalontai Jordán
  */
 public final class Level implements Transposable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LevelManager.class);
 
     //CHECKSTYLE:OFF
     private final int boardSize;
@@ -133,6 +137,7 @@ public final class Level implements Transposable {
                 return board[i][j];
             }
         } catch (ArrayIndexOutOfBoundsException e) {
+            LOGGER.info("CANT GET CANDY");
             return null;
         }
     }
@@ -195,7 +200,8 @@ public final class Level implements Transposable {
      *     [x, B, B, x]
      * </pre>
      *
-     * @return the {@code String} representation of {@code this} instance as the example shows above
+     * @return the {@code String} representation of {@code this} instance as the
+     * example shows above
      */
     @Override
     public String toString() {
@@ -211,18 +217,21 @@ public final class Level implements Transposable {
      * Returns a 2D-array that represents coordinates.
      *
      * <p>
-     * The idea of this, is that in the template we list some coordinates separated, and we parse
-     * this template string. This method ignores whitesapce between the coordinates, because it is
-     * using a regular expression pattern.</p>
+     * The idea of this, is that in the template we list some coordinates
+     * separated, and we parse this template string. This method ignores
+     * whitesapce between the coordinates, because it is using a regular
+     * expression pattern.</p>
      * <p>
-     * For example {@code Level.Builder.createCoordinates("1,2 ; 3,4 ; 5,6");} returns
+     * For example {@code Level.Builder.createCoordinates("1,2 ; 3,4 ; 5,6");}
+     * returns
      * </p>
      *
      * <pre>
      *     new Integer[][]{ { 1, 2 }, { 3, 4 }, { 5, 6 } }
      * </pre>
      *
-     * @param template a string that represents coordinates like in the example above
+     * @param template a string that represents coordinates like in the example
+     * above
      * @return a 2D-array that represents coordinates
      */
     public static Integer[][] createCoordinates(String template) {
@@ -291,13 +300,13 @@ public final class Level implements Transposable {
         //CHECKSTYLE:ON
 
         /**
-         * Constructs a builder for a level, that will represent some pieces of essential
-         * information about the level.
+         * Constructs a builder for a level, that will represent some pieces of
+         * essential information about the level.
          *
          * @param ID the ID of the level
          * @param boardSize the size of the level (all levels are quadratic)
-         * @throws IllegalArgumentException if the {@code type} is {@code null} or the
-         * {@code boardSize} is less than 2
+         * @throws IllegalArgumentException if the {@code type} is {@code null}
+         * or the {@code boardSize} is less than 2
          */
         public Builder(int ID, int boardSize) throws IllegalArgumentException {
             if (boardSize < 3) {
@@ -345,8 +354,8 @@ public final class Level implements Transposable {
          * Sets the board 2D-array with random {@code Candy} instances.
          *
          * <p>
-         * It is important that you must put walls first into a level, so only the real parts of the
-         * board will be filled.</p>
+         * It is important that you must put walls first into a level, so only
+         * the real parts of the board will be filled.</p>
          *
          * @return {@code this} so we can chain builder methods
          */
@@ -356,13 +365,15 @@ public final class Level implements Transposable {
         }
 
         /**
-         * Sets the board 2D-array with {@code Candy} instances specified in a template string.
+         * Sets the board 2D-array with {@code Candy} instances specified in a
+         * template string.
          *
          * <p>
-         * It is important that you must put walls first into a level, and the template string must
-         * be consistent with these walls</p>
+         * It is important that you must put walls first into a level, and the
+         * template string must be consistent with these walls</p>
          *
-         * @param template the template string representing information about the new board
+         * @param template the template string representing information about
+         * the new board
          * @return {@code this} so we can chain builder methods
          * @throws IllegalArgumentException if the template is malformed
          */
@@ -375,11 +386,12 @@ public final class Level implements Transposable {
          * Builds a new {@code Level} object.
          *
          * <p>
-         * This method also sets the {@code initialState} for the level, so we can refer to it in
-         * the future.</p>
+         * This method also sets the {@code initialState} for the level, so we
+         * can refer to it in the future.</p>
          *
          * @return a {@code Level} object with the builded fields
-         * @throws IllegalArgumentException if the board of the level is not set yet
+         * @throws IllegalArgumentException if the board of the level is not set
+         * yet
          */
         public Level build() throws IllegalArgumentException {
             if (this.board == null) {

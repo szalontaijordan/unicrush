@@ -24,6 +24,7 @@ package unicrush.controller;
 import unicrush.model.LevelManager;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
@@ -170,20 +171,16 @@ public class GameSceneController implements Initializable {
 
         LOGGER.trace("Selected candies: {}", gridManager.getSelectedCandies());
 
-        gridManager.disableButtonClicks();
-
         if (validator.isTwoSelected(gridManager.getSelectedCandies())) {
             levelMessage.setText("");
             swapSelectedCandies(gridManager.getSelectedCandies());
         }
-
-        gridManager.enableButtonClicks(onClick -> onCandySelect(onClick));
     }
 
     //CHECKSTYLE:OFF
     private void swapSelectedCandies(String template) {
         Integer[][] coors = Level.createCoordinates(template);
-
+        LOGGER.debug("CREATED COORS: {}", Arrays.toString(coors));
         game.getManager().swap(coors);
         gridManager.renderBoardState(game.getCurrentLevel().getBoardState());
 
@@ -216,7 +213,7 @@ public class GameSceneController implements Initializable {
         gridManager.eraseSelectedCandies();
     }
 
-    private void onPopSuccess(final long add) {
+    private synchronized void onPopSuccess(final long add) {
         if (add != 0) {
             levelSteps.setText("" + (Integer.parseInt(levelSteps.getText()) - 1));
         }

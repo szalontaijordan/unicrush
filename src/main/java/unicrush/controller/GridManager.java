@@ -180,6 +180,7 @@ public final class GridManager {
             try {
                 Thread.sleep(Main.POP_INTERVAL);
             } catch (InterruptedException ex) {
+                LOGGER.error("RENDERING INTERRUPTED");
                 LOGGER.error(ex.getMessage());
             }
         }
@@ -202,7 +203,7 @@ public final class GridManager {
      * Adds the {@code highlighted} class to the CSS class list of the {@code Node} instances, so
      * they will appear with a green background.
      */
-    public void showSuggestionMarkers() {
+    public synchronized void showSuggestionMarkers() {
         if (!validator.isEmptyString(suggestedArea)) {
             LOGGER.debug("Showing help markers");
 
@@ -218,7 +219,7 @@ public final class GridManager {
      * Removes the {@code highlighted} class from the CSS class list of the {@code Node} instances,
      * so they will not appear with a green background.
      */
-    public void hideSuggestionMarkers() {
+    public synchronized void hideSuggestionMarkers() {
         if (!validator.isEmptyString(suggestedArea)) {
             LOGGER.debug("Hiding help markers");
 
@@ -236,7 +237,8 @@ public final class GridManager {
      * @param i the row index of the new selection
      * @param j the column index of the new selection
      */
-    public void updateSelectedCandies(int i, int j) {
+    public synchronized void updateSelectedCandies(int i, int j) {
+        LOGGER.trace("UPDATING SELECTED CANDIES ARRAY! {} , {}", i+"", j+"");
         for (int k = 0; k < 2; k++) {
             if (selectedCandies[k] == null) {
                 selectedCandies[k] = i + "," + j;
@@ -256,14 +258,14 @@ public final class GridManager {
      *
      * @return a template string with the coordinates that were selected (a component can be null)
      */
-    public String getSelectedCandies() {
+    public synchronized String getSelectedCandies() {
         return selectedCandies[0] + ";" + selectedCandies[1];
     }
 
     /**
      * Resets the array that keeps track of the coordinates of the selected candies.
      */
-    public void eraseSelectedCandies() {
+    public synchronized void eraseSelectedCandies() {
         Integer[][] coors = Level.createCoordinates(getSelectedCandies());
 
         getNode(coors[0][0], coors[0][1]).getStyleClass().removeAll("selected");
@@ -290,8 +292,10 @@ public final class GridManager {
     }
 
     //CHECKSTYLE:OFF
-    private Node getNode(int i, int j) {
-        return grid.getChildren().get(i * game.getCurrentLevel().getBoardSize() + j);
+    private synchronized Node getNode(int i, int j) {
+        Node n = grid.getChildren().get(i * game.getCurrentLevel().getBoardSize() + j);
+        LOGGER.info("{}", n.toString());
+        return n;
     }
     
     public Thread getPopThread() {
