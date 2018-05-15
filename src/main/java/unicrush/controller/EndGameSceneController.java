@@ -149,7 +149,7 @@ public class EndGameSceneController implements Initializable {
         scores.stream()
                 .forEach(score -> {
                     final String userName = userDao.get(score.getUserId()).getUsername();
-                    final Integer levelId = game.getCurrentLevel().getID();
+                    final Integer levelId = score.getLevelId();
                     final Integer newScore = score.getScore();
                     data.add(new ScoreRow(userName, levelId, newScore));
                 });
